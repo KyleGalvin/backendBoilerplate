@@ -1,0 +1,29 @@
+{
+  "name": "backend_boilerplate",
+  "version": "0.0.0",
+  "description": "basic blank project setup. Hopefully saves you time configuring",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "lint": "tslint --force 'src/**/*.ts?' > ./tslint.err",
+    "bundle": "tsc",
+    "serve": "npm run lint && npm run bundle && cat ./tslint.err && node ./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KyleGalvin/backendBoilerplate.git"
+  },
+  "author": "Kyle Galvin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KyleGalvin/backendBoilerplate/issues"
+  },
+  "homepage": "https://github.com/KyleGalvin/backendBoilerplate#readme",
+  "devDependencies": {
+    "@types/express": "4.0.37",
+    "typescript": "2.5.3"
+  },
+  "dependencies": {
+    "express": "4.16.0"
+  }
+}

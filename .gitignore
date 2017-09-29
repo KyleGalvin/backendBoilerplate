@@ -1,0 +1,4 @@
+dist/
+node_modules/
+tslint.err
+npm-debug.log
