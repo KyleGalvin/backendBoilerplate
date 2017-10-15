@@ -4,7 +4,7 @@ import * as cors from "cors";
 
 const router = express.Router();
 router.post("/auth/signup", (req, res) => {
-  console.log('signup hit');
+  console.log("signup hit");
   res.json({"user": {
       "firstName": "Jane B",
       "lastName": "Doe",
