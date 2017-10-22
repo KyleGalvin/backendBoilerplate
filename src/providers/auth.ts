@@ -7,8 +7,8 @@ export default class AuthProvider {
   }
 
   // update user
-  public updateUser(){
-    
+  public updateUser() {
+
   }
 
   // get user

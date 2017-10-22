@@ -1,11 +1,16 @@
-// var bunyan = require('bunyan');
-// var log = bunyan.createLogger({
-//     name: <string>,                     // Required 
-//     level: <level name or number>,      // Optional, see "Levels" section 
-//     stream: <node.js stream>,           // Optional, see "Streams" section 
-//     streams: [<bunyan streams>, ...],   // Optional, see "Streams" section 
-//     serializers: <serializers mapping>, // Optional, see "Serializers" section 
-//     src: <boolean>                      // Optional, see "src" section 
-// });
+import * as bunyan from "bunyan";
 
-// export default log;
+export default (filename: string) => {
+  return bunyan.createLogger({
+    "name": filename, // Required
+    "level": "info", // Optional, see "Levels" section
+    "streams": [
+      {
+        "level": "info",
+        "stream": process.stdout
+      }
+    ], // Optional, see "Streams" section
+    "serializers": bunyan.stdSerializers, // Optional, see "Serializers" section
+    "src": true                           // Optional, see "src" section
+  });
+};

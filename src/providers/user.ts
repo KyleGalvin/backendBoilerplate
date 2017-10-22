@@ -1,6 +1,5 @@
 import Users from "../models/users";
 
-
   // "verifyPassword": ((password: string) => {
   //   bcrypt.compare(password, this.passwordHash).then(handleCompareResponse);
   // })
@@ -12,18 +11,18 @@ export default class UserProvider {
   }
 
   // update user
-  public update(){
-    
+  public update() {
+
   }
 
   // get user
-  public get(){
+  public get() {
 
   }
 
   // delete user
-  public delete(){
-    
+  public delete() {
+
   }
 
   // authenticate user

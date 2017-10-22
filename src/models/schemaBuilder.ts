@@ -1,11 +1,9 @@
 import * as Knex from "knex";
 import Bookshelf from "./bookshelf";
 
-
-
 export function deleteSchema() {
   return Bookshelf.knex.schema.dropTableIfExists("users");
-};
+}
 
 export function buildSchema() {
   Bookshelf.knex.schema.createTable("users", (t: Knex.CreateTableBuilder) => {
@@ -20,5 +18,4 @@ export function buildSchema() {
     // ...
     // you now have a users table with a few columns.
   });
-};
-
+}
