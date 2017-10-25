@@ -1,4 +1,4 @@
-import Users from "../models/db/users";
+import {User} from "../models/users";
 
 export default class AuthProvider {
   // create user
