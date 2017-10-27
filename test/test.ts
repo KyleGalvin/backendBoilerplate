@@ -16,12 +16,13 @@ const testUser = {
 	    const UserModel = new User(testUser);
 	    UserModel.save();
 
-	    const queriedUser = User.where("firstName", "john")
-		    .fetch()
-		    .then((user: User) => {
-		    	console.log('got user: ', user);
-		    	assert(1===1, "working");
-		    })
+	    // const queriedUser = User.where("firstName", "john")
+		   //  .fetch()
+		   //  .then((user: User) => {
+		   //  	console.log('got user: ', user);
+		    	
+		   //  })
+		    assert(1===1, "working");
 	    
     }
 }
