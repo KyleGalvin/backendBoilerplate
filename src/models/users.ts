@@ -4,7 +4,7 @@ import * as bcrypt from "bcrypt";
 import Logger from "../util/logger";
 
 const logger = Logger(path.basename(__filename));
-interface IUser {
+interface IDBUser {
   tableName: string;
   id: number;
   firstName: string;
@@ -15,14 +15,35 @@ interface IUser {
 
 }
 
-export class User extends Bookshelf.Model<User> implements IUser {
+interface IUser{
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  username?: string;
+}
+
+export class User extends Bookshelf.Model<User> implements IDBUser {
+  public constructor(props: IUser){
+    super();
+    this.firstName = props.firstName || "";
+    this.lastName = props.lastName || "";
+    this.email = props.email || "";
+    this.username = props.username || "";
+  }
+
   public get tableName() {return 'users';}
-  public get id() {return this.get('id');}
+  // public get id() {return this.get('id');}
   public get firstName() {return this.get('firstName');}
   public get lastName() {return this.get('lastName');}
   public get email() {return this.get('email');}
   public get username() {return this.get('username');}
   private get passwordHash() {return this.get('passwordHash');}
+
+  public set firstName(firstName: string) {this.set('firstName', firstName)}
+  public set lastName(lastName: string) {this.set('lastName', lastName)}
+  public set email(email: string) {this.set('email', email)}
+  public set username(username: string) {this.set('username', username)}
+  // public set id(id: number) {this.set('id', id);}
   private set passwordHash(hash: string) {this.set('passwordHash', hash)}
 
   public verifyPassword = (password: string) => {

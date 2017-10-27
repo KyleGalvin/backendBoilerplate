@@ -4,7 +4,7 @@
   "description": "basic blank project setup. Hopefully saves you time configuring",
   "main": "index.js",
   "scripts": {
-    "test": "test",
+    "test": "mocha-typescript-watch -p tsconfig.json -o test/mocha.opts",
     "lint": "tslint --force 'src/**/*.ts' > ./tslint.err",
     "bundle": "tsc",
     "serve": "npm run lint && npm run bundle && cat ./tslint.err && node ./dist/src/index.js"
@@ -28,6 +28,8 @@
     "@types/express": "4.0.37",
     "@types/knex": "0.0.61",
     "mocha": "^4.0.1",
+    "mocha-typescript": "^1.1.12",
+    "source-map-support": "^0.5.0",
     "typescript": "2.5.3"
   },
   "dependencies": {
