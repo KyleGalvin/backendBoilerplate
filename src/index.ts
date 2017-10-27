@@ -9,14 +9,13 @@ import * as fs from "fs";
 import auth from "./controllers/auth";
 import diagnostics from "./controllers/diagnostics";
 import config from "./config/local";
-import Bookshelf from "./models/bookshelf";
-import * as SchemaBuilder from "./models/schemaBuilder";
+// import * as SchemaBuilder from "./models/schemaBuilder";
 import Logger from "./util/logger";
 
 const logger = Logger(path.basename(__filename));
 
 // for dev environment, launch with a fresh database every time
-SchemaBuilder.deleteSchema().then(SchemaBuilder.buildSchema);
+// SchemaBuilder.deleteSchema().then(SchemaBuilder.buildSchema);
 
 const app = express();
 app.use(bodyParser.json());
