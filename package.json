@@ -4,11 +4,12 @@
   "description": "basic blank project setup. Hopefully saves you time configuring",
   "main": "index.js",
   "scripts": {
-    "test": "mocha-typescript-watch -p tsconfig.json -o test/mocha.opts",
-    "lint": "tslint --force 'src/**/*.ts' > ./tslint.err",
-    "bundle": "mkdirp ./dist && tsc",
+    "bundle": "npm run clean && npm run lint && mkdirp ./dist && tsc",
     "clean": "rm -rf ./dist",
-    "serve": "npm run clean && npm run lint && npm run bundle && cat ./tslint.err && node ./dist/src/index.js"
+    "lint": "tslint --force 'src/**/*.ts' > ./tslint.err",
+    "serve": "npm run bundle && cat ./tslint.err && npm start",
+    "start": "node ./dist/src/index.js",
+    "test": "mocha-typescript-watch -p tsconfig.json -o ./mocha.opts"
   },
   "repository": {
     "type": "git",
