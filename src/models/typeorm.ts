@@ -8,13 +8,13 @@ import Logger from "../util/logger";
 
 const logger = Logger(path.basename(__filename));
 
-let databaseConnection = createConnection({
+const databaseConnection = createConnection({
   "type": "postgres",
   "url": config.connectionString,
   "synchronize": true,
   "entities": [User]
 }).then((connection) => {
-  logger.info("db connection established");
+  logger.debug("db connection established");
   return connection;
 });
 

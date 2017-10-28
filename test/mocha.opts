@@ -1,2 +1,2 @@
 --ui mocha-typescript
-dist/test/test.js
+dist/test/*.js

@@ -1,8 +1,8 @@
 import * as assert from "assert";
-// https://jonathas.com/token-based-authentication-in-nodejs-with-passport-jwt-and-bcrypt/
+import { suite, test, slow, timeout } from "mocha-typescript";
+
 import Connection from "../src/models/typeorm";
 import {User} from "../src/models/user";
-import { suite, test, slow, timeout } from "mocha-typescript";
 
 const testUser = { 
 	username: "testuser", 
