@@ -1,4 +1,4 @@
-import {User} from "../models/users";
+import {User} from "../models/user";
 
   // "verifyPassword": ((password: string) => {
   //   bcrypt.compare(password, this.passwordHash).then(handleCompareResponse);

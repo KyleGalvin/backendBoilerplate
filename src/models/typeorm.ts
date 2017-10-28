@@ -1,21 +1,21 @@
-// import * as Knex from "knex";
-// import * as Bookshelf from "bookshelf";
+import * as path from "path";
+import "reflect-metadata";
+
 import config from "../config/local";
 import {createConnection} from "typeorm";
-import {User} from "./users";
+import {User} from "./user";
+import Logger from "../util/logger";
+
+const logger = Logger(path.basename(__filename));
 
 let databaseConnection = createConnection({
-	type: "postgres",
-	url: config.connectionString,
-	entities: [User]
+  "type": "postgres",
+  "url": config.connectionString,
+  "synchronize": true,
+  "entities": [User]
 }).then((connection) => {
-	console.log('db connection established');
-	return connection;
+  logger.info("db connection established");
+  return connection;
 });
 
-// const knex = Knex({
-//   "client": "postgres",
-//   "connection": config.connectionString
-// });
-// const bookshelf = Bookshelf(knex);
 export default databaseConnection;
