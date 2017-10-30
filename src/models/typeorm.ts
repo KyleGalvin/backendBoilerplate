@@ -8,7 +8,7 @@ import Logger from "../util/logger";
 
 const logger = Logger(path.basename(__filename));
 
-const databaseConnection = createConnection({
+const dbConnection = createConnection({
   "type": "postgres",
   "url": config.connectionString,
   "synchronize": true,
@@ -18,4 +18,4 @@ const databaseConnection = createConnection({
   return connection;
 });
 
-export default databaseConnection;
+export default dbConnection;

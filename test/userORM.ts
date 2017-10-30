@@ -2,38 +2,33 @@ import * as assert from "assert";
 import { suite, test, slow, timeout } from "mocha-typescript";
 
 import Connection from "../src/models/typeorm";
-import {User} from "../src/models/user";
+import {User, IUserSerialized} from "../src/models/user";
+import {UserProvider} from "../src/providers/user";
 
-const testUser = { 
+const testUser: IUserSerialized = { 
+	id: -1,
 	username: "testuser", 
 	email: "email@mail.com",
 	firstName: "jane",
-	lastName: "doe",
-	password: "password"
+	lastName: "doe"
 };
 
+const testUserPassword: string = "password";
+
 @suite class UserORMTests {
-    @test async CRUD() {
+  @test async CRUD() {
+    const connection = await Connection;
 
-	    let connection  = await Connection;
-    	let userRepository = connection.getRepository(User);
+    let userProvider = new UserProvider(connection);
+  	let myUser = await userProvider.create(testUser, testUserPassword);
 
-	    const myUser = new User();
-	    myUser.username = testUser.username;
-	    myUser.email = testUser.email;
-	    myUser.firstName = testUser.firstName;
-	    myUser.lastName = testUser.lastName;
-	    let result = await myUser.updatePassword(testUser.password);
+    const user = await userProvider.getById(myUser.id);
+    assert(user !== null, "userAdded");
 
-	    await userRepository.save(myUser);
+    await userProvider.delete(myUser);
 
-	    const allUsers = await userRepository.find();
-	    assert(allUsers.length == 1, "userAdded");
+    const nullUser = await userProvider.getById(myUser.id);
+    assert(nullUser === undefined, "userRemoved");
 
-	    await userRepository.remove(myUser);
-
-	    const noUsers = await userRepository.find();
-	    assert(noUsers.length == 0, "userRemoved");
-
-    }
+  }
 }

@@ -1,7 +1,7 @@
 import * as bcrypt from "bcrypt";
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
 
-interface IUser {
+export interface IUser {
   id: number;
   firstName: string;
   lastName: string;
@@ -11,17 +11,16 @@ interface IUser {
   updatePassword(password: string): Promise<void>;
 }
 
-interface IDBUser {
+export interface IUserSerialized {
+  id: number;
   firstName: string;
   lastName: string;
   email: string;
   username: string;
-  verifyPassword: (password: string) => Promise<boolean>;
-  updatePassword: (password: string) => Promise<void>;
 }
 
 @Entity()
-export class User extends BaseEntity implements IDBUser {
+export class User extends BaseEntity implements IUser {
   @PrimaryGeneratedColumn()
   public id: number;
 

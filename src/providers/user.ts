@@ -1,9 +1,29 @@
-import {User} from "../models/user";
+import {Repository, Connection} from "typeorm";
 
-export default class UserProvider {
+import {User, IUser, IUserSerialized} from "../models/user";
+
+export class UserProvider {
+
+  private repository: Repository<User>;
+
+  public constructor(dbConnection: Connection) {
+    this.repository = dbConnection.getRepository(User);
+  }
+
   // create user
-  public create() {
+  public async create(userData: IUserSerialized, password: string) {
 
+    console.log("missing validation");
+
+    const user = new User();
+    user.username = userData.username;
+    user.email = userData.email;
+    user.firstName = userData.firstName;
+    user.lastName = userData.lastName;
+    await user.updatePassword(password);
+
+    await this.repository.save(user);
+    return user;
   }
 
   // update user
@@ -13,13 +33,16 @@ export default class UserProvider {
 
   // get user
   public get() {
+    return this.repository.find();
+  }
 
+  public getById(id: number) {
+    return this.repository.findOneById(id);
   }
 
   // delete user
-  public delete() {
-
+  public async delete(user: User) {
+    return await this.repository.remove(user);
   }
 
-  // authenticate user
 }
