@@ -12,7 +12,7 @@ router.post("/auth/signup", (req, res) => {
   res.json({"user": {
       "firstName": "Jane B",
       "lastName": "Doe",
-      "avatar": "http://localhost:8080/dist/data/avatar.jpg"
+      "avatar": "https://localhost:8080/data/avatar.jpg"
     }
   });
 });
