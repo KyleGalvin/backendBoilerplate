@@ -1,6 +1,10 @@
+import * as path from "path";
 import {Repository, Connection} from "typeorm";
 
 import {User, IUser, IUserSerialized} from "../models/user";
+import Logger from "../util/logger";
+
+const logger = Logger(path.basename(__filename));
 
 export class UserProvider {
 
@@ -13,7 +17,10 @@ export class UserProvider {
   // create user
   public async create(userData: IUserSerialized, password: string) {
 
-    console.log("missing validation");
+    const existingUser = await this.repository.findOne({"username": userData.username});
+    if (existingUser) {
+      throw new Error("User already exists");
+    }
 
     const user = new User();
     user.username = userData.username;
@@ -27,7 +34,23 @@ export class UserProvider {
   }
 
   // update user
-  public update() {
+  public async update(userData: IUserSerialized, password?: string) {
+    const user = await this.repository.findOneById(userData.id);
+    if (user === undefined) {
+      // can't update a record that doesn't exist.
+      return false;
+    }
+
+    if (password) {
+      await user.updatePassword(password);
+    }
+
+    user.username = userData.username;
+    user.email = userData.email;
+    user.firstName = userData.firstName;
+    user.lastName = userData.lastName;
+    await this.repository.save(user);
+    return true;
 
   }
 

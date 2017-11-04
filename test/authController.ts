@@ -17,6 +17,7 @@ const testUser: IUserSerialized = {
 const testUserPassword: string = "password";
 
 @suite class AuthControllerTests {
+
   @test async login() {
 
     const connection = await Connection;

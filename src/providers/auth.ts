@@ -1,8 +1,12 @@
+import * as path from "path";
 import * as jwt from "jsonwebtoken";
 
 import {User, IUser} from "../models/user";
 import config from "../config/local";
 import Connection from "../models/typeorm";
+import Logger from "../util/logger";
+
+const logger = Logger(path.basename(__filename));
 
 export interface IAuthProvider {
   login: (username: string, password: string) => string;
@@ -15,30 +19,31 @@ export class AuthProvider {
     const userRepository = connection.getRepository(User);
     const user = await userRepository.findOne({"username": username});
 
-    if ( !user ) {
+    if (!user) {
       return null;
     }
 
-    if ( await (user as User).verifyPassword(password) ) {
+    if (await (user as User).verifyPassword(password)) {
       return this.forgeToken( user );
     } else {
       return null;
     }
-
-    // logout method? or is that entirely client side?
   }
 
   private forgeToken(user: IUser) {
 
-    console.log("need to build payload");
+    logger.info("need to build payload");
     const payload = {
-     // admin: user.admin
+      "id": user.id,
+      "iss": config.jwt.issuer,
+      "exp": (Date.now() / 1000) + config.jwt.duration, 
+      "username": user.username
     };
 
     const jwtSignOptions: jwt.SignOptions = {
       "expiresIn": 1440 // expires in 24 hours
     };
-    return jwt.sign(payload, config.jwtSecret, jwtSignOptions);
+    return jwt.sign(payload, config.jwt.secret, jwtSignOptions);
   }
 
 }
