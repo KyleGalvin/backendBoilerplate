@@ -5,6 +5,7 @@ import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as https from "https";
 import * as fs from "fs";
+import * as expressValidator from "express-validator";
 
 import auth from "./controllers/auth";
 import diagnostics from "./controllers/diagnostics";
@@ -17,6 +18,7 @@ const app = express();
 app.use(bodyParser.json({ type: 'application/json'}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+app.use(expressValidator());
 
 app.use(auth);
 app.use(diagnostics);
