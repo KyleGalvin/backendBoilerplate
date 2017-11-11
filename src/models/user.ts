@@ -1,5 +1,10 @@
 import * as bcrypt from "bcrypt";
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
+import * as path from "path";
+
+import Logger from "../util/logger";
+
+const logger = Logger(path.normalize(path.basename(__filename)));
 
 export interface IUser {
   id: number;
@@ -45,7 +50,9 @@ export class User extends BaseEntity implements IUser {
 
   public updatePassword = async (password: string) => {
     const saltRounds = 10;
+    logger.info({obj: [password, saltRounds]},"obtaining bcrypt hash");
     const hash = await bcrypt.hash(password, saltRounds);
+    logger.info("bcrypt hash obtained");
     this.passwordHash = hash;
   }
 

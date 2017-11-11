@@ -32,13 +32,13 @@ export class AuthProvider {
 
   private forgeToken(user: IUser) {
 
-    logger.info("need to build payload");
+    logger.info({obj: user}, "need to build payload");
     const payload = {
       "id": user.id,
       "iss": config.jwt.issuer,
-      "exp": (Date.now() / 1000) + config.jwt.duration, 
       "username": user.username
     };
+    logger.info({obj: payload}, "made payload. signing...");
 
     const jwtSignOptions: jwt.SignOptions = {
       "expiresIn": 1440 // expires in 24 hours

@@ -19,6 +19,7 @@ export class UserProvider {
 
     const existingUser = await this.repository.findOne({"username": userData.username});
     if (existingUser) {
+      logger.info({"obj": existingUser}, "Error: user already exists: ")
       throw new Error("User already exists");
     }
 
@@ -27,10 +28,18 @@ export class UserProvider {
     user.email = userData.email;
     user.firstName = userData.firstName;
     user.lastName = userData.lastName;
+    logger.info({"obj": [password]}, "updating password...");
     await user.updatePassword(password);
+    logger.info("password updated");
 
-    await this.repository.save(user);
-    return user;
+    try {
+      await this.repository.save(user);
+      return user;
+    } catch (e) {
+      logger.info({"obj": e}, "Error saving user");
+      throw new Error("Error saving user");
+    }
+
   }
 
   // update user
