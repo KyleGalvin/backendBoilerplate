@@ -18,52 +18,46 @@ const multer = Multer();
 const router = express.Router();
 router.post("/auth/signup", [
   multer.any(),
-  check("username", "Invalid Usename").isLength({min: 3}),
+  check("username", "Invalid Usename").isLength({"min": 3}),
   check("email", "Invalid Email").isEmail(),
-  check("firstName", "Empty FirstName").isLength({min: 1}),
-  check("lastName", "Empty LastName").isLength({min: 1}),
-  check("password", "Password too short").isLength({min:3})
-  ], 
+  check("firstName", "Empty FirstName").isLength({"min": 1}),
+  check("lastName", "Empty LastName").isLength({"min": 1}),
+  check("password", "Password too short").isLength({"min": 3})
+  ],
   async (req: express.Request, res: express.Response) => {
-    try{
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.mapped() });
-      }
-      const formData = matchedData(req);
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ "errors": errors.mapped() });
+    }
+    const formData = matchedData(req);
 
-      const user: IUserSerialized = {
-        "username": formData.username as string,
-        "email": formData.email as string,
-        "firstName": formData.firstName as string,
-        "lastName": formData.lastName as string
-      } as IUserSerialized;
-      const password = formData.password as string;
-      const connection = await Connection;
-      const userProvider = new UserProvider(connection);
-      const authProvider = new AuthProvider();
+    const user: IUserSerialized = {
+      "username": formData.username as string,
+      "email": formData.email as string,
+      "firstName": formData.firstName as string,
+      "lastName": formData.lastName as string
+    } as IUserSerialized;
+    const password = formData.password as string;
+    const connection = await Connection;
+    const userProvider = new UserProvider(connection);
+    const authProvider = new AuthProvider();
 
-      logger.info({"obj": [password]}, "creating user");
+    try {
       const result = await userProvider.create(user, password);
-
       if (!result) {
-        // error or username taken
-        return res.json({"error": "error or username taken"});
-      }
-      logger.info("logging in");
-      const jwt = await authProvider.login((result as IUserSerialized).username, password);
-      logger.info("got jwt signed");
-      if (!jwt) {
-        // error
-        return res.json({"error": "error logging in"});
+        return res.status(422).json({"error": "Username Unavailable"});
       }
 
-      logger.info("responding");
+      const jwt = await authProvider.login((result as IUserSerialized).username, password);
+      if (!jwt) {
+        return res.status(422).json({"error": "Login Error"});
+      }
+
       return res.json({"token": jwt});
 
     } catch (e) {
-      logger.info({"obj": e}, "error");
-      return res.json({"error": e})
+      logger.error({"obj": e}, "error");
+      return res.status(422).json({"error": "Unknown Error"});
     }
   }
 );

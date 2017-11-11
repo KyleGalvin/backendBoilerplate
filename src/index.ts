@@ -15,8 +15,8 @@ import Logger from "./util/logger";
 const logger = Logger(path.basename(__filename));
 
 const app = express();
-app.use(bodyParser.json({ type: 'application/json'}));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ "type": "application/json"}));
+app.use(bodyParser.urlencoded({ "extended": true }));
 app.use(cors());
 app.use(expressValidator());
 

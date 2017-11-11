@@ -50,9 +50,8 @@ export class User extends BaseEntity implements IUser {
 
   public updatePassword = async (password: string) => {
     const saltRounds = 10;
-    logger.info({obj: [password, saltRounds]},"obtaining bcrypt hash");
     const hash = await bcrypt.hash(password, saltRounds);
-    logger.info("bcrypt hash obtained");
+    logger.debug("bcrypt hash obtained");
     this.passwordHash = hash;
   }
 
