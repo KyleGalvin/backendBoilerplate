@@ -15,6 +15,8 @@ import Logger from "./util/logger";
 
 const logger = Logger(path.basename(__filename));
 
+logger.info("Running in environment " + process.env.NODE_ENV);
+
 const app = express();
 app.use(bodyParser.json({ "type": "application/json"}));
 app.use(bodyParser.urlencoded({ "extended": true }));
@@ -24,20 +26,30 @@ app.use(expressValidator());
 app.use(auth);
 app.use(diagnostics);
 
-const ensureSecure = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if(req.headers["x-forwarded-proto"] === "https") {
-    // OK, continue
-    return next();
-  };
-  // handle port numbers if you need non defaults
-  res.redirect('https://' + config.domain + req.url);
+if (process.env.NODE_ENV === "DEV" || process.env.NODE_ENV === "PROD") {
+  // heroku does its own ssl
+  app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.setHeader("Strict-Transport-Security", "max-age=8640000; includeSubDomains");
+    if (req.headers["x-forwarded-proto"] && req.headers["x-forwarded-proto"] === "http") {
+      return res.redirect(301, "https://" + req.hostname + req.url);
+    } else {
+      return next();
+    }
+  });
+} else {
+  app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.setHeader("Strict-Transport-Security", "max-age=8640000; includeSubDomains");
+    if (!req.secure) {
+      logger.info("localhost redirect to https://" + req.hostname  + ":" + config.port + req.url);
+      return res.redirect(301, "https://" + req.hostname  + ":" + config.port + req.url);
+    } else {
+      logger.info("localhost secure");
+      return next();
+    }
+  });
 }
-app.all('*', ensureSecure);
 
-// heroku provides an ssl layer
-const server = (process.env.NODE_ENV === "DEV") ? http.createServer(app) : https.createServer(config.sslOptions, app);
-
+const server = http.createServer(app);
 server.listen(config.port, () => {
   logger.info("Example app listening on port " + config.port);
 });
-//server.listen(config.port)
