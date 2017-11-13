@@ -13,7 +13,7 @@
     "heroku-postbuild": "npm run build",
     "build": "npm run clean && npm run bundle",
     "start": "node ./dist/src/index.js",
-    "test": "mocha-typescript-watch -p tsconfig.json -o ./mocha.opts"
+    "test": "mocha-typescript-watch -p tsconfigtest.json -o ./mocha.opts"
   },
   "repository": {
     "type": "git",
