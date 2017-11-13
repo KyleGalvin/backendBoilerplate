@@ -10,6 +10,7 @@
     "watch": "nodemon -e ts -w ./src -x npm run watch:serve",
     "watch:develop": "npm run develop",
     "develop": "npm run build && cat ./tslint.err &&  npm start",
+    "heroku-postbuild": "npm run build",
     "build": "npm run clean && npm run bundle",
     "start": "node ./dist/src/index.js",
     "test": "mocha-typescript-watch -p tsconfig.json -o ./mocha.opts"
