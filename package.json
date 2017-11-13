@@ -8,8 +8,9 @@
     "clean": "rm -rf ./dist",
     "lint": "tslint --force 'src/**/*.ts' > ./tslint.err",
     "watch": "nodemon -e ts -w ./src -x npm run watch:serve",
-    "watch:serve": "npm run serve",
-    "serve": "npm run clean && npm run bundle && cat ./tslint.err &&  npm start",
+    "watch:develop": "npm run develop",
+    "develop": "npm run build && cat ./tslint.err &&  npm start",
+    "build": "npm run clean && npm run bundle",
     "start": "node ./dist/src/index.js",
     "test": "mocha-typescript-watch -p tsconfig.json -o ./mocha.opts"
   },
