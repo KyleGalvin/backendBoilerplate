@@ -1,6 +1,6 @@
 import * as bunyan from "bunyan";
 
-import config from "../config/local";
+import config from "../config";
 
 export default (filename: string) => {
 

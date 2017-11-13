@@ -9,7 +9,7 @@ import * as expressValidator from "express-validator";
 
 import auth from "./controllers/auth";
 import diagnostics from "./controllers/diagnostics";
-import config from "./config/local";
+import config from "./config";
 import Logger from "./util/logger";
 
 const logger = Logger(path.basename(__filename));

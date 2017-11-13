@@ -2,7 +2,7 @@ import * as path from "path";
 import * as jwt from "jsonwebtoken";
 
 import {User, IUser} from "../models/user";
-import config from "../config/local";
+import config from "../config";
 import Connection from "../models/typeorm";
 import Logger from "../util/logger";
 

@@ -1,7 +1,7 @@
 import * as path from "path";
 import "reflect-metadata";
 
-import config from "../config/local";
+import config from "../config";
 import {createConnection} from "typeorm";
 import {User} from "./user";
 import Logger from "../util/logger";
