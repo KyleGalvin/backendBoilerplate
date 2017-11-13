@@ -53,7 +53,7 @@ router.post("/auth/signup", [
         return res.status(422).json({"error": "Login Error"});
       }
 
-      return res.json({"token": jwt});
+      return res.json({"access_token": jwt});
 
     } catch (e) {
       logger.error({"obj": e}, "error");

@@ -7,7 +7,9 @@
     "bundle": "npm run clean && npm run lint && mkdirp ./dist && tsc",
     "clean": "rm -rf ./dist",
     "lint": "tslint --force 'src/**/*.ts' > ./tslint.err",
-    "serve": "npm run clean && npm run bundle && cat ./tslint.err && npm start",
+    "watch": "nodemon -e ts -w ./src -x npm run watch:serve",
+    "watch:serve": "npm run serve",
+    "serve": "npm run clean && npm run bundle && cat ./tslint.err &&  npm start",
     "start": "node ./dist/src/index.js",
     "test": "mocha-typescript-watch -p tsconfig.json -o ./mocha.opts"
   },
@@ -33,6 +35,7 @@
     "mkdirp": "^0.5.1",
     "mocha": "^4.0.1",
     "mocha-typescript": "^1.1.12",
+    "nodemon": "^1.12.1",
     "source-map-support": "^0.5.0",
     "typescript": "2.5.3"
   },

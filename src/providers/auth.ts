@@ -35,7 +35,7 @@ export class AuthProvider {
     const payload = {
       "id": user.id,
       "iss": config.jwt.issuer,
-      "username": user.username
+      "sub": user.username = "@" + config.domain
     };
     logger.debug({"obj": payload}, "signing jwt payload");
 
