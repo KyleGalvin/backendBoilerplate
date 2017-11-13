@@ -4,6 +4,7 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as https from "https";
+import * as http from "http";
 import * as fs from "fs";
 import * as expressValidator from "express-validator";
 
@@ -23,8 +24,20 @@ app.use(expressValidator());
 app.use(auth);
 app.use(diagnostics);
 
-const secureServer = https.createServer(config.sslOptions, app);
+const ensureSecure = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if(req.headers["x-forwarded-proto"] === "https") {
+    // OK, continue
+    return next();
+  };
+  // handle port numbers if you need non defaults
+  res.redirect('https://' + config.domain + req.url);
+}
+app.all('*', ensureSecure);
 
-secureServer.listen(config.httpsPort, () => {
-  logger.info("Example app listening on port " + config.httpsPort + "!");
+// heroku provides an ssl layer
+const server = (process.env.NODE_ENV === "DEV") ? http.createServer(app) : https.createServer(config.sslOptions, app);
+
+server.listen(config.port, () => {
+  logger.info("Example app listening on port " + config.port);
 });
+//server.listen(config.port)
