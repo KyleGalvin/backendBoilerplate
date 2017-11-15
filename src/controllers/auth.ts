@@ -3,14 +3,15 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as Multer from "multer";
-import { check, validationResult } from "express-validator/check";
-import { matchedData } from "express-validator/filter";
+import {check, validationResult} from "express-validator/check";
+import {matchedData} from "express-validator/filter";
 
 import {UserProvider} from "../providers/user";
 import {AuthProvider} from "../providers/auth";
-import Logger from "../util/logger";
+import {Logger} from "../util/logger";
 import Connection from "../models/typeorm";
-import {IUserSerialized} from "../models/user";
+import {IUserSerialized, IUser, User} from "../models/user";
+import {config} from "../config";
 
 const logger = Logger(path.basename(__filename));
 const multer = Multer();
@@ -39,8 +40,9 @@ router.post("/auth/signup", [
     } as IUserSerialized;
     const password = formData.password as string;
     const connection = await Connection;
+    const userRepository = await connection.getRepository(User);
     const userProvider = new UserProvider(connection);
-    const authProvider = new AuthProvider();
+    const authProvider = new AuthProvider(config, userRepository);
 
     try {
       const result = await userProvider.create(user, password);

@@ -11,8 +11,8 @@ export default {
     "duration": 86400
   },
   "sslOptions": {
-    "key": fs.readFileSync("snakeoilkey.pem"),
-    "cert": fs.readFileSync("snakeoilcert.pem"),
+    "key": fs.readFileSync("snakeoilkey.pem").toString(),
+    "cert": fs.readFileSync("snakeoilcert.pem").toString(),
     "passphrase": "password"
   }
 };

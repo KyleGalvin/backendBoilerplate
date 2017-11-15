@@ -2,7 +2,7 @@ import * as bcrypt from "bcrypt";
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
 import * as path from "path";
 
-import Logger from "../util/logger";
+import {Logger} from "../util/logger";
 
 const logger = Logger(path.normalize(path.basename(__filename)));
 

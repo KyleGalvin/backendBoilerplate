@@ -1,8 +1,16 @@
 import * as bunyan from "bunyan";
 
-import config from "../config";
+import { config } from "../config";
 
-export default (filename: string) => {
+export interface ILogger {
+  debug: (format: any, ...params: any[]) => void;
+  info: (format: any, ...params: any[]) => void;
+  warn: (format: any, ...params: any[]) => void;
+  error: (format: any, ...params: any[]) => void;
+  trace: (format: any, ...params: any[]) => void;
+  fatal: (format: any, ...params: any[]) => void;
+}
+export const Logger = (filename: string) => {
 
   type LogLevel = number | "error" | "trace" | "debug" | "info" | "warn" | "fatal" | undefined;
 

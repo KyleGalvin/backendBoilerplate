@@ -1,10 +1,10 @@
 import * as path from "path";
 import "reflect-metadata";
 
-import config from "../config";
+import {config} from "../config";
 import {createConnection} from "typeorm";
 import {User} from "./user";
-import Logger from "../util/logger";
+import {Logger} from "../util/logger";
 
 const logger = Logger(path.basename(__filename));
 

@@ -2,11 +2,11 @@ import * as path from "path";
 import * as jwt from "jsonwebtoken";
 
 import {User, IUser} from "../models/user";
-import config from "../config";
-import Connection from "../models/typeorm";
-import Logger from "../util/logger";
+import { IConfig } from "../config";
+import { Repository } from "typeorm";
+import {ILogger, Logger} from "../util/logger";
 
-const logger = Logger(path.basename(__filename));
+const logger: ILogger = Logger(path.basename(__filename));
 
 export interface IAuthProvider {
   login: (username: string, password: string) => string;
@@ -14,10 +14,16 @@ export interface IAuthProvider {
 
 export class AuthProvider {
 
+  private config: IConfig;
+  private userRepository: Repository<IUser>;
+
+  public constructor(config: IConfig, userRepository: Repository<IUser>) {
+    this.config = config;
+    this.userRepository = userRepository;
+  }
+
   public async login(username: string, password: string) {
-    const connection  = await Connection;
-    const userRepository = connection.getRepository(User);
-    const user = await userRepository.findOne({"username": username});
+    const user = await this.userRepository.findOne({"username": username});
 
     if (!user) {
       return null;
@@ -34,15 +40,15 @@ export class AuthProvider {
 
     const payload = {
       "id": user.id,
-      "iss": config.jwt.issuer,
-      "sub": user.username = "@" + config.domain
+      "iss": this.config.jwt.issuer,
+      "sub": user.username = "@" + this.config.domain
     };
     logger.debug({"obj": payload}, "signing jwt payload");
 
     const jwtSignOptions: jwt.SignOptions = {
       "expiresIn": 1440 // expires in 24 hours
     };
-    return jwt.sign(payload, config.jwt.secret, jwtSignOptions);
+    return jwt.sign(payload, this.config.jwt.secret, jwtSignOptions);
   }
 
 }

@@ -2,7 +2,7 @@ import * as path from "path";
 import {Repository, Connection} from "typeorm";
 
 import {User, IUser, IUserSerialized} from "../models/user";
-import Logger from "../util/logger";
+import {Logger} from "../util/logger";
 
 const logger = Logger(path.basename(__filename));
 
