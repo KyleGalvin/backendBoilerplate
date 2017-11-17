@@ -29,7 +29,7 @@ export class AuthProvider {
       return null;
     }
 
-    if (await (user as User).verifyPassword(password)) {
+    if (await (user as IUser).verifyPassword(password)) {
       return this.forgeToken( user );
     } else {
       return null;
