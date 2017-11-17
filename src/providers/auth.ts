@@ -15,9 +15,9 @@ export interface IAuthProvider {
 export class AuthProvider {
 
   private config: IConfig;
-  private userRepository: Repository<IUser>;
+  private userRepository: Repository<User>;
 
-  public constructor(config: IConfig, userRepository: Repository<IUser>) {
+  public constructor(config: IConfig, userRepository: Repository<User>) {
     this.config = config;
     this.userRepository = userRepository;
   }

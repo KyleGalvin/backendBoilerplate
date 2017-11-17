@@ -8,6 +8,7 @@ import {matchedData} from "express-validator/filter";
 
 import {UserProvider} from "../providers/user";
 import {AuthProvider} from "../providers/auth";
+import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
 import Connection from "../models/typeorm";
 import {IUserSerialized, IUser, User} from "../models/user";
@@ -39,9 +40,10 @@ router.post("/auth/signup", [
       "lastName": formData.lastName as string
     } as IUserSerialized;
     const password = formData.password as string;
-    const connection = await Connection;
+    const connection = await new Connection().init();
+    const userFactory = new UserFactory();
     const userRepository = await connection.getRepository(User);
-    const userProvider = new UserProvider(connection);
+    const userProvider = new UserProvider(connection, userFactory);
     const authProvider = new AuthProvider(config, userRepository);
 
     try {

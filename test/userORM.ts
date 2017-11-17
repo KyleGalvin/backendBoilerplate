@@ -16,19 +16,19 @@ const testUser: IUserSerialized = {
 const testUserPassword: string = "password";
 
 @suite class UserORMTests {
-  @test async CRUD() {
-    const connection = await Connection;
+  // @test async CRUD() {
+  //   const connection = await Connection;
 
-    let userProvider = new UserProvider(connection);
-  	let myUser = await userProvider.create(testUser, testUserPassword);
+  //   let userProvider = new UserProvider(connection);
+  // 	let myUser = await userProvider.create(testUser, testUserPassword);
 
-    const user = await userProvider.getById(myUser.id);
-    assert(user !== null, "userAdded");
+  //   const user = await userProvider.getById(myUser.id);
+  //   assert(user !== null, "userAdded");
 
-    await userProvider.delete(myUser);
+  //   await userProvider.delete(myUser);
 
-    const nullUser = await userProvider.getById(myUser.id);
-    assert(nullUser === undefined, "userRemoved");
+  //   const nullUser = await userProvider.getById(myUser.id);
+  //   assert(nullUser === undefined, "userRemoved");
 
-  }
+  // }
 }

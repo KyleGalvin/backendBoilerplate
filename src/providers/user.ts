@@ -2,6 +2,7 @@ import * as path from "path";
 import {Repository, Connection} from "typeorm";
 
 import {User, IUser, IUserSerialized} from "../models/user";
+import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
 
 const logger = Logger(path.basename(__filename));
@@ -9,9 +10,11 @@ const logger = Logger(path.basename(__filename));
 export class UserProvider {
 
   private repository: Repository<User>;
+  private userFactory: UserFactory;
 
-  public constructor(dbConnection: Connection) {
+  public constructor(dbConnection: Connection, userFactory: UserFactory) {
     this.repository = dbConnection.getRepository(User);
+    this.userFactory = userFactory;
   }
 
   // create user
@@ -19,16 +22,11 @@ export class UserProvider {
 
     const existingUser = await this.repository.findOne({"username": userData.username});
     if (existingUser) {
-      logger.error({"obj": [userData.username]}, "Error: user already exists: ");
+      logger.warn({"obj": [userData.username, existingUser]}, "Error: user already exists: ");
       throw new Error("User already exists");
     }
 
-    const user = new User();
-    user.username = userData.username;
-    user.email = userData.email;
-    user.firstName = userData.firstName;
-    user.lastName = userData.lastName;
-    await user.updatePassword(password);
+    const user = await this.userFactory.Create(userData, password);
 
     try {
       await this.repository.save(user);
