@@ -12,7 +12,6 @@
     "heroku-postbuild": "npm run build",
     "start": "node ./dist/index.js",
     "test": "nyc --extension .ts --extension .tsx mocha -r ts-node/register ./test/*.ts && nyc report --reporter text-lcov --extension .ts --extension .tsx | coveralls",
-    "coverage": "",
     "test-watch": "npm run clean && mocha-typescript-watch -p tsconfig.json -o ./mocha.opts"
   },
   "repository": {
