@@ -15,11 +15,11 @@ export class Fixture {
         hasId: () => true,
         save: () => Promise.resolve(this.testUser),
         remove: () => Promise.resolve(this.testUser),
-        verifyPassword: () => new Promise((res,rej)=> res(true)),
+        verifyPassword: (password: string) => new Promise((res,rej)=> res(password === this.testUserPassword)),
         updatePassword: () => new Promise((res,rej)=> res())
       };
 
-//this variable is our underlying mock datastore capable of holding a single record
+    //this variable is our underlying mock datastore capable of holding a single record
     public testRepositoryUsers: User[] | undefined = undefined;
     public findCalls = 0;
     public saveCalls = 0;
@@ -27,6 +27,7 @@ export class Fixture {
     public connection: Connection;
     public userRepository: Repository<User>;
     public userFactory: UserFactory;
+    public testUserPassword: string = "password";
 
     public constructor() {
 
