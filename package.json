@@ -11,7 +11,7 @@
     "local:watch": "npm run build && npm run lint && cat ./tslint.err && npm start",
     "heroku-postbuild": "npm run build",
     "start": "node ./dist/src/index.js",
-    "test": "mocha -r ts-node/register ./test/*.ts",
+    "test": "nyc --extension .ts --extension .tsx mocha -r ts-node/register ./test/*.ts && nyc report --reporter text-lcov --extension .ts --extension .tsx | coveralls",
     "test-watch": "npm run clean && mocha-typescript-watch -p tsconfig.json -o ./mocha.opts"
   },
   "repository": {
@@ -25,10 +25,13 @@
   },
   "homepage": "https://github.com/KyleGalvin/backendBoilerplate#readme",
   "devDependencies": {
+    "coveralls": "^3.0.0",
     "mkdirp": "^0.5.1",
     "mocha": "^4.0.1",
+    "mocha-lcov-reporter": "^1.3.0",
     "mocha-typescript": "^1.1.12",
     "nodemon": "^1.12.1",
+    "nyc": "^11.3.0",
     "source-map-support": "^0.5.0"
   },
   "dependencies": {
