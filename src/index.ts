@@ -27,6 +27,7 @@ app.use(auth);
 app.use(diagnostics);
 
 if (process.env.NODE_ENV === "DEV" || process.env.NODE_ENV === "PROD") {
+  logger.info("Heroku launching HTTP");
   // heroku does its own ssl
   app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.setHeader("Strict-Transport-Security", "max-age=8640000; includeSubDomains");
@@ -36,7 +37,14 @@ if (process.env.NODE_ENV === "DEV" || process.env.NODE_ENV === "PROD") {
       return next();
     }
   });
+
+  const server = http.createServer(app);
+  server.listen(config.port, () => {
+    logger.info("Example app listening on port " + config.port);
+  });
+
 } else {
+  logger.info("Local launching HTTPS");
   app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.setHeader("Strict-Transport-Security", "max-age=8640000; includeSubDomains");
     if (!req.secure) {
@@ -47,9 +55,11 @@ if (process.env.NODE_ENV === "DEV" || process.env.NODE_ENV === "PROD") {
       return next();
     }
   });
+
+  const server = https.createServer(config.sslOptions, app);
+  server.listen(config.port, () => {
+    logger.info("Example app listening on port " + config.port);
+  });
 }
 
-const server = http.createServer(app);
-server.listen(config.port, () => {
-  logger.info("Example app listening on port " + config.port);
-});
+

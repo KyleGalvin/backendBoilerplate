@@ -8,9 +8,9 @@
     "clean": "rm -rf ./dist",
     "lint": "tslint --force 'src/**/*.ts' > ./tslint.err",
     "local": "nodemon -e ts -w ./src -x npm run local:watch",
-    "local:watch": "npm run build && npm run lint && cat ./tslint.err &&  npm start",
+    "local:watch": "npm run build && npm run lint && cat ./tslint.err && npm start",
     "heroku-postbuild": "npm run build",
-    "start": "node ./dist/index.js",
+    "start": "node ./dist/src/index.js",
     "test": "mocha -r ts-node/register ./test/*.ts",
     "test-watch": "npm run clean && mocha-typescript-watch -p tsconfig.json -o ./mocha.opts"
   },
