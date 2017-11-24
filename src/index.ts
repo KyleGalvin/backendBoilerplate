@@ -61,5 +61,3 @@ if (process.env.NODE_ENV === "DEV" || process.env.NODE_ENV === "PROD") {
     logger.info("Example app listening on port " + config.port);
   });
 }
-
-
