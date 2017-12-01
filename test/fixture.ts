@@ -33,7 +33,7 @@ export class Fixture {
       updatePassword: () => new Promise((res,rej)=> res())
     };
 
-    //this variable is our underlying mock datastore capable of holding a single record
+    //this variable is our underlying mock datastore capable of holding records in a simple array
     public testRepositoryUsers: User[] | undefined = undefined;
     public findCalls = 0;
     public saveCalls = 0;
