@@ -8,7 +8,7 @@ router.get("/", (req, res) => {
   res.json({"user": {
       "firstName": "Jane B",
       "lastName": "Doe",
-      "avatar": "https://localhost:8080/images/avatar.jpg"
+      "avatar": "images/avatar.jpg"
     }
   });
 });
