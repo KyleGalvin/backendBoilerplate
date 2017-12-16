@@ -25,11 +25,13 @@ export class UserProvider {
       logger.warn({"obj": [userData.username, existingUser]}, "Error: user already exists: ");
       throw new Error("User already exists");
     }
+    logger.debug({"obj": userData}, "Creating new user: ");
 
     const user = await this.userFactory.Create(userData, password);
 
     try {
       await this.repository.save(user);
+      logger.debug("New user created");
       return user;
     } catch (e) {
       logger.info({"obj": e}, "Error saving user");

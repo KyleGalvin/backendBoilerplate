@@ -10,7 +10,8 @@ import {UserProvider} from "../providers/user";
 import {AuthProvider} from "../providers/auth";
 import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
-import Connection from "../models/typeorm";
+import DBConnection from "../models/typeorm";
+import {Connection} from "typeorm";
 import {IUserSerialized, IUser, User} from "../models/user";
 import {config} from "../config";
 
@@ -40,7 +41,11 @@ router.post("/auth/signup", [
       "lastName": formData.lastName as string
     } as IUserSerialized;
     const password = formData.password as string;
-    const connection = await new Connection().init();
+
+    const connection = await new DBConnection().init() as Connection;
+    if(connection === null) {
+      return res.status(422).json({"error": "Database Unavailable"});
+    }
     const userFactory = new UserFactory();
     const userRepository = await connection.getRepository(User);
     const userProvider = new UserProvider(connection, userFactory);
