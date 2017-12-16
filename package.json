@@ -55,6 +55,7 @@
     "pg": "^7.3.0",
     "reflect-metadata": "^0.1.10",
     "ts-node": "^3.3.0",
+    "tsoa": "^2.0.1",
     "typemoq": "^2.1.0",
     "typeorm": "^0.1.1",
     "typescript": "2.5.3"
