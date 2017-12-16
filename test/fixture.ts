@@ -6,20 +6,34 @@ import {Repository, Entity, FindOneOptions, Connection, SaveOptions} from "typeo
 
 export class Fixture {
     public readonly testUser: User = {
-        id: -1, 
-        username: "testuser", 
-        email: "email@mail.com",
-        firstName: "jane",
-        lastName: "doe",
-        passwordHash: "",
-        hasId: () => true,
-        save: () => Promise.resolve(this.testUser),
-        remove: () => Promise.resolve(this.testUser),
-        verifyPassword: (password: string) => new Promise((res,rej)=> res(password === this.testUserPassword)),
-        updatePassword: () => new Promise((res,rej)=> res())
-      };
+      id: -1, 
+      username: "testuser", 
+      email: "email@mail.com",
+      firstName: "jane",
+      lastName: "doe",
+      passwordHash: "",
+      hasId: () => true,
+      save: () => Promise.resolve(this.testUser),
+      remove: () => Promise.resolve(this.testUser),
+      verifyPassword: (password: string) => new Promise((res,rej)=> res(password === this.testUserPassword)),
+      updatePassword: () => new Promise((res,rej)=> res())
+    };
 
-    //this variable is our underlying mock datastore capable of holding a single record
+    public readonly modifiedTestUser: User = {
+      id: -1, 
+      username: "testuser2", 
+      email: "email2@mail.com",
+      firstName: "jane2",
+      lastName: "doe2",
+      passwordHash: "",
+      hasId: () => true,
+      save: () => Promise.resolve(this.modifiedTestUser),
+      remove: () => Promise.resolve(this.modifiedTestUser),
+      verifyPassword: (password: string) => new Promise((res,rej)=> res(password === this.testUserPassword)),
+      updatePassword: () => new Promise((res,rej)=> res())
+    };
+
+    //this variable is our underlying mock datastore capable of holding records in a simple array
     public testRepositoryUsers: User[] | undefined = undefined;
     public findCalls = 0;
     public saveCalls = 0;
@@ -49,7 +63,11 @@ export class Fixture {
           .returns((conditions?: any | undefined) => {
             return findOneResult;
           });
-    
+        userRepositoryMock.setup((x: Repository<User>) => x.findOneById)
+          .returns((id: number) => {
+            return findOneResult;
+          });
+
         let saveResult = (entities: User[], options?: SaveOptions | undefined) => {
           this.saveCalls++;
           if(!this.testRepositoryUsers){
