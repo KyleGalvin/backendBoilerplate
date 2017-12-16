@@ -9,7 +9,8 @@
     "lint": "tslint --force 'src/**/*.ts' > ./tslint.err",
     "local": "nodemon -e ts -w ./src -x npm run local:watch",
     "local:watch": "npm run build && npm run lint && cat ./tslint.err && npm start",
-    "start": "npm run build && node ./dist/src/index.js",
+    "heroku-postbuild": "npm run build",
+    "start": "node ./dist/src/index.js",
     "test": "nyc --extension .ts --extension .tsx mocha -r ts-node/register ./test/*.ts && nyc report --reporter text-lcov --extension .ts --extension .tsx | coveralls",
     "test-watch": "npm run clean && mocha-typescript-watch -p tsconfig.json -o ./mocha.opts"
   },
