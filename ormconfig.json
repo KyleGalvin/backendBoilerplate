@@ -1,0 +1,19 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 3306,
+  "username": "sharifyr",
+  "password": "sharifyrpassword",
+  "database": "sharifyr",
+  "synchronize": true,
+  "logging": false,
+  "entities": [
+     "src/models/entity/**/*.ts"
+  ],
+  "migrations": [
+     "src/models/migration/**/*.ts"
+  ],
+  "subscribers": [
+     "src/subscriber/**/*.ts"
+  ]
+}
