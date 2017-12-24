@@ -18,6 +18,9 @@ export default class Connection {
     }).then((connection) => {
       logger.debug("db connection established");
       return connection;
+    }).catch((error) => {
+      logger.error("Could not connect to database");
+      return null;
     });
   }
 }
