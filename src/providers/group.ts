@@ -1,6 +1,6 @@
 import * as path from "path";
 
-import {Group, IGroup} from "../models/group";
+import {Group, IGroup} from "../models/entities/group";
 import { IConfig } from "../config";
 import { Repository } from "typeorm";
 import {ILogger, Logger} from "../util/logger";

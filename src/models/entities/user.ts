@@ -2,7 +2,7 @@ import * as bcrypt from "bcrypt";
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany} from "typeorm";
 import * as path from "path";
 
-import { Logger } from "../util/logger";
+import { Logger } from "../../util/logger";
 import { Group } from "./group";
 
 const logger = Logger(path.normalize(path.basename(__filename)));
@@ -46,7 +46,10 @@ export class User extends BaseEntity implements IUser {
   public passwordHash: string;
 
   @ManyToMany(type => Group, (group: Group) => group.users)
-  groups: Group[]
+  groups: Group[];
+
+  @ManyToMany(type => User, (user: User) => user.id)
+  contacts: User[];
 
   public verifyPassword = async (password: string) => {
     return await bcrypt.compare(password, this.passwordHash);

@@ -1,6 +1,6 @@
 import * as TypeMoq from "typemoq";
 
-import {IUser, User, IUserSerialized} from "../src/models/user";
+import {IUser, User, IUserSerialized} from "../src/models/entities/user";
 import {UserFactory} from "../src/factories/user";
 import {Repository, Entity, FindOneOptions, Connection, SaveOptions} from "typeorm";
 

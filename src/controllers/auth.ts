@@ -12,7 +12,7 @@ import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
 import DBConnection from "../models/typeorm";
 import {Connection} from "typeorm";
-import {IUserSerialized, IUser, User} from "../models/user";
+import {IUserSerialized, IUser, User} from "../models/entities/user";
 import {config} from "../config";
 
 const logger = Logger(path.basename(__filename));
