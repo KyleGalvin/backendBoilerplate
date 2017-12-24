@@ -2,59 +2,68 @@ import * as path from "path";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
-import {check, validationResult} from "express-validator/check";
-import {matchedData} from "express-validator/filter";
+import { check, validationResult } from "express-validator/check";
+import { matchedData } from "express-validator/filter";
+import { Connection } from "typeorm";
 
-import {UserProvider} from "../providers/user";
-import {AuthProvider} from "../providers/auth";
-import {Logger} from "../util/logger";
-import Connection from "../models/typeorm";
+import { UserProvider } from "../providers/user";
+import { AuthProvider } from "../providers/auth";
+import { Logger } from "../util/logger";
 
 const logger = Logger(path.basename(__filename));
 
-const router = express.Router();
-router.put("/group", [
-  check("name", "Invalid Group Name").isLength({"min": 1}),
-  ],
-  async (req: express.Request, res: express.Response) => {
-    //get userId from JWT
-    //create new group with name
-    //return groupName/groupId object
-  }
-);
+export default class Group {
 
-router.get("/group",
-  async (req: express.Request, res: express.Response) => {
-    //get all groups for UID in JWT
-  }
-);
+  public router: express.Router;
+  private connection: Connection;
 
-router.get("/group/:groupId",
-  async (req: express.Request, res: express.Response) => {
-  }
-);
+  public constructor (connection: Connection) {
+    this.router = express.Router();
+    this.connection = connection;
 
-router.post("/group/:groupId", [
-  check("name", "Invalid Group Name").isLength({"min": 1}),
-  ],
-  async (req: express.Request, res: express.Response) => {
-    //for updating a group name
-  }
-);
+    this.router.put("/group", [
+      check("name", "Invalid Group Name").isLength({"min": 1}),
+      ],
+      async (req: express.Request, res: express.Response) => {
+        //get userId from JWT
+        //create new group with name
+        //return groupName/groupId object
+      }
+    );
 
-router.delete("/group/:groupId",
-  async (req: express.Request, res: express.Response) => {
-  }
-);
+    this.router.get("/group",
+      async (req: express.Request, res: express.Response) => {
+        //get all groups for UID in JWT
+      }
+    );
 
-router.delete("/group/:groupId/user/:userId",
-  async (req: express.Request, res: express.Response) => {
-  }
-);
+    this.router.get("/group/:groupId",
+      async (req: express.Request, res: express.Response) => {
+      }
+    );
 
-router.put("/group/:groupId/user/:userId",
-  async (req: express.Request, res: express.Response) => {
-  }
-);
+    this.router.post("/group/:groupId", [
+      check("name", "Invalid Group Name").isLength({"min": 1}),
+      ],
+      async (req: express.Request, res: express.Response) => {
+        //for updating a group name
+      }
+    );
 
-export default router;
+    this.router.delete("/group/:groupId",
+      async (req: express.Request, res: express.Response) => {
+      }
+    );
+
+    this.router.delete("/group/:groupId/user/:userId",
+      async (req: express.Request, res: express.Response) => {
+      }
+    );
+
+    this.router.put("/group/:groupId/user/:userId",
+      async (req: express.Request, res: express.Response) => {
+      }
+    );
+
+  }
+}

@@ -15,7 +15,7 @@ export default class Connection {
   private connection: rawConnection;
 
   public init() {
-    const c = createConnection({
+    return createConnection({
       "type": "postgres",
       "url": config.connectionString,
       "synchronize": true,
@@ -25,10 +25,8 @@ export default class Connection {
       return connection;
     }).catch((error) => {
       logger.error("Could not connect to database");
-      return null;
+      throw error;
     });
-    c.then(c => this.connection = (c as rawConnection));
-    return c;
   }
 
   public buildDB() {
