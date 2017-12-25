@@ -5,24 +5,25 @@ import * as cors from "cors";
 import { check, validationResult } from "express-validator/check";
 import { matchedData } from "express-validator/filter";
 import { Connection } from "typeorm";
+import * as jwt from "express-jwt";
 
 import { UserProvider } from "../providers/user";
 import { AuthProvider } from "../providers/auth";
 import { Logger } from "../util/logger";
+import { IConfig } from "../config";
 
 const logger = Logger(path.basename(__filename));
 
 export default class Group {
 
   public router: express.Router;
-  private connection: Connection;
 
-  public constructor (connection: Connection) {
+  public constructor (connection: Connection, config: IConfig) {
     this.router = express.Router();
-    this.connection = connection;
 
     this.router.put("/group", [
       check("name", "Invalid Group Name").isLength({"min": 1}),
+      jwt({secret: config.jwt.secret})
       ],
       async (req: express.Request, res: express.Response) => {
         //get userId from JWT
@@ -31,7 +32,9 @@ export default class Group {
       }
     );
 
-    this.router.get("/group",
+    this.router.get("/group", [
+        jwt({secret: config.jwt.secret})
+      ],
       async (req: express.Request, res: express.Response) => {
         //get all groups for UID in JWT
       }
