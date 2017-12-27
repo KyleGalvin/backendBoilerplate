@@ -9,6 +9,7 @@ import * as fs from "fs";
 import * as expressValidator from "express-validator";
 
 import auth from "./controllers/auth";
+import user from "./controllers/user";
 import diagnostics from "./controllers/diagnostics";
 import {config} from "./config";
 import {Logger} from "./util/logger";
@@ -22,6 +23,7 @@ app.use(cors());
 app.use(expressValidator());
 
 app.use(auth);
+app.use(user);
 app.use(diagnostics);
 
 const server = http.createServer(app);
