@@ -1,6 +1,6 @@
 import * as TypeMoq from "typemoq";
 
-import {IUser, User, IUserSerialized} from "../src/models/user";
+import {IUser, User, IUserSerialized} from "../src/models/entities/user";
 import {UserFactory} from "../src/factories/user";
 import {Repository, Entity, FindOneOptions, Connection, SaveOptions} from "typeorm";
 
@@ -12,6 +12,8 @@ export class Fixture {
       firstName: "jane",
       lastName: "doe",
       passwordHash: "",
+      groups: [],
+      contacts:[],
       hasId: () => true,
       save: () => Promise.resolve(this.testUser),
       remove: () => Promise.resolve(this.testUser),
@@ -26,6 +28,8 @@ export class Fixture {
       firstName: "jane2",
       lastName: "doe2",
       passwordHash: "",
+      groups: [],
+      contacts: [],
       hasId: () => true,
       save: () => Promise.resolve(this.modifiedTestUser),
       remove: () => Promise.resolve(this.modifiedTestUser),

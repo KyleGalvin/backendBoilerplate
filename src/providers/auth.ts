@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as jwt from "jsonwebtoken";
 
-import {User, IUser} from "../models/user";
+import {User, IUser} from "../models/entities/user";
 import { IConfig } from "../config";
 import { Repository } from "typeorm";
 import {ILogger, Logger} from "../util/logger";

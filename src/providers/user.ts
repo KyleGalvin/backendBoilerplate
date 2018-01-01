@@ -1,7 +1,7 @@
 import * as path from "path";
 import {Repository, Connection} from "typeorm";
 
-import {User, IUser, IUserSerialized} from "../models/user";
+import {User, IUser, IUserSerialized} from "../models/entities/user";
 import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
 

@@ -1,4 +1,4 @@
-import {User, IUserSerialized} from "../models/user";
+import {User, IUserSerialized} from "../models/entities/user";
 
 export class UserFactory {
     public async Create(userData: IUserSerialized, password: string) {

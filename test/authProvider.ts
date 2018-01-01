@@ -4,7 +4,7 @@ import { suite, test, slow, timeout } from "mocha-typescript";
 
 import {Repository, Entity, FindOneOptions, Connection, SaveOptions} from "typeorm";
 
-import {IUser, User, IUserSerialized} from "../src/models/user";
+import {IUser, User, IUserSerialized} from "../src/models/entities/user";
 import {UserFactory} from "../src/factories/user";
 import {AuthProvider} from "../src/providers/auth";
 import {UserProvider} from "../src/providers/user";
