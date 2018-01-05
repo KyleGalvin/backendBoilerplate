@@ -77,6 +77,41 @@ export default class Auth {
       }
     );
 
+    this.router.post("/auth/login", [
+      multer.any(),
+      check("username", "Invalid Usename").isLength({"min": 3}),
+      check("password", "Password too short").isLength({"min": 3})
+      ],
+      async (req: express.Request, res: express.Response) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(422).json({ "errors": errors.mapped() });
+        }
+        const formData = matchedData(req);
+    
+        if (connection === null) {
+          return res.status(422).json({"error": "Database Unavailable"});
+        }
+        const userFactory = new UserFactory();
+        const userRepository = await connection.getRepository(User);
+        const userProvider = new UserProvider(connection, userFactory);
+        const authProvider = new AuthProvider(config, userRepository);
+    
+        try {
+
+          const jwt = await authProvider.login(formData.username, formData.password);
+          if (!jwt) {
+            return res.status(422).json({"error": "Login Error"});
+          }
+    
+          return res.json({"access_token": jwt});
+    
+        } catch (e) {
+          logger.error({"obj": e}, "error");
+          return res.status(422).json({"error": "Unknown Error"});
+        }
+      }
+    );
   }
 
 }

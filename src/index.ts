@@ -25,7 +25,6 @@ new Connection().init().then(connection => {
   app.use(new Group(connection, config).router);
   app.use(new Contacts(connection, config).router);
 
-
   const server = http.createServer(app);
   server.listen(config.port, () => logger.info("Listening on port " + config.port));
 });
