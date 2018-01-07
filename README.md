@@ -5,3 +5,26 @@
 [![Dependencies Status](https://david-dm.org/KyleGalvin/backendBoilerplate.svg)](https://david-dm.org/KyleGalvin/backendBoilerplate)
 [![devDependencies Status](https://david-dm.org/KyleGalvin/backendBoilerplate/dev-status.svg)](https://david-dm.org/KyleGalvin/backendBoilerplate?type=dev)
 
+## Purpose:
+
+This is a boilerplate launch project meant to accelerate application development start times for new projects.
+
+## Developer Notes:
+
+This application pairs out of the box with a corresponding frontend project hosted [here](https://github.com/KyleGalvin/frontendBoilerplate)
+
+## Todo:
+
+Better test coverage
+
+Add IoC container to controller routes
+
+Finish swagger integration for automated API documentation
+
+## To install this project:
+
+npm install
+
+## To run this project:
+
+npm start
