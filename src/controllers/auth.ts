@@ -5,26 +5,34 @@ import * as cors from "cors";
 import * as Multer from "multer";
 import {check, validationResult} from "express-validator/check";
 import {matchedData} from "express-validator/filter";
+import { Connection, Repository } from "typeorm";
 
 import {UserProvider} from "../providers/user";
 import {AuthProvider} from "../providers/auth";
 import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
-import { Connection } from "typeorm";
 import {IUserSerialized, IUser, User} from "../models/entities/user";
 import {config} from "../config";
 
 const logger = Logger(path.basename(__filename));
 const multer = Multer();
 
-export default class Auth {
+export default class AuthController {
 
   public router: express.Router;
   private connection: Connection;
+  private userFactory: UserFactory;
+  private userRepository: Repository<User>;
+  private userProvider: UserProvider;
+  private authProvider: AuthProvider;
 
-  public constructor (connection: Connection) {
+  public constructor (connection: Connection, userRepository: Repository<User>) {
     this.router = express.Router();
     this.connection = connection;
+    this.userFactory = new UserFactory();
+    this.userRepository = userRepository;
+    this.userProvider = new UserProvider(connection, this.userFactory);
+    this.authProvider = new AuthProvider(config, this.userRepository);
 
     this.router.post("/auth/signup", [
       multer.any(),
@@ -52,18 +60,14 @@ export default class Auth {
         if (connection === null) {
           return res.status(422).json({"error": "Database Unavailable"});
         }
-        const userFactory = new UserFactory();
-        const userRepository = await connection.getRepository(User);
-        const userProvider = new UserProvider(connection, userFactory);
-        const authProvider = new AuthProvider(config, userRepository);
     
         try {
-          const result = await userProvider.create(user, password);
+          const result = await this.userProvider.create(user, password);
           if (!result) {
             return res.status(422).json({"error": "Username Unavailable"});
           }
     
-          const jwt = await authProvider.login((result as IUserSerialized).username, password);
+          const jwt = await this.authProvider.login((result as IUserSerialized).username, password);
           if (!jwt) {
             return res.status(422).json({"error": "Login Error"});
           }
@@ -92,14 +96,9 @@ export default class Auth {
         if (connection === null) {
           return res.status(422).json({"error": "Database Unavailable"});
         }
-        const userFactory = new UserFactory();
-        const userRepository = await connection.getRepository(User);
-        const userProvider = new UserProvider(connection, userFactory);
-        const authProvider = new AuthProvider(config, userRepository);
     
         try {
-
-          const jwt = await authProvider.login(formData.username, formData.password);
+          const jwt = await this.authProvider.login(formData.username, formData.password);
           if (!jwt) {
             return res.status(422).json({"error": "Login Error"});
           }

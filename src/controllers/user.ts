@@ -6,7 +6,7 @@ import * as cors from "cors";
 import {config} from "../config";
 
 const router = express.Router();
-// respond with "hello world" when a GET request is made to the homepage
+
 router.get("/user",
   jwt({secret: config.jwt.secret}),
   (req, res) => {
