@@ -7,7 +7,13 @@ import {Logger} from "../util/logger";
 
 const logger = Logger(path.basename(__filename));
 
-export class UserProvider {
+export interface IUserProvider {
+  create: (userData: IUserSerialized, password: string) => Promise<User>;
+  update: (userData: IUserSerialized, password?: string) => Promise<boolean>;
+  getById: (id: number) => Promise<User | undefined>;
+}
+
+export class UserProvider implements IUserProvider {
 
   private repository: Repository<User>;
   private userFactory: UserFactory;
@@ -18,7 +24,7 @@ export class UserProvider {
   }
 
   // create user
-  public async create(userData: IUserSerialized, password: string) {
+  public async create(userData: IUserSerialized) {
 
     const existingUser = await this.repository.findOne({"username": userData.username});
     if (existingUser) {
@@ -27,7 +33,7 @@ export class UserProvider {
     }
     logger.debug({"obj": userData}, "Creating new user: ");
 
-    const user = await this.userFactory.Create(userData, password);
+    const user = await this.userFactory.Create(userData);
 
     try {
       await this.repository.save(user);
@@ -41,15 +47,15 @@ export class UserProvider {
   }
 
   // update user
-  public async update(userData: IUserSerialized, password?: string) {
+  public async update(userData: IUserSerialized) {
     const user = await this.repository.findOneById(userData.id);
     if (user === undefined) {
       // can't update a record that doesn't exist.
       return false;
     }
 
-    if (password) {
-      await user.updatePassword(password);
+    if (userData.password && userData.password !== "") {
+      await user.updatePassword(userData.password);
     }
 
     user.username = userData.username;

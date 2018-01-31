@@ -7,13 +7,13 @@ import { matchedData } from "express-validator/filter";
 import { Connection, Repository } from "typeorm";
 import * as jwt from "express-jwt";
 
-import { UserProvider } from "../providers/user";
+import { UserProvider, IUserProvider } from "../providers/user";
 import { AuthProvider } from "../providers/auth";
 import { Logger } from "../util/logger";
 import { IConfig } from "../config";
 import {User} from "../models/entities/user";
-import {IGroup, Group} from "../models/entities/group";
-import { GroupProvider } from "../providers/group";
+import { IGroup, Group, IGroupSerialized } from "../models/entities/group";
+import { GroupProvider, IGroupProvider } from "../providers/group";
 import { GroupFactory } from "../factories/group";
 import { UserFactory } from "../factories/user";
 
@@ -24,34 +24,32 @@ export default class GroupController {
   public router: express.Router;
   private userRepository: Repository<User>;
   private groupRepository: Repository<Group>;
-  private groupProvider: GroupProvider;
+  private groupProvider: IGroupProvider;
+  private userProvider: IUserProvider;
 
   public constructor (connection: Connection, config: IConfig, userRepository: Repository<User>, groupRepository: Repository<Group>) {
     this.router = express.Router();
     this.groupProvider = new GroupProvider(config, groupRepository, new GroupFactory());
+    this.userProvider = new UserProvider(connection, new UserFactory());
 
     this.router.put("/group", [
       check("name", "Invalid Group Name").isLength({"min": 1}),
       jwt({secret: config.jwt.secret})
       ],
       async (req: express.Request, res: express.Response) => {
-        
-        //get user record from jwt userId
-        const user = userRepository.getId(req.user.userId);
-        
-        //create group record
-        
-        const groupData: IGroup = {
-          id: 0,
-          name: req.body.name
+        const user = await this.userProvider.getById(req.user.userId);
+        if(user) {
+          //create group record
+          const groupData: IGroupSerialized = {
+            id: 0,
+            name: req.body.name,
+            owner: req.user.userId
+          }
+          const group = await this.groupProvider.create(groupData);
+          res.status(200).json(group);
+        } else {
+          res.status(400);
         }
-        const group = await this.groupProvider.create(groupData);
-        //add group to user's groups
-        user.groups.push(group);
-        const userProvider = new UserProvider(connection, new UserFactory());
-        await userProvider.update(user);
-        //return groupName/groupId object
-        res.status(200).json(group);
       }
     );
 
@@ -59,7 +57,13 @@ export default class GroupController {
         jwt({secret: config.jwt.secret})
       ],
       async (req: express.Request, res: express.Response) => {
-        //get all groups for UID in JWT
+        //get user record from jwt userId
+        const user = await this.userProvider.getById(req.user.userId);
+        if(user) {
+          res.status(200).json(user.groups)
+        } else {
+          res.status(400);
+        }
       }
     );
 

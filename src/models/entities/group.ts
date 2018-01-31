@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTable} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTable, OneToMany} from "typeorm";
 import * as path from "path";
 
 import {Logger} from "../../util/logger";
@@ -8,6 +8,14 @@ const logger = Logger(path.normalize(path.basename(__filename)));
 export interface IGroup {
   id: number;
   name: string;
+  owner: number;
+  save: () => void;
+}
+
+export interface IGroupSerialized {
+  id: number;
+  name: string;
+  owner: number;
 }
 
 @Entity()
@@ -17,6 +25,9 @@ export class Group extends BaseEntity implements IGroup {
 
   @Column({ "type": "varchar" })
   public name: string;
+
+  @Column({ "type": "bigint" })
+  public owner: number;
 
   @ManyToMany(type => User, (user: User) => user.groups)
   @JoinTable()

@@ -13,6 +13,7 @@ export class Fixture {
       lastName: "doe",
       passwordHash: "",
       groups: [],
+      ownedGroups: [],
       contacts:[],
       hasId: () => true,
       save: () => Promise.resolve(this.testUser),
@@ -29,6 +30,7 @@ export class Fixture {
       lastName: "doe2",
       passwordHash: "",
       groups: [],
+      ownedGroups: [],
       contacts: [],
       hasId: () => true,
       save: () => Promise.resolve(this.modifiedTestUser),
@@ -51,7 +53,7 @@ export class Fixture {
 
         let userFactoryMock = TypeMoq.Mock.ofType<UserFactory>();
         userFactoryMock.setup((x: UserFactory) => x.Create)
-          .returns(() => (userData: IUserSerialized, password: string) => Promise.resolve(this.testUser));
+          .returns(() => (userData: IUserSerialized) => Promise.resolve(this.testUser));
         this.userFactory = userFactoryMock.object;
         
         var findOneResult = (options?: any) => {

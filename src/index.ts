@@ -16,20 +16,20 @@ import {Group} from "./models/entities/group";
 
 const logger = Logger(path.basename(__filename));
 
-new Connection().init().then(connection => {
+new Connection().init().then( async connection => {
   const app = express();
   app.use(bodyParser.json({ "type": "application/json"}));
   app.use(bodyParser.urlencoded({ "extended": true }));
   app.use(cors());
   app.use(expressValidator());
 
-  const userRepository = connection.getRepository(User);
-  const groupRepository = connection.getRepository(Group);
+  const userRepository = await connection.getRepository(User);
+  const groupRepository = await connection.getRepository(Group);
   
   app.use(new AuthController(connection,userRepository).router);
   app.use(new GroupController(connection, config, userRepository, groupRepository).router);
   app.use(new ContactsController(connection, config).router);
 
-  const server = http.createServer(app);
+  const server = http.createServer(app  as (req: any, res: any) => void);
   server.listen(config.port, () => logger.info("Listening on port " + config.port));
 });

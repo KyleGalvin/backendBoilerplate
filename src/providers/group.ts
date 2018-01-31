@@ -1,6 +1,6 @@
 import * as path from "path";
 
-import {Group, IGroup} from "../models/entities/group";
+import { Group, IGroup, IGroupSerialized } from "../models/entities/group";
 import {GroupFactory} from "../factories/group";
 import { IConfig } from "../config";
 import { Repository } from "typeorm";
@@ -9,10 +9,13 @@ import {ILogger, Logger} from "../util/logger";
 const logger: ILogger = Logger(path.basename(__filename));
 
 export interface IGroupProvider {
-  login: (username: string, password: string) => string;
+  create: (groupData: IGroupSerialized) => Promise<IGroup>;
+  update: (groupData: IGroupSerialized) => Promise<boolean>;
+  getByOwnerId: (id: number) => Promise<IGroup[]>;
+  getById: (id: number) => Promise<IGroup | undefined>;
 }
 
-export class GroupProvider {
+export class GroupProvider implements IGroupProvider {
 
   private config: IConfig;
   private repository: Repository<Group>;
@@ -24,7 +27,7 @@ export class GroupProvider {
     this.groupFactory = groupFactory;
   }
 
-    public async create(groupData: IGroup) {
+    public async create(groupData: IGroupSerialized) {
 
       logger.debug({"obj": groupData}, "Creating new group: ");
   
@@ -41,7 +44,7 @@ export class GroupProvider {
   
     }
   
-    public async update(groupData: IGroup) {
+    public async update(groupData: IGroupSerialized) {
       const group = await this.repository.findOneById(groupData.id);
       if (group === undefined) {
         // can't update a record that doesn't exist.
@@ -61,6 +64,10 @@ export class GroupProvider {
   
     public getById(id: number) {
       return this.repository.findOneById(id);
+    }
+
+    public getByOwnerId(id: number) {
+      return this.repository.find({ owner: id })
     }
   
     // delete user

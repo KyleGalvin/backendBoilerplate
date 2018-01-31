@@ -10,10 +10,9 @@ const testUser: IUserSerialized = {
 	username: "testuser", 
 	email: "email@mail.com",
 	firstName: "jane",
-	lastName: "doe"
+  lastName: "doe",
+  password: ""
 };
-
-const testUserPassword: string = "password";
 
 @suite class UserORMTests {
   // @test async CRUD() {

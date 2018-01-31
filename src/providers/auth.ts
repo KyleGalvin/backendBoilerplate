@@ -9,10 +9,10 @@ import {ILogger, Logger} from "../util/logger";
 const logger: ILogger = Logger(path.basename(__filename));
 
 export interface IAuthProvider {
-  login: (username: string, password: string) => string;
+  login: (username: string, password: string) => Promise<string | null>;
 }
 
-export class AuthProvider {
+export class AuthProvider implements IAuthProvider {
 
   private config: IConfig;
   private userRepository: Repository<User>;

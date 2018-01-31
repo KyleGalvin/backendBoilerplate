@@ -1,5 +1,5 @@
 import * as bcrypt from "bcrypt";
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, OneToMany} from "typeorm";
 import * as path from "path";
 
 import { Logger } from "../../util/logger";
@@ -23,6 +23,7 @@ export interface IUserSerialized {
   lastName: string;
   email: string;
   username: string;
+  password: string;
 }
 
 @Entity()
@@ -47,6 +48,9 @@ export class User extends BaseEntity implements IUser {
 
   @ManyToMany(type => Group, (group: Group) => group.users)
   groups: Group[];
+
+  @OneToMany(type => Group, (group: Group) => group.owner)
+  ownedGroups: Group[];
 
   @ManyToMany(type => User, (user: User) => user.id)
   contacts: User[];

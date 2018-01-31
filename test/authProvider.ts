@@ -23,7 +23,9 @@ const logger = Logger(path.basename(__filename));
     let userProvider = new UserProvider(fixture.connection, fixture.userFactory);
     assert.equal(fixture.getRepoCalls, 1, "user provider constructor called getRepo");
 
-    let myUser = await userProvider.create(fixture.testUser, fixture.testUserPassword);
+    let myUser = await userProvider.create({
+      ...{password: fixture.testUserPassword},
+      ...fixture.testUser} as IUserSerialized);
     assert.equal(fixture.findCalls, 1, "user create calls repo find");
     assert.equal(fixture.saveCalls, 1, "user create calls repo save");
 
@@ -42,7 +44,9 @@ const logger = Logger(path.basename(__filename));
     let userProvider = new UserProvider(fixture.connection, fixture.userFactory);
     assert.equal(fixture.getRepoCalls, 1, "user provider constructor called getRepo");
 
-    let myUser = await userProvider.create(fixture.testUser, fixture.testUserPassword);
+    let myUser = await userProvider.create({
+      ...{password: fixture.testUserPassword},
+      ...fixture.testUser} as IUserSerialized);
     assert.equal(fixture.findCalls, 1, "user create calls repo find");
     assert.equal(fixture.saveCalls, 1, "user create calls repo save");
 
@@ -51,7 +55,7 @@ const logger = Logger(path.basename(__filename));
     myUser.firstName = fixture.modifiedTestUser.firstName;
     myUser.lastName = fixture.modifiedTestUser.lastName;
 
-    await userProvider.update(myUser);
+    await userProvider.update({...{"password": ""},...myUser} as IUserSerialized);
 
     let myUpdatedUser = (await userProvider.getById(myUser.id)) as User;
 
@@ -70,7 +74,9 @@ const logger = Logger(path.basename(__filename));
     let fixture = new Fixture();
 
     let userProvider = new UserProvider(fixture.connection, fixture.userFactory);
-    let myUser = await userProvider.create(fixture.testUser, fixture.testUserPassword);
+    let myUser = await userProvider.create({
+      ...{password: fixture.testUserPassword},
+      ...fixture.testUser} as IUserSerialized);
 
     const myAuthProvider = new AuthProvider(config, fixture.userRepository);
     const loginResult2 = await myAuthProvider.login(fixture.testUser.username, "");
