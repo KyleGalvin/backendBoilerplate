@@ -19,7 +19,7 @@ const logger = Logger(path.basename(__filename));
 const multer = Multer();
 
 @Route("auth")
-export default class AuthController {
+export class AuthController {
 
   public router: express.Router;
   private connection: Connection;
@@ -36,40 +36,40 @@ export default class AuthController {
     this.userProvider = new UserProvider(connection, this.userFactory);
     this.authProvider = new AuthProvider(config, this.userRepository);
 
-    this.router.post("/auth/signup", [
-      multer.any(),
-      check("username", "Invalid Usename").isLength({"min": 3}),
-      check("email", "Invalid Email").isEmail(),
-      check("firstName", "Empty FirstName").isLength({"min": 1}),
-      check("lastName", "Empty LastName").isLength({"min": 1}),
-      check("password", "Password too short").isLength({"min": 3})
-      ], this.signupExpress.bind(this));
+    // this.router.post("/auth/signup", [
+    //   multer.any(),
+    //   check("username", "Invalid Usename").isLength({"min": 3}),
+    //   check("email", "Invalid Email").isEmail(),
+    //   check("firstName", "Empty FirstName").isLength({"min": 1}),
+    //   check("lastName", "Empty LastName").isLength({"min": 1}),
+    //   check("password", "Password too short").isLength({"min": 3})
+    //   ], this.signupExpress.bind(this));
 
-    this.router.post("/auth/login", [
-      multer.any(),
-      check("username", "Invalid Usename").isLength({"min": 3}),
-      check("password", "Password too short").isLength({"min": 3})
-    ], this.loginExpress.bind(this));
+    // this.router.post("/auth/login", [
+    //   multer.any(),
+    //   check("username", "Invalid Usename").isLength({"min": 3}),
+    //   check("password", "Password too short").isLength({"min": 3})
+    // ], this.loginExpress.bind(this));
   }
 
   
-  public async signupExpress(req: express.Request, res: express.Response): Promise<express.Response> {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ "errors": errors.mapped() });
-    }
-    const formData = matchedData(req);
+  // public async signupExpress(req: express.Request, res: express.Response): Promise<express.Response> {
+  //   const errors = validationResult(req);
+  //   if (!errors.isEmpty()) {
+  //     return res.status(422).json({ "errors": errors.mapped() });
+  //   }
+  //   const formData = matchedData(req);
 
-    const user: IUserSerialized = {
-      "username": formData.username as string,
-      "email": formData.email as string,
-      "firstName": formData.firstName as string,
-      "lastName": formData.lastName as string,
-      "password": formData.password as string
-    } as IUserSerialized;
+  //   const user: IUserSerialized = {
+  //     "username": formData.username as string,
+  //     "email": formData.email as string,
+  //     "firstName": formData.firstName as string,
+  //     "lastName": formData.lastName as string,
+  //     "password": formData.password as string
+  //   } as IUserSerialized;
 
-    return res.json(this.signup(user));
-  }
+  //   return res.json(this.signup(user));
+  // }
 
   @Post("signup")
   private async signup(@Body() user: IUserSerialized): Promise<IAccessToken> {
@@ -96,19 +96,19 @@ export default class AuthController {
     }
   }
 
-  public async loginExpress(req: express.Request, res: express.Response): Promise<express.Response> {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ "errors": errors.mapped() });
-    }
-    const formData = matchedData(req);
-    const user: IUserCredentials = {
-      "username": formData.username as string,
-      "password": formData.password as string
-    };
+  // public async loginExpress(req: express.Request, res: express.Response): Promise<express.Response> {
+  //   const errors = validationResult(req);
+  //   if (!errors.isEmpty()) {
+  //     return res.status(422).json({ "errors": errors.mapped() });
+  //   }
+  //   const formData = matchedData(req);
+  //   const user: IUserCredentials = {
+  //     "username": formData.username as string,
+  //     "password": formData.password as string
+  //   };
 
-    return await res.json(this.login(user));
-  }
+  //   return await res.json(this.login(user));
+  // }
 
   @Post("login")
   public async login( @Body() credentials: IUserCredentials): Promise<IAccessToken> {
