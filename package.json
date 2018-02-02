@@ -4,8 +4,9 @@
   "description": "basic blank project setup. Hopefully saves you time configuring",
   "main": "index.js",
   "scripts": {
-    "build": "npm run clean && mkdirp ./dist && tsc",
+    "build": "npm run clean && mkdirp ./dist && tsc && npm run swagger",
     "clean": "rm -rf ./dist",
+    "swagger": "tsoa swagger",
     "lint": "tslint --force 'src/**/*.ts' > ./tslint.err",
     "local": "nodemon -e ts -w ./src -x npm run local:watch",
     "local:watch": "npm run build && npm run lint && cat ./tslint.err && npm start",

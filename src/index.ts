@@ -8,6 +8,7 @@ import * as cors from "cors";
 import AuthController from "./controllers/auth";
 import ContactsController from "./controllers/contacts";
 import GroupController from "./controllers/group";
+import SwaggerController from "./controllers/swagger";
 import { config } from "./config";
 import { Logger } from "./util/logger";
 import Connection from "./models/typeorm";
@@ -29,6 +30,7 @@ new Connection().init().then( async connection => {
   app.use(new AuthController(connection,userRepository).router);
   app.use(new GroupController(connection, config, userRepository, groupRepository).router);
   app.use(new ContactsController(connection, config).router);
+  app.use(new SwaggerController(config).router);
 
   const server = http.createServer(app  as (req: any, res: any) => void);
   server.listen(config.port, () => logger.info("Listening on port " + config.port));

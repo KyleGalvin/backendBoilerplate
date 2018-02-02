@@ -17,13 +17,16 @@ export interface IUser {
   updatePassword(password: string): Promise<void>;
 }
 
-export interface IUserSerialized {
+export interface IUserCredentials {
+  username: string;
+  password: string;  
+}
+
+export interface IUserSerialized extends IUserCredentials {
   id: number;
   firstName: string;
   lastName: string;
   email: string;
-  username: string;
-  password: string;
 }
 
 @Entity()

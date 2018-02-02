@@ -6,13 +6,13 @@ import * as Multer from "multer";
 import {check, validationResult} from "express-validator/check";
 import {matchedData} from "express-validator/filter";
 import { Connection, Repository } from "typeorm";
-import {Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller, Request } from "tsoa";
+import {Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller, Request, Security } from "tsoa";
 
 import {UserProvider, IUserProvider} from "../providers/user";
-import {AuthProvider, IAuthProvider} from "../providers/auth";
+import {AuthProvider, IAuthProvider, IAccessToken} from "../providers/auth";
 import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
-import {IUserSerialized, IUser, User} from "../models/entities/user";
+import {IUserSerialized, IUserCredentials, IUser, User} from "../models/entities/user";
 import {config} from "../config";
 
 const logger = Logger(path.basename(__filename));
@@ -43,18 +43,17 @@ export default class AuthController {
       check("firstName", "Empty FirstName").isLength({"min": 1}),
       check("lastName", "Empty LastName").isLength({"min": 1}),
       check("password", "Password too short").isLength({"min": 3})
-      ], this.signup.bind(this));
+      ], this.signupExpress.bind(this));
 
     this.router.post("/auth/login", [
       multer.any(),
       check("username", "Invalid Usename").isLength({"min": 3}),
       check("password", "Password too short").isLength({"min": 3})
-    ], this.login.bind(this));
+    ], this.loginExpress.bind(this));
   }
 
-
-  @Post("signup")
-  public async signup( @Request() req: express.Request, res: express.Response): Promise<any> {
+  
+  public async signupExpress(req: express.Request, res: express.Response): Promise<express.Response> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ "errors": errors.mapped() });
@@ -69,51 +68,64 @@ export default class AuthController {
       "password": formData.password as string
     } as IUserSerialized;
 
+    return res.json(this.signup(user));
+  }
+
+  @Post("signup")
+  private async signup(@Body() user: IUserSerialized): Promise<IAccessToken> {
     if (this.connection === null) {
-      return res.status(422).json({"error": "Database Unavailable"});
+      throw new Error("Database Unavailable");
     }
 
     try {
       const result = await this.userProvider.create(user, user.password);
       if (!result) {
-        return res.status(422).json({"error": "Username Unavailable"});
+        throw new Error("Username Unavailable");
       }
 
       const jwt = await this.authProvider.login((result as User).username, user.password);
       if (!jwt) {
-        return res.status(422).json({"error": "Login Error"});
+        throw new Error("Login Error");
       }
 
-      return res.json({"access_token": jwt});
+      return {"access_token": jwt};
 
     } catch (e) {
       logger.error({"obj": e}, "error");
-      return res.status(422).json({"error": "Unknown Error"});
+      throw new Error("Unknown Error");
     }
   }
 
-  public async login( @Request() req: express.Request, res: express.Response): Promise<any> {
+  public async loginExpress(req: express.Request, res: express.Response): Promise<express.Response> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ "errors": errors.mapped() });
     }
     const formData = matchedData(req);
+    const user: IUserCredentials = {
+      "username": formData.username as string,
+      "password": formData.password as string
+    };
 
+    return await res.json(this.login(user));
+  }
+
+  @Post("login")
+  public async login( @Body() credentials: IUserCredentials): Promise<IAccessToken> {
     if (this.connection === null) {
-      return res.status(422).json({"error": "Database Unavailable"});
+      throw new Error("Database Unavailable");
     }
 
     try {
-      const jwt = await this.authProvider.login(formData.username, formData.password);
+      const jwt = await this.authProvider.login(credentials.username, credentials.password);
       if (!jwt) {
-        return res.status(422).json({"error": "Login Error"});
+        throw new Error("Login Error");
       }
 
-      return res.json({"access_token": jwt});
+      return {"access_token": jwt};
 
     } catch (e) {
-      logger.error({"obj": e}, "error");
-      return res.status(422).json({"error": "Unknown Error"});
+      throw new Error("Unknown Error");
     }
   }
 }

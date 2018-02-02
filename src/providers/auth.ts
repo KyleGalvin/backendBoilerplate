@@ -12,6 +12,10 @@ export interface IAuthProvider {
   login: (username: string, password: string) => Promise<string | null>;
 }
 
+export interface IAccessToken {
+  access_token: string;
+}
+
 export class AuthProvider implements IAuthProvider {
 
   private config: IConfig;
