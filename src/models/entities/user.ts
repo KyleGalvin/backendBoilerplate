@@ -23,7 +23,7 @@ export interface IUserCredentials {
 }
 
 export interface IUserSerialized extends IUserCredentials {
-  id: number;
+  id?: number;
   firstName: string;
   lastName: string;
   email: string;

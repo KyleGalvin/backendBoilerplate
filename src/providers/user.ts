@@ -1,5 +1,6 @@
 import * as path from "path";
 import {Repository, Connection} from "typeorm";
+import { Inject, Provides } from "typescript-ioc";
 
 import {User, IUser, IUserSerialized} from "../models/entities/user";
 import {UserFactory} from "../factories/user";
@@ -7,25 +8,28 @@ import {Logger} from "../util/logger";
 
 const logger = Logger(path.basename(__filename));
 
-export interface IUserProvider {
-  create: (userData: IUserSerialized, password: string) => Promise<User>;
+export abstract class IUserProvider {
+  create: (userData: IUserSerialized) => Promise<User>;
   update: (userData: IUserSerialized, password?: string) => Promise<boolean>;
   getById: (id: number) => Promise<User | undefined>;
 }
 
+@Provides(IUserProvider)
 export class UserProvider implements IUserProvider {
 
-  private repository: Repository<User>;
+  @Inject
   private userFactory: UserFactory;
+  @Inject
+  private connection: Connection;
+  private repository: Repository<User>;
 
-  public constructor(dbConnection: Connection, userFactory: UserFactory) {
-    this.repository = dbConnection.getRepository(User);
-    this.userFactory = userFactory;
+  public constructor() {
+    this.repository = this.connection.getRepository(User);
   }
 
   // create user
   public async create(userData: IUserSerialized) {
-
+    logger.info("create1");
     const existingUser = await this.repository.findOne({"username": userData.username});
     if (existingUser) {
       logger.warn({"obj": [userData.username, existingUser]}, "Error: user already exists: ");

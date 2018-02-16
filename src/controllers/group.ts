@@ -6,6 +6,7 @@ import { check, validationResult } from "express-validator/check";
 import { matchedData } from "express-validator/filter";
 import { Connection, Repository } from "typeorm";
 import * as jwt from "express-jwt";
+import {Inject} from "typescript-ioc";
 
 import { UserProvider, IUserProvider } from "../providers/user";
 import { AuthProvider } from "../providers/auth";
@@ -25,12 +26,13 @@ export default class GroupController {
   private userRepository: Repository<User>;
   private groupRepository: Repository<Group>;
   private groupProvider: IGroupProvider;
+  @Inject
   private userProvider: IUserProvider;
 
-  public constructor (connection: Connection, config: IConfig, userRepository: Repository<User>, groupRepository: Repository<Group>) {
+  public constructor (connection: Connection, config: IConfig, groupRepository: Repository<Group>) {
     this.router = express.Router();
     this.groupProvider = new GroupProvider(config, groupRepository, new GroupFactory());
-    this.userProvider = new UserProvider(connection, new UserFactory());
+    this.userProvider = new UserProvider();
 
     this.router.put("/group", [
       check("name", "Invalid Group Name").isLength({"min": 1}),

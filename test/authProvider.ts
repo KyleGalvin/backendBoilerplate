@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as assert from "assert";
 import { suite, test, slow, timeout } from "mocha-typescript";
-
+import {Inject} from "typescript-ioc";
 import {Repository, Entity, FindOneOptions, Connection, SaveOptions} from "typeorm";
 
 import {IUser, User, IUserSerialized} from "../src/models/entities/user";
@@ -16,35 +16,37 @@ const logger = Logger(path.basename(__filename));
 
 @suite class AuthProviderTests {
 
+  @Inject
+  private userProvider: UserProvider;
+  @Inject
+  private authProvider: AuthProvider;
+
   @test async canCreateUserAndLogin() {
 
     let fixture = new Fixture();
 
-    let userProvider = new UserProvider(fixture.connection, fixture.userFactory);
     assert.equal(fixture.getRepoCalls, 1, "user provider constructor called getRepo");
 
-    let myUser = await userProvider.create({
+    let myUser = await this.userProvider.create({
       ...{password: fixture.testUserPassword},
       ...fixture.testUser} as IUserSerialized);
     assert.equal(fixture.findCalls, 1, "user create calls repo find");
     assert.equal(fixture.saveCalls, 1, "user create calls repo save");
 
-    const myAuthProvider = new AuthProvider(config, fixture.userRepository);
-    const loginResult = await myAuthProvider.login(myUser.username, fixture.testUserPassword);
+    const loginResult = await this.authProvider.login(myUser.username, fixture.testUserPassword);
     assert.equal(fixture.findCalls, 2, "user login calls repo find");
     assert.notEqual(loginResult, null, "new user can log in");
 
-    await userProvider.delete(myUser);
+    await this.userProvider.delete(myUser);
   }  
 
   @test async canUpdateUser() {
 
     let fixture = new Fixture();
 
-    let userProvider = new UserProvider(fixture.connection, fixture.userFactory);
     assert.equal(fixture.getRepoCalls, 1, "user provider constructor called getRepo");
 
-    let myUser = await userProvider.create({
+    let myUser = await this.userProvider.create({
       ...{password: fixture.testUserPassword},
       ...fixture.testUser} as IUserSerialized);
     assert.equal(fixture.findCalls, 1, "user create calls repo find");
@@ -55,9 +57,9 @@ const logger = Logger(path.basename(__filename));
     myUser.firstName = fixture.modifiedTestUser.firstName;
     myUser.lastName = fixture.modifiedTestUser.lastName;
 
-    await userProvider.update({...{"password": ""},...myUser} as IUserSerialized);
+    await this.userProvider.update({...{"password": ""},...myUser} as IUserSerialized);
 
-    let myUpdatedUser = (await userProvider.getById(myUser.id)) as User;
+    let myUpdatedUser = (await this.userProvider.getById(myUser.id)) as User;
 
     assert.equal(-1,myUpdatedUser.id);
 
@@ -66,31 +68,28 @@ const logger = Logger(path.basename(__filename));
     assert.equal(fixture.modifiedTestUser.firstName, myUpdatedUser.firstName, "updated firstName");
     assert.equal(fixture.modifiedTestUser.lastName, myUpdatedUser.lastName, "updated lastName");
 
-    await userProvider.delete(myUpdatedUser);
+    await this.userProvider.delete(myUpdatedUser);
   }
   
   @test async loginBadPassword() {
     
     let fixture = new Fixture();
 
-    let userProvider = new UserProvider(fixture.connection, fixture.userFactory);
-    let myUser = await userProvider.create({
+    let myUser = await this.userProvider.create({
       ...{password: fixture.testUserPassword},
       ...fixture.testUser} as IUserSerialized);
 
-    const myAuthProvider = new AuthProvider(config, fixture.userRepository);
-    const loginResult2 = await myAuthProvider.login(fixture.testUser.username, "");
+    const loginResult2 = await this.authProvider.login(fixture.testUser.username, "");
     assert(!loginResult2, "new user can't login with wrong password");
 
-    await userProvider.delete(myUser);
+    await this.userProvider.delete(myUser);
   }
 
   @test async loginBadUsername() {
 
     let fixture = new Fixture();
 
-    const myAuthProvider = new AuthProvider(config, fixture.userRepository);
-    const loginResult3 = await myAuthProvider.login("", fixture.testUserPassword);
+    const loginResult3 = await this.authProvider.login("", fixture.testUserPassword);
     assert(!loginResult3, "bad username can't login");
   }
 }

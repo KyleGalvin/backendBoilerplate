@@ -1,14 +1,16 @@
 import * as path from "path";
 import * as jwt from "jsonwebtoken";
+import { Repository, Connection } from "typeorm";
+import { Inject, Provides } from "typescript-ioc";
 
 import {User, IUser} from "../models/entities/user";
 import { IConfig } from "../config";
-import { Repository } from "typeorm";
 import {ILogger, Logger} from "../util/logger";
+import { config } from "../config";
 
 const logger: ILogger = Logger(path.basename(__filename));
 
-export interface IAuthProvider {
+export abstract class IAuthProvider {
   login: (username: string, password: string) => Promise<string | null>;
 }
 
@@ -16,18 +18,21 @@ export interface IAccessToken {
   access_token: string;
 }
 
+@Provides(IAuthProvider)
 export class AuthProvider implements IAuthProvider {
 
   private config: IConfig;
-  private userRepository: Repository<User>;
+  @Inject
+  private connection: Connection;
+  private repository: Repository<User>;
 
-  public constructor(config: IConfig, userRepository: Repository<User>) {
+  public constructor() {
     this.config = config;
-    this.userRepository = userRepository;
+    this.repository = this.connection.getRepository(User);
   }
 
   public async login(username: string, password: string) {
-    const user = await this.userRepository.findOne({"username": username});
+    const user = await this.repository.findOne({"username": username});
 
     if (!user) {
       return null;
