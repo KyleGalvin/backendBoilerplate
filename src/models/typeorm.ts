@@ -45,7 +45,7 @@ export class ConnectionSingleton {
       });
     } else {
       logger.info("returning database connection");
-      return Promise.resolve(ConnectionSingleton.connection);
+      return ConnectionSingleton.connection;
     }
 
   }

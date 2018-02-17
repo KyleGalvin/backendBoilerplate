@@ -29,10 +29,8 @@ export class AuthController {
   @Post("signup")
   public async signup(@Body() user: IUserSerialized): Promise<IAccessToken> {
     logger.info("signup1");
-    logger.info({"obj": this.userProvider}, "signup2");
     try {
       const result = await this.userProvider.create(user);
-      logger.info({"obj": result},"signup3");
       if (!result) {
         throw new Error("Username Unavailable");
       }
