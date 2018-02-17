@@ -11,7 +11,7 @@ import { config } from "../config";
 const logger: ILogger = Logger(path.basename(__filename));
 
 export abstract class IAuthProvider {
-  login: (username: string, password: string) => Promise<string | null>;
+  login!: (username: string, password: string) => Promise<string | null>;
 }
 
 export interface IAccessToken {
@@ -23,7 +23,7 @@ export class AuthProvider implements IAuthProvider {
 
   private config: IConfig;
   @Inject
-  private connection: Connection;
+  private connection!: Connection;
   private repository: Repository<User>;
 
   public constructor() {

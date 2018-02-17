@@ -5,23 +5,25 @@ import * as http from "http";
 import * as expressValidator from "express-validator";
 import * as cors from "cors";
 import {Container} from "typescript-ioc";
-import {createConnection, Connection} from "typeorm";
+import {Connection} from "typeorm";
 
 import "./controllers/auth";
-import ContactsController from "./controllers/contacts";
-import GroupController from "./controllers/group";
-import SwaggerController from "./controllers/swagger";
+// import ContactsController from "./controllers/contacts";
+// import GroupController from "./controllers/group";
+// import SwaggerController from "./controllers/swagger";
 import { config } from "./config";
 import { Logger } from "./util/logger";
-import connectionProvider from "./models/typeorm";
-import {IUserProvider, UserProvider} from "./providers/user";
-import {User} from "./models/entities/user";
-import {Group} from "./models/entities/group";
+import { ConnectionProvider } from "./models/typeorm";
+// import {IUserProvider, UserProvider} from "./providers/user";
+// import {User} from "./models/entities/user";
+// import {Group} from "./models/entities/group";
 import {RegisterRoutes} from './routes';
 
 const logger = Logger(path.basename(__filename));
 
-Container.bind(Connection).provider(connectionProvider);
+//establish the database connection
+const connection = ConnectionProvider.get();
+
 
 const app = express();
 app.use(bodyParser.json({ "type": "application/json"}));

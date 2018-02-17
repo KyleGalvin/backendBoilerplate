@@ -1,7 +1,6 @@
 import * as assert from "assert";
 import { suite, test, slow, timeout } from "mocha-typescript";
 
-import Connection from "../src/models/typeorm";
 import {User, IUserSerialized} from "../src/models/entities/user";
 import {UserProvider} from "../src/providers/user";
 

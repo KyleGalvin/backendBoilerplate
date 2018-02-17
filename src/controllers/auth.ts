@@ -1,5 +1,4 @@
 import * as path from "path";
-import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as Multer from "multer";
@@ -11,7 +10,6 @@ import {AutoWired, Inject} from "typescript-ioc";
 
 import {UserProvider, IUserProvider} from "../providers/user";
 import {AuthProvider, IAuthProvider, IAccessToken} from "../providers/auth";
-import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
 import {IUserSerialized, IUserCredentials, IUser, User} from "../models/entities/user";
 import {config} from "../config";
@@ -23,27 +21,14 @@ const multer = Multer();
 @Route("auth")
 export class AuthController {
 
-  public router: express.Router;
   @Inject
-  private connection: Connection;
-  private userFactory: UserFactory;
+  private userProvider!: IUserProvider;
   @Inject
-  private userRepository: Repository<User>;
-  @Inject
-  private userProvider: IUserProvider;
-  @Inject
-  private authProvider: IAuthProvider;
-
-  public constructor () {
-    this.userFactory = new UserFactory();
-  }
+  private authProvider!: IAuthProvider;
 
   @Post("signup")
   public async signup(@Body() user: IUserSerialized): Promise<IAccessToken> {
     logger.info("signup1");
-    if (this.connection === null) {
-      throw new Error("Database Unavailable");
-    }
     logger.info({"obj": this.userProvider}, "signup2");
     try {
       const result = await this.userProvider.create(user);
@@ -69,10 +54,6 @@ export class AuthController {
   @Post("login")
   public async login( @Body() credentials: IUserCredentials): Promise<IAccessToken> {
     logger.info("login");
-    if (this.connection === null) {
-      throw new Error("Database Unavailable");
-    }
-
     try {
       const jwt = await this.authProvider.login(credentials.username, credentials.password);
       if (!jwt) {

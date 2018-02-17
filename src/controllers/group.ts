@@ -23,8 +23,8 @@ const logger = Logger(path.basename(__filename));
 export default class GroupController {
 
   public router: express.Router;
-  private userRepository: Repository<User>;
-  private groupRepository: Repository<Group>;
+  private userRepository!: Repository<User>;
+  private groupRepository!: Repository<Group>;
   private groupProvider: IGroupProvider;
   @Inject
   private userProvider: IUserProvider;

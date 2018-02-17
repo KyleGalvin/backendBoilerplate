@@ -1,36 +1,38 @@
 import * as path from "path";
 import {Repository, Connection} from "typeorm";
-import { Inject, Provides } from "typescript-ioc";
+import { Inject, Provides, Container } from "typescript-ioc";
 
 import {User, IUser, IUserSerialized} from "../models/entities/user";
 import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
+//import {ConnectionProvider} from "../models/typeorm";
 
 const logger = Logger(path.basename(__filename));
 
 export abstract class IUserProvider {
-  create: (userData: IUserSerialized) => Promise<User>;
-  update: (userData: IUserSerialized, password?: string) => Promise<boolean>;
-  getById: (id: number) => Promise<User | undefined>;
+  create!: (userData: IUserSerialized) => Promise<User>;
+  update!: (userData: IUserSerialized, password?: string) => Promise<boolean>;
+  getById!: (id: number) => Promise<User | undefined>;
 }
 
 @Provides(IUserProvider)
 export class UserProvider implements IUserProvider {
 
   @Inject
-  private userFactory: UserFactory;
+  private userFactory!: UserFactory;
   @Inject
-  private connection: Connection;
-  private repository: Repository<User>;
+  private connection!: Connection;
+  private repository!: Repository<User>;
 
   public constructor() {
-    this.repository = this.connection.getRepository(User);
+    
   }
 
   // create user
   public async create(userData: IUserSerialized) {
+    this.repository = this.connection.getRepository(User);
     logger.info("create1");
-    const existingUser = await this.repository.findOne({"username": userData.username});
+    const existingUser = this.repository.findOne({"username": userData.username});
     if (existingUser) {
       logger.warn({"obj": [userData.username, existingUser]}, "Error: user already exists: ");
       throw new Error("User already exists");

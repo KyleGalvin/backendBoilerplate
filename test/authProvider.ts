@@ -17,9 +17,9 @@ const logger = Logger(path.basename(__filename));
 @suite class AuthProviderTests {
 
   @Inject
-  private userProvider: UserProvider;
+  private userProvider!: UserProvider;
   @Inject
-  private authProvider: AuthProvider;
+  private authProvider!: AuthProvider;
 
   @test async canCreateUserAndLogin() {
 
