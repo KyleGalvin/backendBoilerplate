@@ -18,8 +18,8 @@ export class Group extends BaseEntity implements IGroup {
   @Column({ "type": "varchar" })
   public name!: string;
 
-  @ManyToMany(type => User, (user: User) => user.groups)
+  @ManyToMany((type) => User, (user: User) => user.groups)
   @JoinTable()
-  users!: User[]
+  public users!: User[];
 
 }

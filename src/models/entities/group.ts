@@ -9,7 +9,6 @@ export interface IGroup {
   id: number;
   name: string;
   owner: number;
-  //save: () => void;
 }
 
 export interface IGroupSerialized {
@@ -29,8 +28,8 @@ export class Group extends BaseEntity implements IGroup {
   @Column({ "type": "bigint" })
   public owner!: number;
 
-  @ManyToMany(type => User, (user: User) => user.groups)
+  @ManyToMany((type) => User, (user: User) => user.groups)
   @JoinTable()
-  users!: User[]
+  public users!: User[];
 
 }

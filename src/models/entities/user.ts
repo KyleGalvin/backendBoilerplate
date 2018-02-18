@@ -19,7 +19,7 @@ export interface IUser {
 
 export interface IUserCredentials {
   username: string;
-  password: string;  
+  password: string;
 }
 
 export interface IUserSerialized extends IUserCredentials {
@@ -49,14 +49,14 @@ export class User extends BaseEntity implements IUser {
   @Column({ "type": "varchar" })
   public passwordHash!: string;
 
-  @ManyToMany(type => Group, (group: Group) => group.users)
-  groups!: Group[];
+  @ManyToMany((type) => Group, (group: Group) => group.users)
+  public groups!: Group[];
 
-  @OneToMany(type => Group, (group: Group) => group.owner)
-  ownedGroups!: Group[];
+  @OneToMany((type) => Group, (group: Group) => group.owner)
+  public ownedGroups!: Group[];
 
-  @ManyToMany(type => User, (user: User) => user.id)
-  contacts!: User[];
+  @ManyToMany((type) => User, (user: User) => user.id)
+  public contacts!: User[];
 
   public verifyPassword = async (password: string) => {
     return await bcrypt.compare(password, this.passwordHash);

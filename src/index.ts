@@ -16,11 +16,11 @@ import { ConnectionProvider } from "./models/typeorm";
 // import {IUserProvider, UserProvider} from "./providers/user";
 // import {User} from "./models/entities/user";
 // import {Group} from "./models/entities/group";
-import {RegisterRoutes} from './routes';
+import {RegisterRoutes} from "./routes";
 
 const logger = Logger(path.basename(__filename));
 
-//establish the database connection
+// establish the database connection
 const connection = ConnectionProvider.get();
 
 const app = express();
@@ -32,9 +32,8 @@ RegisterRoutes(app);
 // const userRepository = await connection.getRepository(User);
 // const groupRepository = await connection.getRepository(Group);
 
-//app.use(new AuthController(connection,userRepository).router);
-//app.use(new ContactsController(connection, config).router);
+// app.use(new AuthController(connection,userRepository).router);
+// app.use(new ContactsController(connection, config).router);
 
 const server = http.createServer(app  as (req: any, res: any) => void);
 server.listen(config.port, () => logger.info("Listening on port " + config.port));
-

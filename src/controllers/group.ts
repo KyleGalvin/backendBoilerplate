@@ -1,14 +1,11 @@
 import * as path from "path";
-import { Connection, Repository } from "typeorm";
 import {Inject} from "typescript-ioc";
-import {Get, Post, Put, Route, Body, Query, Header, Path, SuccessResponse, Controller, Request, Security } from "tsoa";
+import {Get, Put, Route, Body, Query, Header, Request, Security } from "tsoa";
 
 import { Logger } from "../util/logger";
 import { IConfig, config } from "../config";
-import {User} from "../models/entities/user";
 import { IGroup, Group, IGroupSerialized } from "../models/entities/group";
 import { UserProvider, IUserProvider } from "../providers/user";
-import { AuthProvider } from "../providers/auth";
 import { GroupProvider, IGroupProvider } from "../providers/group";
 
 const logger = Logger(path.basename(__filename));
@@ -22,16 +19,16 @@ export class GroupController {
   private userProvider!: IUserProvider;
 
   @Put("")
-  @Security("jwt",["user"])
+  @Security("jwt", ["user"])
   public async putGroup(@Request() request: Express.Request, @Body() name: string): Promise<IGroup> {
     const user = await this.userProvider.getById(request.user.userId);
-    if(user) {
-      //create group record
+    if (user) {
+      // create group record
       const groupData: IGroupSerialized = {
-        id: 0,
-        name: name,
-        owner: request.user.userId
-      }
+        "id": 0,
+        "name": name,
+        "owner": request.user.userId
+      };
       return await this.groupProvider.create(groupData);
     } else {
       throw new Error("Not authenticated");
@@ -39,11 +36,11 @@ export class GroupController {
   }
 
   @Get("")
-  public async getGroup(@Request() request: Express.Request): Promise<IGroup[]> {
-    //get user record from jwt userId
+  public async getGroups(@Request() request: Express.Request): Promise<IGroup[]> {
+    // get user record from jwt userId
     const user = await this.userProvider.getById(request.user.userId);
-    if(user) {
-      return user.groups
+    if (user) {
+      return user.groups;
     } else {
       throw new Error("Not authenticated");
     }

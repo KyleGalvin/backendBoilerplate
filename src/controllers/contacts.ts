@@ -14,14 +14,14 @@ export default class Contacts {
   public router: express.Router;
   private connection: Connection;
 
-  public constructor (connection: Connection, config: IConfig) {
+  public constructor(connection: Connection, config: IConfig) {
     this.router = express.Router();
     this.connection = connection;
 
     this.router.get("/contacts", [
       ],
       async (req: express.Request, res: express.Response) => {
-        //get all groups for UID in JWT
+        // get all groups for UID in JWT
         logger.info({"obj": req.user}, "user: ");
       }
     );

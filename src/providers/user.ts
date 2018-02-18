@@ -5,14 +5,14 @@ import { Inject, Provides, Container } from "typescript-ioc";
 import {User, IUser, IUserSerialized} from "../models/entities/user";
 import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
-//import {ConnectionProvider} from "../models/typeorm";
+// import {ConnectionProvider} from "../models/typeorm";
 
 const logger = Logger(path.basename(__filename));
 
 export abstract class IUserProvider {
-  create!: (userData: IUserSerialized) => Promise<User>;
-  update!: (userData: IUserSerialized, password?: string) => Promise<boolean>;
-  getById!: (id: number) => Promise<User | undefined>;
+  public create!: (userData: IUserSerialized) => Promise<User>;
+  public update!: (userData: IUserSerialized, password?: string) => Promise<boolean>;
+  public getById!: (id: number) => Promise<User | undefined>;
 }
 
 @Provides(IUserProvider)

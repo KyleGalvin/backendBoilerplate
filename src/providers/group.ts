@@ -10,10 +10,10 @@ import {ILogger, Logger} from "../util/logger";
 const logger: ILogger = Logger(path.basename(__filename));
 
 export abstract class IGroupProvider {
-  create!: (groupData: IGroupSerialized) => Promise<IGroup>;
-  update!: (groupData: IGroupSerialized) => Promise<boolean>;
-  getByOwnerId!: (id: number) => Promise<IGroup[]>;
-  getById!: (id: number) => Promise<IGroup | undefined>;
+  public create!: (groupData: IGroupSerialized) => Promise<IGroup>;
+  public update!: (groupData: IGroupSerialized) => Promise<boolean>;
+  public getByOwnerId!: (id: number) => Promise<IGroup[]>;
+  public getById!: (id: number) => Promise<IGroup | undefined>;
 }
 
 @Provides(IGroupProvider)
@@ -34,9 +34,9 @@ export class GroupProvider implements IGroupProvider {
     public async create(groupData: IGroupSerialized) {
 
       logger.debug({"obj": groupData}, "Creating new group: ");
-  
+
       const group = await this.groupFactory.Create(groupData);
-  
+
       try {
         await this.repository.save(group);
         logger.debug("New user created");
@@ -45,9 +45,9 @@ export class GroupProvider implements IGroupProvider {
         logger.info({"obj": e}, "Error saving user");
         throw new Error("Error saving user");
       }
-  
+
     }
-  
+
     public async update(groupData: IGroupSerialized) {
       const group = await this.repository.findOneById(groupData.id);
       if (group === undefined) {
@@ -58,22 +58,22 @@ export class GroupProvider implements IGroupProvider {
       group.name = groupData.name;
       await this.repository.save(group);
       return true;
-  
+
     }
-  
+
     // get user
     public get() {
       return this.repository.find();
     }
-  
+
     public getById(id: number) {
       return this.repository.findOneById(id);
     }
 
     public getByOwnerId(id: number) {
-      return this.repository.find({ owner: id })
+      return this.repository.find({"owner": id });
     }
-  
+
     // delete user
     public async delete(group: Group) {
       return await this.repository.remove(group);

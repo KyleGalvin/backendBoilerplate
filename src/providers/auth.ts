@@ -10,7 +10,7 @@ import {ILogger, Logger} from "../util/logger";
 const logger: ILogger = Logger(path.basename(__filename));
 
 export abstract class IAuthProvider {
-  login!: (username: string, password: string) => Promise<string | null>;
+  public login!: (username: string, password: string) => Promise<string | null>;
 }
 
 export interface IAccessToken {
