@@ -2,11 +2,19 @@
     "swagger": {
         "outputDirectory": "./dist",
         "entryFile": "./src/index.ts",
-        "host": "localhost:3000"
+        "host": "localhost:3000",
+        "securityDefinitions": {
+            "JWT": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
     },
     "routes": {
         "entryFile": "./src/index.ts",
         "middleware": "express",
-        "routesDir": "./src"
+        "routesDir": "./src",
+        "authenticationModule": "./src/authentication.ts"
     }
 }

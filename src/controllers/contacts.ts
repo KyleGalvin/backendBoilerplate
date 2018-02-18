@@ -1,11 +1,6 @@
 import * as path from "path";
 import * as express from "express";
-import * as bodyParser from "body-parser";
-import * as cors from "cors";
-import { check, validationResult } from "express-validator/check";
-import { matchedData } from "express-validator/filter";
 import { Connection } from "typeorm";
-import * as jwt from "express-jwt";
 
 import { UserProvider } from "../providers/user";
 import { AuthProvider } from "../providers/auth";
@@ -24,7 +19,6 @@ export default class Contacts {
     this.connection = connection;
 
     this.router.get("/contacts", [
-      jwt({secret: config.jwt.secret})
       ],
       async (req: express.Request, res: express.Response) => {
         //get all groups for UID in JWT
@@ -33,7 +27,6 @@ export default class Contacts {
     );
 
     this.router.put("/contacts/:userId", [
-      jwt({secret: config.jwt.secret})
       ],
       async (req: express.Request, res: express.Response) => {
       }

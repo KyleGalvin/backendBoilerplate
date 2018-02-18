@@ -4,9 +4,8 @@ import { Repository, Connection } from "typeorm";
 import { Inject, Provides } from "typescript-ioc";
 
 import {User, IUser} from "../models/entities/user";
-import { IConfig } from "../config";
+import { IConfig, config } from "../config";
 import {ILogger, Logger} from "../util/logger";
-import { config } from "../config";
 
 const logger: ILogger = Logger(path.basename(__filename));
 
@@ -50,7 +49,8 @@ export class AuthProvider implements IAuthProvider {
     const payload = {
       "id": user.id,
       "iss": this.config.jwt.issuer,
-      "sub": user.username = "@" + this.config.domain
+      "sub": user.username = "@" + this.config.domain,
+      "scopes": ["user"]
     };
     logger.debug({"obj": payload}, "signing jwt payload");
 

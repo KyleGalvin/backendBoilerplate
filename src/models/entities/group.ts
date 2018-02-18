@@ -9,7 +9,7 @@ export interface IGroup {
   id: number;
   name: string;
   owner: number;
-  save: () => void;
+  //save: () => void;
 }
 
 export interface IGroupSerialized {

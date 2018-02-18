@@ -1,31 +1,26 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as express from "express";
-
-import * as jwt from "express-jwt";
-
-
+import {Get, Post, Put, Route, Body, Query, Header, Path, SuccessResponse, Controller, Request, Security } from "tsoa";
 import { Logger } from "../util/logger";
 import { IConfig } from "../config";
 
 const logger = Logger(path.basename(__filename));
 
-export default class Swagger {
+@Route("")
+export class Swagger {
 
-  public router: express.Router;
-
-  public constructor ( config: IConfig) {
-    this.router = express.Router();
-
-    this.router.get("/swagger.json",
-      async (req: express.Request, res: express.Response) => {
-        
-        fs.readFile("./dist/swagger.json", {encoding:"utf-8"}, (err: any, data: any) => {
-          logger.info({obj: err}, "swagger.json grab");
-          res.json(JSON.parse(data));
-        })
-      }
-    );
+  @Security("jwt",["user"])
+  @Get("swagger.json")
+  public async getSwagger(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      fs.readFile("./dist/swagger.json", {encoding:"utf-8"}, (err: any, data: any) => {
+        logger.info({obj: err}, "swagger.json grab");
+        if(err){
+          reject("error reading swagger file");
+        }
+        resolve(JSON.parse(data));
+      })
+    })
   }
-
 }

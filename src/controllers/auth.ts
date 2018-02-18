@@ -2,10 +2,8 @@ import * as path from "path";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as Multer from "multer";
-import {check, validationResult} from "express-validator/check";
-import {matchedData} from "express-validator/filter";
 import { Connection, Repository } from "typeorm";
-import {Get, Post, Route, Body, Query, Header, Path, SuccessResponse, Controller, Request, Security } from "tsoa";
+import {Get, Put, Route, Body, Query, Header, Path, SuccessResponse, Controller, Request, Security } from "tsoa";
 import {AutoWired, Inject} from "typescript-ioc";
 
 import {UserProvider, IUserProvider} from "../providers/user";
@@ -26,7 +24,7 @@ export class AuthController {
   @Inject
   private authProvider!: IAuthProvider;
 
-  @Post("signup")
+  @Put("signup")
   public async signup(@Body() user: IUserSerialized): Promise<IAccessToken> {
     logger.info("signup1");
     try {
@@ -49,7 +47,7 @@ export class AuthController {
     }
   }
 
-  @Post("login")
+  @Put("login")
   public async login( @Body() credentials: IUserCredentials): Promise<IAccessToken> {
     logger.info("login");
     try {

@@ -1,30 +1,34 @@
 import * as path from "path";
+import {Provides, Inject} from "typescript-ioc";
+import { Repository, Connection } from "typeorm";
 
 import { Group, IGroup, IGroupSerialized } from "../models/entities/group";
 import {GroupFactory} from "../factories/group";
-import { IConfig } from "../config";
-import { Repository } from "typeorm";
+import { IConfig, config } from "../config";
 import {ILogger, Logger} from "../util/logger";
 
 const logger: ILogger = Logger(path.basename(__filename));
 
-export interface IGroupProvider {
-  create: (groupData: IGroupSerialized) => Promise<IGroup>;
-  update: (groupData: IGroupSerialized) => Promise<boolean>;
-  getByOwnerId: (id: number) => Promise<IGroup[]>;
-  getById: (id: number) => Promise<IGroup | undefined>;
+export abstract class IGroupProvider {
+  create!: (groupData: IGroupSerialized) => Promise<IGroup>;
+  update!: (groupData: IGroupSerialized) => Promise<boolean>;
+  getByOwnerId!: (id: number) => Promise<IGroup[]>;
+  getById!: (id: number) => Promise<IGroup | undefined>;
 }
 
+@Provides(IGroupProvider)
 export class GroupProvider implements IGroupProvider {
 
+  @Inject
+  private connection!: Connection;
   private config: IConfig;
   private repository: Repository<Group>;
-  private groupFactory: GroupFactory;
+  @Inject
+  private groupFactory!: GroupFactory;
 
-  public constructor(config: IConfig, groupRepository: Repository<Group>, groupFactory: GroupFactory) {
+  public constructor() {
     this.config = config;
-    this.repository = groupRepository;
-    this.groupFactory = groupFactory;
+    this.repository = this.connection.getRepository(Group);
   }
 
     public async create(groupData: IGroupSerialized) {
