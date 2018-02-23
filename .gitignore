@@ -3,3 +3,5 @@ node_modules/
 tslint.err
 npm-debug.log*
 .nyc_output
+package-lock.json
+src/routes.ts
