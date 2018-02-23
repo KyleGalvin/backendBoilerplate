@@ -16,7 +16,6 @@ export abstract class IGroupProvider {
   public getById!: (id: number) => Promise<IGroup | undefined>;
 }
 
-@Provides(IGroupProvider)
 export class GroupProvider implements IGroupProvider {
 
   @Inject

@@ -15,7 +15,6 @@ export abstract class IUserProvider {
   public getById!: (id: number) => Promise<User | undefined>;
 }
 
-@Provides(IUserProvider)
 export class UserProvider implements IUserProvider {
 
   @Inject

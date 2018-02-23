@@ -6,6 +6,7 @@ import * as cors from "cors";
 import {Container} from "typescript-ioc";
 import {Connection} from "typeorm";
 
+import RuntimeIoC from "./dependencyResolution/runtimeIoC";
 import "./controllers/auth";
 import "./controllers/swagger";
 // import ContactsController from "./controllers/contacts";
@@ -20,8 +21,9 @@ import {RegisterRoutes} from "./routes";
 
 const logger = Logger(path.basename(__filename));
 
+RuntimeIoC.configure();
 // establish the database connection
-const connection = ConnectionProvider.get();
+const connection = Container.get(Connection);
 
 const app = express();
 app.use(bodyParser.json({ "type": "application/json"}));

@@ -10,6 +10,7 @@ import {AuthProvider} from "../src/providers/auth";
 import {UserProvider} from "../src/providers/user";
 import {config} from "../src/config";
 import {Logger} from "../src/util/logger";
+import TestIoC from "../src/dependencyResolution/testIoC";
 import {Fixture} from "./fixture";
 
 const logger = Logger(path.basename(__filename));

@@ -17,7 +17,6 @@ export interface IAccessToken {
   access_token: string;
 }
 
-@Provides(IAuthProvider)
 export class AuthProvider implements IAuthProvider {
 
   private config: IConfig;
