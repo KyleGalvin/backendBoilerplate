@@ -1,3 +1,5 @@
+/*
+
 import * as path from "path";
 import * as assert from "assert";
 import { suite, test, slow, timeout } from "mocha-typescript";
@@ -94,3 +96,5 @@ const logger = Logger(path.basename(__filename));
     assert(!loginResult3, "bad username can't login");
   }
 }
+
+*/

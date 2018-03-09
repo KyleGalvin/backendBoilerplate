@@ -1,3 +1,5 @@
+/*
+
 import * as TypeMoq from "typemoq";
 
 import {IUser, User, IUserSerialized} from "../src/models/entities/user";
@@ -107,3 +109,5 @@ export class Fixture {
         this.connection = connectionMock.object;
     }
 }
+
+*/

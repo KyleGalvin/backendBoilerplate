@@ -6,9 +6,9 @@ import * as TypeMoq from "typemoq";
 
 export default class TestIoC {
   static configure(){ 
-    Container.bind(IAuthProvider).to(AuthProvider); 
-    Container.bind(IGroupProvider).to(GroupProvider); 
-    Container.bind(Connection).provider(ConnectionProvider);
+    // Container.bind(IAuthProvider).to(AuthProvider); 
+    // Container.bind(IGroupProvider).to(GroupProvider); 
+    // Container.bind(Connection).provider(ConnectionProvider);
     // ...
   }
 }
