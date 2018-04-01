@@ -29,22 +29,18 @@ export class UserProvider implements IUserProvider {
 
   // create user
   public async create(userData: IUserSerialized) {
-    logger.info("create1");
     const existingUser = await this.repository.findOne({"username": userData.username});
     if (existingUser) {
       logger.warn({"obj": [userData.username, existingUser]}, "Error: user already exists: ");
       throw new Error("User already exists");
     }
-    logger.debug({"obj": userData}, "Creating new user: ");
 
     const user = await this.userFactory.Create(userData);
 
     try {
       await this.repository.save(user);
-      logger.debug("New user created");
       return user;
     } catch (e) {
-      logger.info({"obj": e}, "Error saving user");
       throw new Error("Error saving user");
     }
 

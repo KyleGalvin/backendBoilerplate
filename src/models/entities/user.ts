@@ -64,16 +64,12 @@ export class User extends BaseEntity implements IUser {
   public contacts!: User[];
 
   public verifyPassword = async (password: string) => {
-    logger.info("in user verify password: ", password, password.length, this.passwordHash, this.passwordHash.length)
-    var result = await bcrypt.compare(password, this.passwordHash);
-    logger.info("password compare result = "+ result)
-    return result;
+    return await bcrypt.compare(password, this.passwordHash);
   }
 
   public updatePassword = async (password: string) => {
     const saltRounds = 10;
     const hash = await bcrypt.hash(password, saltRounds);
-    logger.debug("bcrypt hash obtained ", hash.length, password.length);
     this.passwordHash = hash;
   }
 

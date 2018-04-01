@@ -57,7 +57,7 @@ export class ConnectionSingleton {
         throw error;
       });
     } else {
-      logger.info("returning database connection");
+      logger.debug("returning database connection");
       return ConnectionSingleton.connection;
     }
   }

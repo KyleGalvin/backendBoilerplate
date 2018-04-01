@@ -10,7 +10,7 @@ import {ILogger, Logger} from "../util/logger";
 const logger: ILogger = Logger(path.basename(__filename));
 
 export abstract class IAuthProvider {
-  public login!: (username: string, password: string) => Promise<string | null>;
+  public login!: (username: string, password: string) => Promise<string>;
 }
 
 export interface IAccessToken {
@@ -30,18 +30,15 @@ export class AuthProvider implements IAuthProvider {
   }
 
   public async login(username: string, password: string) {
-    logger.info("findOne username: "+ username)
     const user = await this.repository.findOne({"username": username});
 
     if (!user) {
-      return null;
+      return "";
     }
-    logger.info('verify password: '+ password + user.passwordHash)
     if (await (user as IUser).verifyPassword(password)) {
-      logger.info({"obj": user},'password verified')
       return this.forgeToken( user );
     } else {
-      return null;
+      return "";
     }
   }
 

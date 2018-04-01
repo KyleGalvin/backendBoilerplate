@@ -40,6 +40,26 @@ const connection = Container.get(Connection);
     assert.notEqual(loginResult, null, "new user can log in");
   }  
 
+  @test async loginNamesMustBeUnique() {
+    let fixture = new Fixture();
+    fixture.testUser.username += uuid.v4();
+
+    const serializedUser = {
+      ...fixture.testUser,
+      ...{password: fixture.testUserPassword}
+      } as IUserSerialized
+
+    let myUser = await fixture.authController.signup(serializedUser);
+
+    try{
+      let myDuplicateUser = await fixture.authController.signup(serializedUser);
+      assert.fail("duplicate user should not be creatable")
+    } catch(e){
+      assert.equal(e, "Error: User already exists");
+    }
+
+  }  
+
   // @test async canUpdateUser() {
 
   //   let fixture = new Fixture();
