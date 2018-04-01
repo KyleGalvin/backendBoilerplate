@@ -30,13 +30,15 @@ export class AuthProvider implements IAuthProvider {
   }
 
   public async login(username: string, password: string) {
+    logger.info("findOne username: "+ username)
     const user = await this.repository.findOne({"username": username});
 
     if (!user) {
       return null;
     }
-
+    logger.info('verify password: '+ password + user.passwordHash)
     if (await (user as IUser).verifyPassword(password)) {
+      logger.info({"obj": user},'password verified')
       return this.forgeToken( user );
     } else {
       return null;

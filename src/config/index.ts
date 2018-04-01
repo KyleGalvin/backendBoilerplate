@@ -31,7 +31,8 @@ if (env === "DEV") {
 }
 
 if (env === "TEST") {
-  defaultConfig.database = testConfig.database
+  defaultConfig.database = testConfig.database;
+  defaultConfig.logLevel = testConfig.logLevel;
 }
 
 export const config = (defaultConfig as IConfig);
