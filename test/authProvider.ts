@@ -1,10 +1,8 @@
-/*
 
 import * as path from "path";
 import * as assert from "assert";
 import { suite, test, slow, timeout } from "mocha-typescript";
 import {Inject} from "typescript-ioc";
-import {Repository, Entity, FindOneOptions, Connection, SaveOptions} from "typeorm";
 
 import {IUser, User, IUserSerialized} from "../src/models/entities/user";
 import {UserFactory} from "../src/factories/user";
@@ -12,10 +10,15 @@ import {AuthProvider} from "../src/providers/auth";
 import {UserProvider} from "../src/providers/user";
 import {config} from "../src/config";
 import {Logger} from "../src/util/logger";
-import TestIoC from "../src/dependencyResolution/testIoC";
+import IoC from "../src/dependencyResolution/IoC";
 import {Fixture} from "./fixture";
+import {Container} from "typescript-ioc";
+import {Connection} from "typeorm";
 
 const logger = Logger(path.basename(__filename));
+IoC.configure();
+// establish the database connection
+const connection = Container.get(Connection);
 
 @suite class AuthProviderTests {
 
@@ -28,16 +31,16 @@ const logger = Logger(path.basename(__filename));
 
     let fixture = new Fixture();
 
-    assert.equal(fixture.getRepoCalls, 1, "user provider constructor called getRepo");
+    //assert.equal(fixture.getRepoCalls, 1, "user provider constructor called getRepo");
 
     let myUser = await this.userProvider.create({
       ...{password: fixture.testUserPassword},
       ...fixture.testUser} as IUserSerialized);
-    assert.equal(fixture.findCalls, 1, "user create calls repo find");
-    assert.equal(fixture.saveCalls, 1, "user create calls repo save");
+    //assert.equal(fixture.findCalls, 1, "user create calls repo find");
+    //assert.equal(fixture.saveCalls, 1, "user create calls repo save");
 
     const loginResult = await this.authProvider.login(myUser.username, fixture.testUserPassword);
-    assert.equal(fixture.findCalls, 2, "user login calls repo find");
+    //assert.equal(fixture.findCalls, 2, "user login calls repo find");
     assert.notEqual(loginResult, null, "new user can log in");
 
     await this.userProvider.delete(myUser);
@@ -97,4 +100,3 @@ const logger = Logger(path.basename(__filename));
   }
 }
 
-*/

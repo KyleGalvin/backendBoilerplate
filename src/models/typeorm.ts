@@ -2,7 +2,7 @@ import * as path from "path";
 import "reflect-metadata";
 import * as fs from "fs";
 import {Provider, Provided, Provides} from "typescript-ioc";
-import {createConnection, Connection} from "typeorm";
+import {createConnection, Connection, ConnectionOptions} from "typeorm";
 
 import {config} from "../config";
 import {User} from "./entities/user";
@@ -10,6 +10,7 @@ import {Group} from "./entities/group";
 import {Resume} from "./entities/resume";
 import {Job} from "./entities/job";
 import {Logger} from "../util/logger";
+import { MongoConnectionOptions } from "typeorm/driver/mongodb/MongoConnectionOptions";
 
 const logger = Logger(path.basename(__filename));
 
@@ -30,13 +31,24 @@ export class ConnectionSingleton {
 
   public static getInstance() {
     if (!ConnectionSingleton.connection) {
-      logger.info("Establishing database connection...");
-      return createConnection({
-        "type": "postgres",
-        "url": config.connectionString,
-        "synchronize": true,
-        "entities": [User, Group, Resume, Job]
-      }).then((connection) => {
+      logger.info("Establishing database connection. Driver: " + config.database);
+      var connectionData : ConnectionOptions
+
+      if(config.database === "sqljs"){
+        connectionData = {
+          "type": "sqljs",
+          "synchronize": true,
+          "entities": [User, Group, Resume, Job]
+        };
+      }else {      
+        connectionData = {
+          "type": "postgres",
+          "url" : config.connectionString,
+          "synchronize": true,
+          "entities": [User, Group, Resume, Job]
+        };
+      }
+      return createConnection(connectionData).then((connection) => {
         logger.info("... Database connection established!");
         ConnectionSingleton.connection = connection;
         return ConnectionSingleton.connection;

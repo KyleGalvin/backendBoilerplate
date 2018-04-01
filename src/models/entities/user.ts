@@ -8,14 +8,14 @@ import { Resume } from "./resume";
 
 const logger = Logger(path.normalize(path.basename(__filename)));
 
-export interface IUser {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  username: string;
-  verifyPassword(password: string): Promise<boolean>;
-  updatePassword(password: string): Promise<void>;
+export abstract class IUser {
+  id!: number;
+  firstName!: string;
+  lastName!: string;
+  email!: string;
+  username!: string;
+  public verifyPassword!: (password: string) => Promise<boolean>;
+  public updatePassword!: (password: string) => Promise<void>;
 }
 
 export interface IUserCredentials {
@@ -37,7 +37,7 @@ export class User extends BaseEntity implements IUser {
 
   @OneToOne(type => Resume)
   @JoinColumn()
-  public resume!: Resume;
+  public resume?: Resume;
 
   @Column({ "type": "varchar" })
   public firstName!: string;

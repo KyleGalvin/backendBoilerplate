@@ -2,6 +2,7 @@ import * as fs from "fs";
 
 export default {
   "domain": "localhost",
+  "database": "postgres",
   "connectionString": "postgresql://sharifyr:sharifyrpassword@localhost/sharifyr",
   "port": 3000,
   "logLevel": "info",

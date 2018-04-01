@@ -11,7 +11,7 @@
     "local": "nodemon -e ts -w ./src -x npm run local:watch",
     "local:watch": "npm run build && npm run lint && cat ./tslint.err && npm run build && node --inspect ./dist/src/index.js",
     "start": "npm run build && node ./dist/src/index.js",
-    "test": "nyc --extension .ts --extension .tsx mocha -r ts-node/register ./test/*.ts && nyc report --reporter text-lcov --extension .ts --extension .tsx | coveralls",
+    "test": "set NODE_ENV=TEST && nyc --extension .ts --extension .tsx mocha -r ts-node/register ./test/*.ts && nyc report --reporter text-lcov --extension .ts --extension .tsx | coveralls",
     "test-watch": "npm run clean && mocha-typescript-watch -p tsconfig.json -o ./mocha.opts"
   },
   "repository": {
@@ -45,6 +45,7 @@
     "@types/jsonwebtoken": "^7.2.3",
     "@types/multer": "^1.3.6",
     "@types/node": "^8.0.51",
+    "@types/sql.js": "0.0.29",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "bunyan": "^1.8.12",
@@ -56,11 +57,12 @@
     "multer": "^1.3.0",
     "pg": "^7.3.0",
     "reflect-metadata": "^0.1.10",
+    "sql.js": "^0.5.0",
     "ts-node": "^4.0.2",
     "tslint": "^5.8.0",
     "tsoa": "^2.1.1",
     "typemoq": "^2.1.0",
-    "typeorm": "^0.1.1",
+    "typeorm": "^0.1.19",
     "typescript": "^2.6.2",
     "typescript-ioc": "^1.1.0"
   }
