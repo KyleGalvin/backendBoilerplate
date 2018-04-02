@@ -1,6 +1,7 @@
 import * as bcrypt from "bcrypt";
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, OneToMany, OneToOne, JoinColumn} from "typeorm";
 import * as path from "path";
+import {Exclude} from "class-transformer";
 
 import { Logger } from "../../util/logger";
 import { Group } from "./group";
@@ -23,11 +24,24 @@ export interface IUserCredentials {
   password: string;
 }
 
-export interface IUserSerialized extends IUserCredentials {
+export abstract class IUserSerialized {
   id?: number;
-  firstName: string;
-  lastName: string;
-  email: string;
+  firstName!: string;
+  lastName!: string;
+  email!: string;
+  username!: string;
+  @Exclude()
+  password!: string;
+}
+
+export class UserSerialized implements IUserSerialized {
+  id?: number;
+  firstName!: string;
+  lastName!: string;
+  email!: string;
+  username!: string;
+  @Exclude()
+  password!: string;
 }
 
 @Entity()
@@ -35,9 +49,9 @@ export class User extends BaseEntity implements IUser {
   @PrimaryGeneratedColumn()
   public id!: number;
 
-  @OneToOne(type => Resume)
-  @JoinColumn()
-  public resume?: Resume;
+  // @OneToOne(type => Resume)
+  // @JoinColumn()
+  // public resume?: Resume;
 
   @Column({ "type": "varchar" })
   public firstName!: string;
@@ -51,17 +65,18 @@ export class User extends BaseEntity implements IUser {
   @Column({ "type": "varchar" })
   public username!: string;
 
+  @Exclude()
   @Column({ "type": "varchar" })
   public passwordHash!: string;
 
-  @ManyToMany((type) => Group, (group: Group) => group.users)
-  public groups!: Group[];
+  // @ManyToMany((type) => Group, (group: Group) => group.users)
+  // public groups!: Group[];
 
-  @OneToMany((type) => Group, (group: Group) => group.owner)
-  public ownedGroups!: Group[];
+  // @OneToMany((type) => Group, (group: Group) => group.owner)
+  // public ownedGroups!: Group[];
 
-  @ManyToMany((type) => User, (user: User) => user.id)
-  public contacts!: User[];
+  // @ManyToMany((type) => User, (user: User) => user.id)
+  // public contacts!: User[];
 
   public verifyPassword = async (password: string) => {
     return await bcrypt.compare(password, this.passwordHash);

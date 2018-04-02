@@ -11,8 +11,8 @@ const logger = Logger(path.basename(__filename));
 
 export abstract class IUserProvider {
   public create!: (userData: IUserSerialized) => Promise<User>;
-  public update!: (userData: IUserSerialized, password?: string) => Promise<boolean>;
-  public getById!: (id: number) => Promise<User | undefined>;
+  public update!: (userData: IUserSerialized, password?: string) => Promise<User| undefined>;
+  public getById!: (id: number) => Promise<User>;
 }
 
 export class UserProvider implements IUserProvider {
@@ -47,11 +47,10 @@ export class UserProvider implements IUserProvider {
   }
 
   // update user
-  public async update(userData: IUserSerialized) {
-    const user = await this.repository.findOneById(userData.id);
+  public async update(userData: IUserSerialized): Promise<User | undefined> {
+    let user = await this.repository.findOneById(userData.id);
     if (user === undefined) {
-      // can't update a record that doesn't exist.
-      return false;
+      throw new Error("User does not exist");
     }
 
     if (userData.password && userData.password !== "") {
@@ -62,9 +61,8 @@ export class UserProvider implements IUserProvider {
     user.email = userData.email;
     user.firstName = userData.firstName;
     user.lastName = userData.lastName;
-    await this.repository.save(user);
-    return true;
 
+    return await this.repository.save(user);
   }
 
   // get user
@@ -72,8 +70,12 @@ export class UserProvider implements IUserProvider {
     return this.repository.find();
   }
 
-  public getById(id: number) {
-    return this.repository.findOneById(id);
+  public async getById(id: number) {
+    const user = await this.repository.findOneById(id);
+    if(!user) {
+      throw new Error("User does not exist");
+    }
+    return user;
   }
 
   // delete user

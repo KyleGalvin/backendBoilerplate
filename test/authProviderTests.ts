@@ -1,4 +1,5 @@
 
+import "reflect-metadata";
 import * as path from "path";
 import * as assert from "assert";
 import { suite, test, slow, timeout } from "mocha-typescript";
@@ -29,7 +30,7 @@ const connection = Container.get(Connection);
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    let myUser = await fixture.authController.signup(serializedUser);
+    const myAccessToken = await fixture.authController.signup(serializedUser);
 
     const credentials = {
       username: fixture.testUser.username,
@@ -49,10 +50,10 @@ const connection = Container.get(Connection);
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    let myUser = await fixture.authController.signup(serializedUser);
+    let myAccessToken = await fixture.authController.signup(serializedUser);
 
     try{
-      let myDuplicateUser = await fixture.authController.signup(serializedUser);
+      let myDuplicateAccessTokenAttempt = await fixture.authController.signup(serializedUser);
       assert.fail("duplicate user should not be creatable")
     } catch(e){
       assert.equal(e, "Error: User already exists");
@@ -60,41 +61,49 @@ const connection = Container.get(Connection);
 
   }  
 
-  // @test async canUpdateUser() {
+  @test async canUpdateUser() {
 
-  //   let fixture = new Fixture();
-  //   fixture.testUser.username += uuid.v4();
+    let fixture = new Fixture();
+    fixture.testUser.username += uuid.v4();
 
-  //   let myUser = await fixture.authController.signup({
-  //     ...{password: fixture.testUserPassword},
-  //     ...fixture.testUser} as IUserSerialized);
+    const serializedUser = {
+      ...fixture.testUser,
+      ...{password: fixture.testUserPassword}
+      } as IUserSerialized
 
-  //   // myUser.username = fixture.modifiedTestUser.username;
-  //   // myUser.email = fixture.modifiedTestUser.email;
-  //   // myUser.firstName = fixture.modifiedTestUser.firstName;
-  //   // myUser.lastName = fixture.modifiedTestUser.lastName;
+    let myAccessToken = await fixture.authController.signup(serializedUser);
+    
+    const myUserData = JSON.parse(Buffer.from(myAccessToken.access_token.split(".")[1], "base64").toString());
+    
+    const myUser = await fixture.userController.read(myUserData["id"]);
 
-  //   await fixture.userProvider.update({...{"password": ""},...myUser} as IUserSerialized);
+    const myUpdatedUserData: IUserSerialized = {
+      id: myUserData["id"], 
+      username: "testuser", 
+      email: "email2@mail.com",
+      firstName: "jane2",
+      lastName: "doe2",
+      password: ""
+    }
 
-  //   let myUpdatedUser = (await fixture.userProvider.getById(myUser.id)) as User;
+    await fixture.userController.update(myUpdatedUserData);
+    const myUpdatedUser = await fixture.userController.read(myUserData["id"]);
 
-  //   assert.equal(-1,myUpdatedUser.id);
-
-  //   assert.equal(fixture.modifiedTestUser.username, myUpdatedUser.username, "updated username");
-  //   assert.equal(fixture.modifiedTestUser.email, myUpdatedUser.email, "updated email");
-  //   assert.equal(fixture.modifiedTestUser.firstName, myUpdatedUser.firstName, "updated firstName");
-  //   assert.equal(fixture.modifiedTestUser.lastName, myUpdatedUser.lastName, "updated lastName");
-
-  //   await fixture.userProvider.delete(myUpdatedUser);
-  // }
+    assert.notEqual(myUser.email, myUpdatedUser.email, "updated email");
+    assert.notEqual(myUser.firstName, myUpdatedUser.firstName, "updated firstName");
+    assert.notEqual(myUser.lastName, myUpdatedUser.lastName, "updated lastName");
+  }
   
   @test async loginBadPassword() {
     let fixture = new Fixture();
     fixture.testUser.username += uuid.v4();
 
-    let myUser = await fixture.authController.signup({
-      ...{password: fixture.testUserPassword},
-      ...fixture.testUser} as IUserSerialized);
+    const serializedUser = {
+      ...fixture.testUser,
+      ...{password: fixture.testUserPassword}
+      } as IUserSerialized
+
+    let myAccessToken = await fixture.authController.signup(serializedUser);
 
     const credentials = {
       username: fixture.testUser.username,
