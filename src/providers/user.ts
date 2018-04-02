@@ -13,6 +13,7 @@ export abstract class IUserProvider {
   public create!: (userData: IUserSerialized) => Promise<IUser>;
   public update!: (userData: IUserSerialized, password?: string) => Promise<IUser>;
   public getById!: (id: number) => Promise<User>;
+  public deleteById!: (id: number) => Promise<User>;
   public static serialize: (user: IUser) => IUserSerialized;
 }
 
@@ -80,7 +81,11 @@ export class UserProvider implements IUserProvider {
   }
 
   // delete user
-  public async delete(user: User) {
+  public async deleteById(id: number) {
+    var user = await this.repository.findOneById(id);
+    if(!user) {
+      throw new Error("User does not exist");
+    }
     return await this.repository.remove(user);
   }
 

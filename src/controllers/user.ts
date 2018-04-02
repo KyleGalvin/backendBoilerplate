@@ -1,5 +1,5 @@
 import * as express from "express";
-import {Post, Get, Route, Body} from "tsoa";
+import {Post, Get, Route, Body, Security, Delete} from "tsoa";
 import {Inject} from "typescript-ioc";
 
 import {config} from "../config";
@@ -17,14 +17,23 @@ export class UserController {
   private authProvider!: IAuthProvider;
 
   @Post()
+  @Security("jwt", ["user"])
   public async update(@Body() user: IUserSerialized): Promise<IUserSerialized> {
     const updatedUser = await this.userProvider.update(user);
     return UserProvider.serialize(updatedUser);
   }
 
   @Get()
+  @Security("jwt", ["user"])
   public async read(id: number): Promise<IUserSerialized> {
     var user = await this.userProvider.getById(id);
+    return UserProvider.serialize(user);
+  }
+
+  @Delete()
+  @Security("jwt", ["user"])
+  public async delete(id: number): Promise<IUserSerialized> {
+    var user = await this.userProvider.deleteById(id);
     return UserProvider.serialize(user);
   }
 }

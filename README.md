@@ -15,10 +15,8 @@ This application pairs out of the box with a corresponding frontend project host
 
 ## Todo:
 
-* Better test coverage
-* Add IoC container to controller routes
-* Finish swagger integration for automated API documentation
-* Better HTTP verbs
+* REST JWT test coverage
+* Build out group controller
 
 ## To install this project:
 
@@ -27,3 +25,7 @@ npm install
 ## To run this project:
 
 npm start
+
+## To run integration tests:
+
+npm test

@@ -21,9 +21,13 @@ const connection = Container.get(Connection);
 
 @suite class AuthProviderTests {
 
+  private static getUserIdFromJwt(jwt: string) {
+    const myUserData = JSON.parse(Buffer.from(jwt.split(".")[1], "base64").toString());
+    return myUserData["id"];
+  }
+
   @test async canCreateUserAndLogin() {
     let fixture = new Fixture();
-    fixture.testUser.username += uuid.v4();
 
     const serializedUser = {
       ...fixture.testUser,
@@ -31,52 +35,54 @@ const connection = Container.get(Connection);
       } as IUserSerialized
 
     const myAccessToken = await fixture.authController.signup(serializedUser);
-
+    const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
     const credentials = {
       username: fixture.testUser.username,
       password: fixture.testUserPassword
     }
 
     const loginResult = await fixture.authController.login(credentials);
+    await fixture.userController.delete(myUserId);
+
     assert.notEqual(loginResult, null, "new user can log in");
   }  
 
   @test async loginNamesMustBeUnique() {
     let fixture = new Fixture();
-    fixture.testUser.username += uuid.v4();
 
     const serializedUser = {
       ...fixture.testUser,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    let myAccessToken = await fixture.authController.signup(serializedUser);
+    const myAccessToken = await fixture.authController.signup(serializedUser);
+    const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     try{
-      let myDuplicateAccessTokenAttempt = await fixture.authController.signup(serializedUser);
+      await fixture.authController.signup(serializedUser);
       assert.fail("duplicate user should not be creatable")
     } catch(e){
       assert.equal(e, "Error: User already exists");
     }
 
+    await fixture.userController.delete(myUserId);
   }  
   
   @test async loginBadPassword() {
-    console.log('starting loginBadPassword')
     let fixture = new Fixture();
-    fixture.testUser.username += uuid.v4();
 
     const serializedUser = {
       ...fixture.testUser,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    let myAccessToken = await fixture.authController.signup(serializedUser);
+    const myAccessToken = await fixture.authController.signup(serializedUser);
+    const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const credentials = {
       username: fixture.testUser.username,
       password: "notMyPassword"
-    }
+    };
 
     try{
       const loginResult2 = await fixture.authController.login(credentials);
@@ -84,24 +90,24 @@ const connection = Container.get(Connection);
     } catch(e){
       assert.equal(e, "Error: Login Error");
     }
+    await fixture.userController.delete(myUserId);
   }
 
   @test async loginBadUsername() {
-    console.log('starting loginBadUsername')
     let fixture = new Fixture();
-    fixture.testUser.username += uuid.v4();
-
-    const credentials = {
-      username: "notMyUsername",
-      password: fixture.testUserPassword
-    }
 
     const serializedUser = {
       ...fixture.testUser,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    let myAccessToken = await fixture.authController.signup(serializedUser);
+    const myAccessToken = await fixture.authController.signup(serializedUser);
+    const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
+
+    const credentials = {
+      username: "notMyUsername",
+      password: fixture.testUserPassword
+    };
 
     try{
       const loginResult3 = await fixture.authController.login(credentials);
@@ -109,25 +115,23 @@ const connection = Container.get(Connection);
     } catch(e){
       assert.equal(e, "Error: Login Error");
     }
+    await fixture.userController.delete(myUserId);
   }
 
   @test async canUpdateUser() {
-
     let fixture = new Fixture();
-    fixture.testUser.username += uuid.v4();
 
     const serializedUser = {
       ...fixture.testUser,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    let myAccessToken = await fixture.authController.signup(serializedUser);
-    
-    const myUserData = JSON.parse(Buffer.from(myAccessToken.access_token.split(".")[1], "base64").toString());
-    const myUser = await fixture.userController.read(myUserData["id"]);
+    const myAccessToken = await fixture.authController.signup(serializedUser);
+    const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token)
+    const myUser = await fixture.userController.read(myUserId);
 
     const myUpdatedUserData: IUserSerialized = {
-      id: myUserData["id"], 
+      id: myUserId, 
       username: "testuser", 
       email: "email2@mail.com",
       firstName: "jane2",
@@ -136,12 +140,35 @@ const connection = Container.get(Connection);
     }
 
     await fixture.userController.update(myUpdatedUserData);
-    const myUpdatedUser = await fixture.userController.read(myUserData["id"]);
+    const myUpdatedUser = await fixture.userController.read(myUserId);
+
+    await fixture.userController.delete(myUserId);
 
     assert.notEqual(myUser.email, myUpdatedUser.email, "updated email");
     assert.notEqual(myUser.firstName, myUpdatedUser.firstName, "updated firstName");
     assert.notEqual(myUser.lastName, myUpdatedUser.lastName, "updated lastName");
 
+  }
+
+  @test async canDeleteUser() {
+    let fixture = new Fixture();
+
+    const serializedUser = {
+      ...fixture.testUser,
+      ...{password: fixture.testUserPassword}
+      } as IUserSerialized
+
+    const myAccessToken = await fixture.authController.signup(serializedUser);
+    const myUserData = JSON.parse(Buffer.from(myAccessToken.access_token.split(".")[1], "base64").toString());
+    const myUser = await fixture.userController.read(myUserData["id"]);
+
+    const myDeletedUser = await fixture.userController.delete(myUserData["id"]);
+    try{
+      const myUpdatedUser = await fixture.userController.read(myUserData["id"]);
+      assert.fail("deleted user should not be able to log in")
+    } catch(e){
+      assert.equal(e, "Error: User does not exist");
+    }
   }
 }
 
