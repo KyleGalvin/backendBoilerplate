@@ -60,41 +60,9 @@ const connection = Container.get(Connection);
     }
 
   }  
-
-  @test async canUpdateUser() {
-
-    let fixture = new Fixture();
-    fixture.testUser.username += uuid.v4();
-
-    const serializedUser = {
-      ...fixture.testUser,
-      ...{password: fixture.testUserPassword}
-      } as IUserSerialized
-
-    let myAccessToken = await fixture.authController.signup(serializedUser);
-    
-    const myUserData = JSON.parse(Buffer.from(myAccessToken.access_token.split(".")[1], "base64").toString());
-    
-    const myUser = await fixture.userController.read(myUserData["id"]);
-
-    const myUpdatedUserData: IUserSerialized = {
-      id: myUserData["id"], 
-      username: "testuser", 
-      email: "email2@mail.com",
-      firstName: "jane2",
-      lastName: "doe2",
-      password: ""
-    }
-
-    await fixture.userController.update(myUpdatedUserData);
-    const myUpdatedUser = await fixture.userController.read(myUserData["id"]);
-
-    assert.notEqual(myUser.email, myUpdatedUser.email, "updated email");
-    assert.notEqual(myUser.firstName, myUpdatedUser.firstName, "updated firstName");
-    assert.notEqual(myUser.lastName, myUpdatedUser.lastName, "updated lastName");
-  }
   
   @test async loginBadPassword() {
+    console.log('starting loginBadPassword')
     let fixture = new Fixture();
     fixture.testUser.username += uuid.v4();
 
@@ -119,6 +87,7 @@ const connection = Container.get(Connection);
   }
 
   @test async loginBadUsername() {
+    console.log('starting loginBadUsername')
     let fixture = new Fixture();
     fixture.testUser.username += uuid.v4();
 
@@ -127,12 +96,52 @@ const connection = Container.get(Connection);
       password: fixture.testUserPassword
     }
 
+    const serializedUser = {
+      ...fixture.testUser,
+      ...{password: fixture.testUserPassword}
+      } as IUserSerialized
+
+    let myAccessToken = await fixture.authController.signup(serializedUser);
+
     try{
       const loginResult3 = await fixture.authController.login(credentials);
       assert.fail("bad username should not log in")
     } catch(e){
       assert.equal(e, "Error: Login Error");
     }
+  }
+
+  @test async canUpdateUser() {
+
+    let fixture = new Fixture();
+    fixture.testUser.username += uuid.v4();
+
+    const serializedUser = {
+      ...fixture.testUser,
+      ...{password: fixture.testUserPassword}
+      } as IUserSerialized
+
+    let myAccessToken = await fixture.authController.signup(serializedUser);
+    
+    const myUserData = JSON.parse(Buffer.from(myAccessToken.access_token.split(".")[1], "base64").toString());
+    const myUser = await fixture.userController.read(myUserData["id"]);
+
+    const myUpdatedUserData: IUserSerialized = {
+      id: myUserData["id"], 
+      username: "testuser", 
+      email: "email2@mail.com",
+      firstName: "jane2",
+      lastName: "doe2",
+      password: ""
+    }
+
+    await fixture.userController.update(myUpdatedUserData);
+    const myUpdatedUser = await fixture.userController.read(myUserData["id"]);
+
+    assert.notEqual(myUser.email, myUpdatedUser.email, "updated email");
+    assert.notEqual(myUser.firstName, myUpdatedUser.firstName, "updated firstName");
+    assert.notEqual(myUser.lastName, myUpdatedUser.lastName, "updated lastName");
+
   }
 }
 

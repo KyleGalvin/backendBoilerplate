@@ -10,9 +10,10 @@ import {Logger} from "../util/logger";
 const logger = Logger(path.basename(__filename));
 
 export abstract class IUserProvider {
-  public create!: (userData: IUserSerialized) => Promise<User>;
-  public update!: (userData: IUserSerialized, password?: string) => Promise<User| undefined>;
+  public create!: (userData: IUserSerialized) => Promise<IUser>;
+  public update!: (userData: IUserSerialized, password?: string) => Promise<IUser>;
   public getById!: (id: number) => Promise<User>;
+  public static serialize: (user: IUser) => IUserSerialized;
 }
 
 export class UserProvider implements IUserProvider {
@@ -47,7 +48,7 @@ export class UserProvider implements IUserProvider {
   }
 
   // update user
-  public async update(userData: IUserSerialized): Promise<User | undefined> {
+  public async update(userData: IUserSerialized) {
     let user = await this.repository.findOneById(userData.id);
     if (user === undefined) {
       throw new Error("User does not exist");
@@ -83,4 +84,12 @@ export class UserProvider implements IUserProvider {
     return await this.repository.remove(user);
   }
 
+  public static serialize(user: IUser) {
+    return {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        username: user.username
+      } as IUserSerialized 
+  }
 }

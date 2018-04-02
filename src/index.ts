@@ -6,7 +6,6 @@ import * as cors from "cors";
 import {Container} from "typescript-ioc";
 import {Connection} from "typeorm";
 
-import "./util/automapper";
 import IoC from "./dependencyResolution/IoC";
 import "./controllers/auth";
 import "./controllers/swagger";

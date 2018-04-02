@@ -69,8 +69,8 @@ export class User extends BaseEntity implements IUser {
   @Column({ "type": "varchar" })
   public passwordHash!: string;
 
-  // @ManyToMany((type) => Group, (group: Group) => group.users)
-  // public groups!: Group[];
+  @ManyToMany((type) => Group, (group: Group) => group.users)
+  public groups!: Group[];
 
   // @OneToMany((type) => Group, (group: Group) => group.owner)
   // public ownedGroups!: Group[];
