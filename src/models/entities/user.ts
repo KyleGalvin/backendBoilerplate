@@ -1,7 +1,6 @@
 import * as bcrypt from "bcrypt";
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, OneToMany, OneToOne, JoinColumn} from "typeorm";
 import * as path from "path";
-import {Exclude} from "class-transformer";
 
 import { Logger } from "../../util/logger";
 import { Group } from "./group";
@@ -30,7 +29,6 @@ export abstract class IUserSerialized {
   lastName!: string;
   email!: string;
   username!: string;
-  @Exclude()
   password!: string;
 }
 
@@ -40,7 +38,6 @@ export class UserSerialized implements IUserSerialized {
   lastName!: string;
   email!: string;
   username!: string;
-  @Exclude()
   password!: string;
 }
 
@@ -65,7 +62,6 @@ export class User extends BaseEntity implements IUser {
   @Column({ "type": "varchar" })
   public username!: string;
 
-  @Exclude()
   @Column({ "type": "varchar" })
   public passwordHash!: string;
 
