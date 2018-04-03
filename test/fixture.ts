@@ -1,12 +1,9 @@
 import {IUserSerialized} from "../src/models/entities/user";
-import {AuthController} from "../src/controllers/auth";
 import {UserController} from "../src/controllers/user";
 import {Inject} from "typescript-ioc";
 
 export class Fixture {
 
-    @Inject
-    public readonly authController!: AuthController;
     @Inject
     public readonly userController!: UserController;
 

@@ -1,4 +1,3 @@
-
 import "reflect-metadata";
 import * as path from "path";
 import * as assert from "assert";
@@ -34,14 +33,14 @@ const connection = Container.get(Connection);
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    const myAccessToken = await fixture.authController.signup(serializedUser);
+    const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
     const credentials = {
       username: fixture.testUser.username,
       password: fixture.testUserPassword
     }
 
-    const loginResult = await fixture.authController.login(credentials);
+    const loginResult = await fixture.userController.login(credentials);
     await fixture.userController.delete(myUserId);
 
     assert.notEqual(loginResult, null, "new user can log in");
@@ -55,11 +54,11 @@ const connection = Container.get(Connection);
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    const myAccessToken = await fixture.authController.signup(serializedUser);
+    const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     try{
-      await fixture.authController.signup(serializedUser);
+      await fixture.userController.signup(serializedUser);
       assert.fail("duplicate user should not be creatable")
     } catch(e){
       assert.equal(e, "Error: User already exists");
@@ -76,7 +75,7 @@ const connection = Container.get(Connection);
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    const myAccessToken = await fixture.authController.signup(serializedUser);
+    const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const credentials = {
@@ -85,7 +84,7 @@ const connection = Container.get(Connection);
     };
 
     try{
-      const loginResult2 = await fixture.authController.login(credentials);
+      const loginResult2 = await fixture.userController.login(credentials);
       assert.fail("bad password should not log in")
     } catch(e){
       assert.equal(e, "Error: Login Error");
@@ -101,7 +100,7 @@ const connection = Container.get(Connection);
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    const myAccessToken = await fixture.authController.signup(serializedUser);
+    const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const credentials = {
@@ -110,7 +109,7 @@ const connection = Container.get(Connection);
     };
 
     try{
-      const loginResult3 = await fixture.authController.login(credentials);
+      const loginResult3 = await fixture.userController.login(credentials);
       assert.fail("bad username should not log in")
     } catch(e){
       assert.equal(e, "Error: Login Error");
@@ -126,7 +125,7 @@ const connection = Container.get(Connection);
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    const myAccessToken = await fixture.authController.signup(serializedUser);
+    const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token)
     const myUser = await fixture.userController.read(myUserId);
 
@@ -158,7 +157,7 @@ const connection = Container.get(Connection);
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
-    const myAccessToken = await fixture.authController.signup(serializedUser);
+    const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserData = JSON.parse(Buffer.from(myAccessToken.access_token.split(".")[1], "base64").toString());
     const myUser = await fixture.userController.read(myUserData["id"]);
 
