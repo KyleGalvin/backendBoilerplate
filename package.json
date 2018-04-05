@@ -63,7 +63,7 @@
     "tsoa": "^2.1.1",
     "typemoq": "^2.1.0",
     "typeorm": "^0.1.19",
-    "typescript": "^2.6.2",
+    "typescript": "^2.7.2",
     "typescript-ioc": "^1.1.0"
   }
 }
