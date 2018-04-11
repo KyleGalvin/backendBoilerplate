@@ -91,6 +91,7 @@ export class UserProvider implements IUserProvider {
 
   public static serialize(user: IUser) {
     return {
+        id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
