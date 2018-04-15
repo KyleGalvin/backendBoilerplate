@@ -38,11 +38,11 @@ export class GroupProvider implements IGroupProvider {
 
       try {
         await this.repository.save(group);
-        logger.debug("New user created");
+        logger.debug("New group created");
         return group;
       } catch (e) {
-        logger.info({"obj": e}, "Error saving user");
-        throw new Error("Error saving user");
+        logger.info({"obj": e}, "Error saving group");
+        throw new Error("Error saving group");
       }
 
     }
@@ -60,7 +60,7 @@ export class GroupProvider implements IGroupProvider {
 
     }
 
-    // get user
+    // get group
     public get() {
       return this.repository.find();
     }
@@ -73,7 +73,7 @@ export class GroupProvider implements IGroupProvider {
       return this.repository.find({"owner": id });
     }
 
-    // delete user
+    // delete group
     public async delete(group: Group) {
       return await this.repository.remove(group);
     }

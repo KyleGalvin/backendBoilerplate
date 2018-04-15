@@ -68,8 +68,8 @@ export class User extends BaseEntity implements IUser {
   @ManyToMany((type) => Group, (group: Group) => group.users)
   public groups!: Group[];
 
-  // @OneToMany((type) => Group, (group: Group) => group.owner)
-  // public ownedGroups!: Group[];
+  @OneToMany((type) => Group, (group: Group) => group.owner)
+  public ownedGroups!: Group[];
 
   // @ManyToMany((type) => User, (user: User) => user.id)
   // public contacts!: User[];
