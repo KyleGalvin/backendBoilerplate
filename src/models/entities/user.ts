@@ -4,7 +4,6 @@ import * as path from "path";
 
 import { Logger } from "../../util/logger";
 import { Group } from "./group";
-import { Resume } from "./resume";
 
 const logger = Logger(path.normalize(path.basename(__filename)));
 
@@ -46,10 +45,6 @@ export class User extends BaseEntity implements IUser {
   @PrimaryGeneratedColumn()
   public id!: number;
 
-  // @OneToOne(type => Resume)
-  // @JoinColumn()
-  // public resume?: Resume;
-
   @Column({ "type": "varchar" })
   public firstName!: string;
 
@@ -71,8 +66,8 @@ export class User extends BaseEntity implements IUser {
   @OneToMany((type) => Group, (group: Group) => group.owner)
   public ownedGroups!: Group[];
 
-  // @ManyToMany((type) => User, (user: User) => user.id)
-  // public contacts!: User[];
+  @ManyToMany((type) => User, (user: User) => user.id)
+  public contacts!: User[];
 
   public verifyPassword = async (password: string) => {
     return await bcrypt.compare(password, this.passwordHash);

@@ -24,12 +24,13 @@ export class GroupProvider implements IGroupProvider {
 
   @Inject
   private connection!: Connection;
-  private config: IConfig;
-  private groupRepository: Repository<Group>;
   @Inject
   private userProvider!: IUserProvider;
   @Inject
   private groupFactory!: GroupFactory;
+
+  private config: IConfig;
+  private groupRepository: Repository<Group>;
 
   public constructor() {
     this.config = config;
@@ -59,9 +60,11 @@ export class GroupProvider implements IGroupProvider {
     }
 
     group.name = groupData.name;
-    group.users = await Promise.all(groupData.users
-      .filter(u => u.id !== undefined)
-      .map(async u => await this.userProvider.getById(u.id as number)));
+    group.users = await Promise.all(
+        groupData.users
+        .filter(u => u.id !== undefined)
+        .map(async u => await this.userProvider.getById(u.id as number))
+      );
     return await this.groupRepository.save(group);
 
   }
