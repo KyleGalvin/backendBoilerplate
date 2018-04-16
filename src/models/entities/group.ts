@@ -2,19 +2,21 @@ import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTabl
 import * as path from "path";
 
 import {Logger} from "../../util/logger";
-import { User } from "./user";
+import { User, IUserSerialized } from "./user";
 const logger = Logger(path.normalize(path.basename(__filename)));
 
 export interface IGroup {
   id: number;
   name: string;
   owner: number;
+  users: User[];
 }
 
 export interface IGroupSerialized {
   id: number;
   name: string;
   owner: number;
+  users: IUserSerialized[];
 }
 
 @Entity()

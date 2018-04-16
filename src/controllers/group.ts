@@ -1,6 +1,6 @@
 import * as path from "path";
 import {Inject} from "typescript-ioc";
-import {Get, Put, Route, Body, Query, Header, Request, Security } from "tsoa";
+import {Get, Put, Route, Body, Query, Header, Request, Security, Delete, Post } from "tsoa";
 
 import { Logger } from "../util/logger";
 import { IConfig, config } from "../config";
@@ -18,65 +18,48 @@ export class GroupController {
   @Inject
   private userProvider!: IUserProvider;
 
+  @Post("")
+  @Security("jwt", ["user"])
+  public async update(@Body() group: IGroupSerialized): Promise<IGroupSerialized> {
+    const updatedGroup = await this.groupProvider.update(group);
+    return GroupProvider.serialize(updatedGroup);
+  }
+
   @Put("")
   @Security("jwt", ["user"])
-  public async putGroup(@Request() request: Express.Request, @Body() name: string): Promise<IGroup> {
+  public async create(@Request() request: Express.Request, @Body() group: IGroupSerialized): Promise<IGroupSerialized> {
     const user = await this.userProvider.getById(request.user.userId);
     if (user) {
       // create group record
       const groupData: IGroupSerialized = {
         "id": 0,
-        "name": name,
-        "owner": request.user.userId
+        "name": group.name,
+        "owner": request.user.userId,
+        "users": group.users
       };
-      return await this.groupProvider.create(groupData);
+      var savedGroup = await this.groupProvider.create(groupData);
+      return GroupProvider.serialize(savedGroup);
     } else {
       throw new Error("Not authenticated");
     }
   }
 
   @Get("")
-  public async getGroups(@Request() request: Express.Request): Promise<IGroup[]> {
+  public async read(@Request() request: Express.Request): Promise<IGroupSerialized[]> {
     // get user record from jwt userId
     const user = await this.userProvider.getById(request.user.userId);
     if (user) {
-      return user.groups;
+      return user.groups.map(g => GroupProvider.serialize(g));
     } else {
       throw new Error("Not authenticated");
     }
   }
 
-  //   this.router.get("/group/:groupId",
-  //     async (req: express.Request, res: express.Response) => {
-  //     }
-  //   );
-
-  //   this.router.post("/group/:groupId", [
-  //     check("name", "Invalid Group Name").isLength({"min": 1}),
-  //     ],
-  //     async (req: express.Request, res: express.Response) => {
-  //       //for updating a group name
-  //     }
-  //   );
-
-  //   this.router.delete("/group/:groupId",
-  //     async (req: express.Request, res: express.Response) => {
-  //     }
-  //   );
-
-  //   this.router.delete("/group/:groupId/user/:userId",
-  //     async (req: express.Request, res: express.Response) => {
-  //     }
-  //   );
-
-  //   this.router.put("/group/:groupId/user/:userId",
-  //     async (req: express.Request, res: express.Response) => {
-  //       const group = await this.groupProvider.getById(req.params.groupId);
-  //       if(group){
-  //         (group as Group).users.push(req.params.userId);
-  //         group.save();
-  //       }
-  //     }
-  //   );
+  @Delete("/{id}")
+  @Security("jwt", ["user"])
+  public async delete(id: number): Promise<IGroupSerialized> {
+    var group = await this.groupProvider.deleteById(id);
+    return GroupProvider.serialize(group);
+  }
 
 }
