@@ -12,6 +12,7 @@ import IoC from "../src/dependencyResolution/IoC";
 import {Fixture} from "./fixture";
 import {Container} from "typescript-ioc";
 import {Connection} from "typeorm";
+import { UserController } from "../src/controllers/user";
 
 const logger = Logger(path.basename(__filename));
 IoC.configure();
@@ -29,14 +30,14 @@ const connection = Container.get(Connection);
     let fixture = new Fixture();
 
     const serializedUser = {
-      ...fixture.testUser,
+      ...fixture.testUser1,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
     const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
     const credentials = {
-      username: fixture.testUser.username,
+      username: fixture.testUser1.username,
       password: fixture.testUserPassword
     }
 
@@ -50,7 +51,7 @@ const connection = Container.get(Connection);
     let fixture = new Fixture();
 
     const serializedUser = {
-      ...fixture.testUser,
+      ...fixture.testUser1,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
@@ -71,7 +72,7 @@ const connection = Container.get(Connection);
     let fixture = new Fixture();
 
     const serializedUser = {
-      ...fixture.testUser,
+      ...fixture.testUser1,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
@@ -79,7 +80,7 @@ const connection = Container.get(Connection);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const credentials = {
-      username: fixture.testUser.username,
+      username: fixture.testUser1.username,
       password: "notMyPassword"
     };
 
@@ -96,7 +97,7 @@ const connection = Container.get(Connection);
     let fixture = new Fixture();
 
     const serializedUser = {
-      ...fixture.testUser,
+      ...fixture.testUser1,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
@@ -121,7 +122,7 @@ const connection = Container.get(Connection);
     let fixture = new Fixture();
 
     const serializedUser = {
-      ...fixture.testUser,
+      ...fixture.testUser1,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
@@ -135,7 +136,8 @@ const connection = Container.get(Connection);
       email: "email2@mail.com",
       firstName: "jane2",
       lastName: "doe2",
-      password: ""
+      password: "",
+      contacts: []
     }
 
     await fixture.userController.update(myUpdatedUserData);
@@ -153,21 +155,59 @@ const connection = Container.get(Connection);
     let fixture = new Fixture();
 
     const serializedUser = {
-      ...fixture.testUser,
+      ...fixture.testUser1,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
 
     const myAccessToken = await fixture.userController.signup(serializedUser);
-    const myUserData = JSON.parse(Buffer.from(myAccessToken.access_token.split(".")[1], "base64").toString());
-    const myUser = await fixture.userController.read(myUserData["id"]);
+    const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
-    const myDeletedUser = await fixture.userController.delete(myUserData["id"]);
+    const myDeletedUser = await fixture.userController.delete(myUserId);
     try{
-      const myUpdatedUser = await fixture.userController.read(myUserData["id"]);
+      const myUpdatedUser = await fixture.userController.read(myUserId);
       assert.fail("deleted user should not be able to log in")
     } catch(e){
       assert.equal(e, "Error: User does not exist");
     }
+  }
+
+  @test async canAddContacts() {
+    let fixture = new Fixture();
+
+    const serializedUser1 = {
+      ...fixture.testUser1,
+      ...{password: fixture.testUserPassword}
+      } as IUserSerialized
+
+    const myAccessToken1 = await fixture.userController.signup(serializedUser1);
+
+    const serializedUser2 = {
+      ...fixture.testUser2,
+      ...{password: fixture.testUserPassword}
+      } as IUserSerialized
+
+    const myAccessToken2 = await fixture.userController.signup(serializedUser2);
+
+    const myUserId1 = AuthProviderTests.getUserIdFromJwt(myAccessToken1.access_token);
+    const myUserId2 = AuthProviderTests.getUserIdFromJwt(myAccessToken2.access_token);
+    const myUser1 = await fixture.userController.read(myUserId1);
+    const myUser2 = await fixture.userController.read(myUserId2);
+    const myUpdatedUser1 = {
+        ...myUser1, 
+        ...{
+          contacts: [
+            myUser2
+          ]
+        }
+      } as IUserSerialized;
+
+    const savedUser1 = await fixture.userController.update(myUpdatedUser1);
+
+    await fixture.userController.delete(myUserId1);
+    await fixture.userController.delete(myUserId2);
+
+    assert.equal(myUser2.id, savedUser1.contacts[0].id)
+
   }
 }
 

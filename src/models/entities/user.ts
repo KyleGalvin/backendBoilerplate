@@ -1,5 +1,5 @@
 import * as bcrypt from "bcrypt";
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, OneToMany, OneToOne, JoinColumn} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, OneToMany, OneToOne, JoinColumn, JoinTable} from "typeorm";
 import * as path from "path";
 
 import { Logger } from "../../util/logger";
@@ -13,6 +13,7 @@ export abstract class IUser {
   lastName!: string;
   email!: string;
   username!: string;
+  contacts!: IUser[];
   public verifyPassword!: (password: string) => Promise<boolean>;
   public updatePassword!: (password: string) => Promise<void>;
 }
@@ -29,6 +30,7 @@ export abstract class IUserSerialized {
   email!: string;
   username!: string;
   password!: string;
+  contacts!: IUserSerialized[];
 }
 
 export class UserSerialized implements IUserSerialized {
@@ -38,6 +40,7 @@ export class UserSerialized implements IUserSerialized {
   email!: string;
   username!: string;
   password!: string;
+  contacts!: IUserSerialized[];
 }
 
 @Entity()
@@ -63,10 +66,11 @@ export class User extends BaseEntity implements IUser {
   @ManyToMany((type) => Group, (group: Group) => group.users)
   public groups!: Group[];
 
-  @OneToMany((type) => Group, (group: Group) => group.owner)
-  public ownedGroups!: Group[];
+  // @OneToMany((type) => Group, (group: Group) => group.owner)
+  // public ownedGroups!: Group[];
 
-  @ManyToMany((type) => User, (user: User) => user.id)
+  @ManyToMany((type) => User)
+  @JoinTable()
   public contacts!: User[];
 
   public verifyPassword = async (password: string) => {

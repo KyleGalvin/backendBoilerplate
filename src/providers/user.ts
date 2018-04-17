@@ -50,6 +50,9 @@ export class UserProvider implements IUserProvider {
 
   // update user
   public async update(userData: IUserSerialized) {
+    if(!userData.id)
+      throw new Error("Cannot update user without an id");
+
     let user = await this.repository.findOneById(userData.id);
     if (user === undefined) {
       throw new Error("User does not exist");
@@ -63,8 +66,28 @@ export class UserProvider implements IUserProvider {
     user.email = userData.email;
     user.firstName = userData.firstName;
     user.lastName = userData.lastName;
+    user.contacts = await this.resolveUpdatedContacts(user, userData.contacts);
 
-    return await this.repository.save(user);
+    await this.repository.save(user);
+    return await this.getById(userData.id);
+  }
+
+  private async resolveUpdatedContacts(currentUser: User, updatedUsers: IUserSerialized[]) {
+    if(!currentUser.contacts)
+      currentUser.contacts = [];
+    if(!updatedUsers)
+      updatedUsers = [];
+    
+    //sets force items to be unique, and gives us the handy 'has' method we can use for easy filtering
+    const existingContactUsers = new Set(currentUser.contacts.map(c => c.id));
+    const updatedContactUsers = new Set(updatedUsers.map(c => c.id));
+    const newContactUsers = [...updatedContactUsers].filter(c => c !== undefined && !existingContactUsers.has(c as number));
+
+    const addedFullUsers = await this.repository.findByIds(newContactUsers);
+    return [
+      ...currentUser.contacts.filter(c => !updatedContactUsers.has(c.id)),
+      ...addedFullUsers
+    ];
   }
 
   // get user
@@ -73,7 +96,12 @@ export class UserProvider implements IUserProvider {
   }
 
   public async getById(id: number) {
-    const user = await this.repository.findOneById(id);
+    const user = await this.repository
+      .createQueryBuilder("users")
+      .leftJoinAndSelect("users.contacts", "contacts")
+      .where("users.id = :id", {id: id})
+      .getOne();
+    
     if(!user) {
       throw new Error("User does not exist");
     }
@@ -89,13 +117,14 @@ export class UserProvider implements IUserProvider {
     return await this.repository.remove(user);
   }
 
-  public static serialize(user: IUser) {
+  public static serialize(user: IUser): IUserSerialized {
     return {
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        username: user.username
+        username: user.username,
+        contacts: user.contacts ? user.contacts.map((c: IUser) => this.serialize(c)) : []
       } as IUserSerialized 
   }
 }
