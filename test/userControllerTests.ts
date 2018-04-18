@@ -178,20 +178,21 @@ const connection = Container.get(Connection);
       ...fixture.testUser1,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
-
-    const myAccessToken1 = await fixture.userController.signup(serializedUser1);
-
     const serializedUser2 = {
       ...fixture.testUser2,
       ...{password: fixture.testUserPassword}
       } as IUserSerialized
-
+  
+    const myAccessToken1 = await fixture.userController.signup(serializedUser1);
     const myAccessToken2 = await fixture.userController.signup(serializedUser2);
 
     const myUserId1 = AuthProviderTests.getUserIdFromJwt(myAccessToken1.access_token);
     const myUserId2 = AuthProviderTests.getUserIdFromJwt(myAccessToken2.access_token);
+
     const myUser1 = await fixture.userController.read(myUserId1);
     const myUser2 = await fixture.userController.read(myUserId2);
+
+    //add user2 as a contact to user1's list
     const myUpdatedUser1 = {
         ...myUser1, 
         ...{
@@ -200,13 +201,12 @@ const connection = Container.get(Connection);
           ]
         }
       } as IUserSerialized;
-
     const savedUser1 = await fixture.userController.update(myUpdatedUser1);
 
     await fixture.userController.delete(myUserId1);
     await fixture.userController.delete(myUserId2);
 
-    assert.equal(myUser2.id, savedUser1.contacts[0].id)
+    assert.equal(myUser2.id, savedUser1.contacts[0].id);
 
   }
 }

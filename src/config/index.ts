@@ -26,13 +26,11 @@ export interface IConfig {
 if(process && process.env && process.env.NODE_ENV) {
   const env = (process.env.NODE_ENV as string).trim();
   if (env === "DEV") {
-    console.log('dev')
     defaultConfig.connectionString =  process.env.DATABASE_URL as string;
     defaultConfig.port = Number(process.env.PORT as string);
   }
   
   if (env === "TEST") {
-    console.log('test')
     defaultConfig.database = testConfig.database;
     defaultConfig.logLevel = testConfig.logLevel;
   }

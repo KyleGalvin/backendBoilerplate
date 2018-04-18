@@ -5,7 +5,6 @@ import { Inject, Provides, Container } from "typescript-ioc";
 import {User, IUser, IUserSerialized} from "../models/entities/user";
 import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
-// import {ConnectionProvider} from "../models/typeorm";
 
 const logger = Logger(path.basename(__filename));
 
