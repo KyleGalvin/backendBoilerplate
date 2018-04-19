@@ -1,5 +1,5 @@
 import * as bcrypt from "bcrypt";
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, OneToMany, OneToOne, JoinColumn, JoinTable} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTable} from "typeorm";
 import * as path from "path";
 
 import { Logger } from "../../util/logger";
@@ -8,12 +8,12 @@ import { Group } from "./group";
 const logger = Logger(path.normalize(path.basename(__filename)));
 
 export abstract class IUser {
-  id!: number;
-  firstName!: string;
-  lastName!: string;
-  email!: string;
-  username!: string;
-  contacts!: IUser[];
+  public id!: number;
+  public firstName!: string;
+  public lastName!: string;
+  public email!: string;
+  public username!: string;
+  public contacts!: IUser[];
   public verifyPassword!: (password: string) => Promise<boolean>;
   public updatePassword!: (password: string) => Promise<void>;
 }
@@ -24,23 +24,23 @@ export interface IUserCredentials {
 }
 
 export abstract class IUserSerialized {
-  id?: number;
-  firstName!: string;
-  lastName!: string;
-  email!: string;
-  username!: string;
-  password!: string;
-  contacts!: IUserSerialized[];
+  public id?: number;
+  public firstName!: string;
+  public lastName!: string;
+  public email!: string;
+  public username!: string;
+  public password!: string;
+  public contacts!: IUserSerialized[];
 }
 
 export class UserSerialized implements IUserSerialized {
-  id?: number;
-  firstName!: string;
-  lastName!: string;
-  email!: string;
-  username!: string;
-  password!: string;
-  contacts!: IUserSerialized[];
+  public id?: number;
+  public firstName!: string;
+  public lastName!: string;
+  public email!: string;
+  public username!: string;
+  public password!: string;
+  public contacts!: IUserSerialized[];
 }
 
 @Entity()

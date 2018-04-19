@@ -5,9 +5,9 @@ import { Logger } from "../../util/logger";
 import { User } from "./user";
 
 export abstract class IContactRequest {
-  id!: number;
-  fromUserId!: number;
-  toUserId!: number;
+  public id!: number;
+  public fromUserId!: number;
+  public toUserId!: number;
 }
 
 @Entity()

@@ -37,19 +37,21 @@ export class ContactRequestProvider implements IContactRequestProvider {
 
   public async acceptContactRequest(requestId: number) {
     const contactRequest = await this.repository.findOneById(requestId);
-    if(!contactRequest)
+    if (!contactRequest) {
       throw new Error("Contact Request not found");
+    }
 
     const fromUser = await this.userRepository.findOneById(contactRequest.fromUserId);
     const toUser = await this.userRepository.findOneById(contactRequest.toUserId);
 
-    if(!fromUser || !toUser)
+    if (!fromUser || !toUser) {
       throw new Error("Invalid User Id given");
+    }
 
     fromUser.contacts.push(toUser);
     toUser.contacts.push(fromUser);
 
-    //no duplicates allowed
+    // no duplicates allowed
     fromUser.contacts = [...new Set(fromUser.contacts)];
     toUser.contacts = [...new Set(toUser.contacts)];
 
@@ -65,7 +67,7 @@ export class ContactRequestProvider implements IContactRequestProvider {
   public async getContactRequests(userId: number) {
     return await this.repository
       .createQueryBuilder("contactRequests")
-      .where("contactRequests.toUserId = :id", {id: userId})
-      .getMany()
+      .where("contactRequests.toUserId = :id", {"id": userId})
+      .getMany();
   }
 }

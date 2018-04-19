@@ -16,20 +16,21 @@ export interface ISSLOptions {
 
 export interface IConfig {
   "domain": string;
-  "database": "mysql" | "mariadb" | "postgres" | "sqlite" | "mssql" | "oracle" | "websql" | "cordova" | "sqljs" | "mongodb";
+  "database": "mysql" | "mariadb" | "postgres" | "sqlite" | "mssql"
+    | "oracle" | "websql" | "cordova" | "sqljs" | "mongodb";
   "connectionString": string;
   "port": number;
   "logLevel": string;
   "jwt": IJWT;
   "sslOptions": ISSLOptions;
 }
-if(process && process.env && process.env.NODE_ENV) {
+if (process && process.env && process.env.NODE_ENV) {
   const env = (process.env.NODE_ENV as string).trim();
   if (env === "DEV") {
     defaultConfig.connectionString =  process.env.DATABASE_URL as string;
     defaultConfig.port = Number(process.env.PORT as string);
   }
-  
+
   if (env === "TEST") {
     defaultConfig.database = testConfig.database;
     defaultConfig.logLevel = testConfig.logLevel;

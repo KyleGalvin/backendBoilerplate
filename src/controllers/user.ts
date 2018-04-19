@@ -26,14 +26,14 @@ export class UserController {
   @Get("/{id}")
   @Security("jwt", ["user"])
   public async read(id: number): Promise<IUserSerialized> {
-    var user = await this.userProvider.getById(id);
+    const user = await this.userProvider.getById(id);
     return UserProvider.serialize(user);
   }
 
   @Delete("/{id}")
   @Security("jwt", ["user"])
   public async delete(id: number): Promise<IUserSerialized> {
-    var user = await this.userProvider.deleteById(id);
+    const user = await this.userProvider.deleteById(id);
     return UserProvider.serialize(user);
   }
 

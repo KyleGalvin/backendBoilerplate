@@ -49,10 +49,11 @@ export class UserProvider implements IUserProvider {
 
   // update user
   public async update(userData: IUserSerialized) {
-    if(!userData.id)
+    if (!userData.id) {
       throw new Error("Cannot update user without an id");
+    }
 
-    let user = await this.repository.findOneById(userData.id);
+    const user = await this.repository.findOneById(userData.id);
     if (user === undefined) {
       throw new Error("User does not exist");
     }
@@ -72,19 +73,22 @@ export class UserProvider implements IUserProvider {
   }
 
   private async resolveUpdatedContacts(currentUser: User, updatedUsers: IUserSerialized[]) {
-    if(!currentUser.contacts)
+    if (!currentUser.contacts) {
       currentUser.contacts = [];
-    if(!updatedUsers)
+    }
+    if (!updatedUsers) {
       updatedUsers = [];
-    
-    //sets force items to be unique, and gives us the handy 'has' method we can use for easy filtering
-    const existingContactUsers = new Set(currentUser.contacts.map(c => c.id));
-    const updatedContactUsers = new Set(updatedUsers.map(c => c.id));
-    const newContactUsers = [...updatedContactUsers].filter(c => c !== undefined && !existingContactUsers.has(c as number));
+    }
+
+    // sets force items to be unique, and gives us the handy 'has' method we can use for easy filtering
+    const existingContactUsers = new Set(currentUser.contacts.map((c) => c.id));
+    const updatedContactUsers = new Set(updatedUsers.map((c) => c.id));
+    const newContactUsers = [...updatedContactUsers]
+      .filter((c) => c !== undefined && !existingContactUsers.has(c as number));
 
     const addedFullUsers = await this.repository.findByIds(newContactUsers);
     return [
-      ...currentUser.contacts.filter(c => !updatedContactUsers.has(c.id)),
+      ...currentUser.contacts.filter((c) => !updatedContactUsers.has(c.id)),
       ...addedFullUsers
     ];
   }
@@ -98,10 +102,10 @@ export class UserProvider implements IUserProvider {
     const user = await this.repository
       .createQueryBuilder("users")
       .leftJoinAndSelect("users.contacts", "contacts")
-      .where("users.id = :id", {id: id})
+      .where("users.id = :id", {"id": id})
       .getOne();
-    
-    if(!user) {
+
+    if (!user) {
       throw new Error("User does not exist");
     }
     return user;
@@ -109,8 +113,8 @@ export class UserProvider implements IUserProvider {
 
   // delete user
   public async deleteById(id: number) {
-    var user = await this.repository.findOneById(id);
-    if(!user) {
+    const user = await this.repository.findOneById(id);
+    if (!user) {
       throw new Error("User does not exist");
     }
     return await this.repository.remove(user);
@@ -118,12 +122,12 @@ export class UserProvider implements IUserProvider {
 
   public static serialize(user: IUser): IUserSerialized {
     return {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        username: user.username,
-        contacts: user.contacts ? user.contacts.map((c: IUser) => this.serialize(c)) : []
-      } as IUserSerialized 
+        "id": user.id,
+        "firstName": user.firstName,
+        "lastName": user.lastName,
+        "email": user.email,
+        "username": user.username,
+        "contacts": user.contacts ? user.contacts.map((c: IUser) => this.serialize(c)) : []
+      } as IUserSerialized;
   }
 }

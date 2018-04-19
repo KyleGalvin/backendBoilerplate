@@ -30,15 +30,15 @@ export class ConnectionSingleton {
   public static getInstance() {
     if (!ConnectionSingleton.connection) {
       logger.info("Establishing database connection. Driver: " + config.database);
-      var connectionData : ConnectionOptions
+      let connectionData: ConnectionOptions;
 
-      if(config.database === "sqljs"){
+      if (config.database === "sqljs") {
         connectionData = {
           "type": "sqljs",
           "synchronize": true,
           "entities": [User, Group]
         };
-      }else {      
+      } else {
         connectionData = {
           "type": "postgres",
           "url" : config.connectionString,

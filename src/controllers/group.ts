@@ -37,7 +37,7 @@ export class GroupController {
         "owner": request.user.userId,
         "users": group.users
       };
-      var savedGroup = await this.groupProvider.create(groupData);
+      const savedGroup = await this.groupProvider.create(groupData);
       return GroupProvider.serialize(savedGroup);
     } else {
       throw new Error("Not authenticated");
@@ -58,7 +58,7 @@ export class GroupController {
   @Delete("/{id}")
   @Security("jwt", ["user"])
   public async delete(id: number): Promise<IGroupSerialized> {
-    var group = await this.groupProvider.deleteById(id);
+    const group = await this.groupProvider.deleteById(id);
     return GroupProvider.serialize(group);
   }
 

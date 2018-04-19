@@ -6,10 +6,10 @@ import {Connection} from "typeorm";
 import {ConnectionProvider} from "../models/typeorm";
 
 export default class RuntimeIoC {
-  static configure(){ 
-    Container.bind(IAuthProvider).to(AuthProvider); 
-    Container.bind(IUserProvider).to(UserProvider); 
-    Container.bind(IGroupProvider).to(GroupProvider); 
+  static configure() {
+    Container.bind(IAuthProvider).to(AuthProvider);
+    Container.bind(IUserProvider).to(UserProvider);
+    Container.bind(IGroupProvider).to(GroupProvider);
     Container.bind(Connection).provider(ConnectionProvider);
     // ...
   }

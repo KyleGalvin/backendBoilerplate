@@ -62,8 +62,8 @@ export class GroupProvider implements IGroupProvider {
     group.name = groupData.name;
     group.users = await Promise.all(
         groupData.users
-        .filter(u => u.id !== undefined)
-        .map(async u => await this.userProvider.getById(u.id as number))
+        .filter((u) => u.id !== undefined)
+        .map(async (u) => await this.userProvider.getById(u.id as number))
       );
     return await this.groupRepository.save(group);
 
@@ -84,8 +84,8 @@ export class GroupProvider implements IGroupProvider {
 
   // delete group
   public async deleteById(id: number) {
-    var group = await this.groupRepository.findOneById(id);
-    if(!group) {
+    const group = await this.groupRepository.findOneById(id);
+    if (!group) {
       throw new Error("Group does not exist");
     }
     return await this.groupRepository.remove(group);
@@ -93,10 +93,10 @@ export class GroupProvider implements IGroupProvider {
 
   public static serialize(group: IGroup) {
     return {
-        id: group.id,
-        name: group.name,
-        owner: group.owner,
-        users: group.users.map(u => UserProvider.serialize(u))
-      } as IGroupSerialized 
+        "id": group.id,
+        "name": group.name,
+        "owner": group.owner,
+        "users": group.users.map((u) => UserProvider.serialize(u))
+      } as IGroupSerialized;
   }
 }
