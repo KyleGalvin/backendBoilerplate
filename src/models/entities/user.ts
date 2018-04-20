@@ -1,5 +1,5 @@
 import * as bcrypt from "bcrypt";
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTable} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, OneToMany, JoinTable} from "typeorm";
 import * as path from "path";
 
 import { Logger } from "../../util/logger";
@@ -69,7 +69,7 @@ export class User extends BaseEntity implements IUser {
   // @OneToMany((type) => Group, (group: Group) => group.owner)
   // public ownedGroups!: Group[];
 
-  @ManyToMany((type) => User)
+  @ManyToMany((type) => User, (user: User) => user.id,  {cascade: true})
   @JoinTable()
   public contacts!: User[];
 
