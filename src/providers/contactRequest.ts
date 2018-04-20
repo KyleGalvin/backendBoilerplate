@@ -5,16 +5,11 @@ import { Inject, Provides, Container } from "typescript-ioc";
 import {Logger} from "../util/logger";
 import { IContactRequest, ContactRequest } from "../models/entities/contactRequest";
 import {ContactRequestFactory} from "../factories/contactRequest";
-import {User, IUser} from "../models/entities/user";
+import {IUser} from "../models/entities/IUser";
+import {User} from "../models/entities/user";
+import {IContactRequestProvider} from "./IContactRequestProvider";
 
 const logger = Logger(path.basename(__filename));
-
-export abstract class IContactRequestProvider {
-  public sendContactRequest!: (fromUserId: number, toUserId: number) => Promise<ContactRequest>;
-  public acceptContactRequest!: (requestId: number) => Promise<ContactRequest>;
-  public rejectContactRequest!: (requestId: number) => Promise<void>;
-  public getContactRequests!: (userId: number) => Promise<ContactRequest[]>;
-}
 
 export class ContactRequestProvider implements IContactRequestProvider {
 
@@ -67,7 +62,7 @@ export class ContactRequestProvider implements IContactRequestProvider {
   public async getContactRequests(userId: number) {
     return await this.repository
       .createQueryBuilder("contactRequests")
-      .where("contactRequests.toUserId = :id", {"id": userId})
+      .where("(contactRequests.toUserId = :id OR contractRequests.fromUserId = :id)", {"id": userId})
       .getMany();
   }
 }

@@ -4,7 +4,9 @@ import * as assert from "assert";
 import { suite, test, slow, timeout } from "mocha-typescript";
 import * as uuid from "uuid";
 
-import {IUser, User, IUserSerialized} from "../src/models/entities/user";
+import {User} from "../src/models/entities/user";
+import {IUser} from "../src/models/entities/IUser";
+import {IUserSerialized} from "../src/models/entities/IUserSerialized";
 import {UserFactory} from "../src/factories/user";
 import {config} from "../src/config";
 import {Logger} from "../src/util/logger";
@@ -23,125 +25,124 @@ const connection = Container.get(Connection);
 
   private static getUserIdFromJwt(jwt: string) {
     const myUserData = JSON.parse(Buffer.from(jwt.split(".")[1], "base64").toString());
-    return myUserData["id"];
+    return myUserData.id;
   }
 
-  @test async canCreateUserAndLogin() {
-    let fixture = new Fixture();
+  @test public async canCreateUserAndLogin() {
+    const fixture = new Fixture();
 
     const serializedUser = {
       ...fixture.testUser1,
-      ...{password: fixture.testUserPassword}
-      } as IUserSerialized
+      ...{"password": fixture.testUserPassword}
+      } as IUserSerialized;
 
     const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
     const credentials = {
-      username: fixture.testUser1.username,
-      password: fixture.testUserPassword
-    }
+      "username": fixture.testUser1.username,
+      "password": fixture.testUserPassword
+    };
 
     const loginResult = await fixture.userController.login(credentials);
 
     const myUser = await fixture.userController.read(myUserId);
 
     await fixture.userController.delete(myUserId);
-    console.log('created user: ', JSON.stringify(myUser));
     assert.notEqual(loginResult, null, "new user can log in");
-  }  
+  }
 
-  @test async loginNamesMustBeUnique() {
-    let fixture = new Fixture();
+  @test public async loginNamesMustBeUnique() {
+    const fixture = new Fixture();
 
     const serializedUser = {
       ...fixture.testUser1,
-      ...{password: fixture.testUserPassword}
-      } as IUserSerialized
+      ...{"password": fixture.testUserPassword}
+      } as IUserSerialized;
 
     const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
-    try{
+    try {
       await fixture.userController.signup(serializedUser);
-      assert.fail("duplicate user should not be creatable")
-    } catch(e){
+      assert.fail("duplicate user should not be creatable");
+    } catch (e) {
       assert.equal(e, "Error: User already exists");
     }
 
     await fixture.userController.delete(myUserId);
-  }  
-  
-  @test async loginBadPassword() {
-    let fixture = new Fixture();
+  }
+
+  @test public async loginBadPassword() {
+    const fixture = new Fixture();
 
     const serializedUser = {
       ...fixture.testUser1,
-      ...{password: fixture.testUserPassword}
-      } as IUserSerialized
+      ...{"password": fixture.testUserPassword}
+      } as IUserSerialized;
 
     const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const credentials = {
-      username: fixture.testUser1.username,
-      password: "notMyPassword"
+      "username": fixture.testUser1.username,
+      "password": "notMyPassword"
     };
 
-    try{
+    try {
       const loginResult2 = await fixture.userController.login(credentials);
-      assert.fail("bad password should not log in")
-    } catch(e){
+      assert.fail("bad password should not log in");
+    } catch (e) {
       assert.equal(e, "Error: Login Error");
     }
     await fixture.userController.delete(myUserId);
   }
 
-  @test async loginBadUsername() {
-    let fixture = new Fixture();
+  @test public async loginBadUsername() {
+    const fixture = new Fixture();
 
     const serializedUser = {
       ...fixture.testUser1,
-      ...{password: fixture.testUserPassword}
-      } as IUserSerialized
+      ...{"password": fixture.testUserPassword}
+      } as IUserSerialized;
 
     const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const credentials = {
-      username: "notMyUsername",
-      password: fixture.testUserPassword
+      "username": "notMyUsername",
+      "password": fixture.testUserPassword
     };
 
-    try{
+    try {
       const loginResult3 = await fixture.userController.login(credentials);
-      assert.fail("bad username should not log in")
-    } catch(e){
+      assert.fail("bad username should not log in");
+    } catch (e) {
       assert.equal(e, "Error: Login Error");
     }
     await fixture.userController.delete(myUserId);
   }
 
-  @test async canUpdateUser() {
-    let fixture = new Fixture();
+  @test public async canUpdateUser() {
+    const fixture = new Fixture();
 
     const serializedUser = {
       ...fixture.testUser1,
-      ...{password: fixture.testUserPassword}
-      } as IUserSerialized
+      ...{"password": fixture.testUserPassword}
+      } as IUserSerialized;
 
     const myAccessToken = await fixture.userController.signup(serializedUser);
-    const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token)
+    const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
     const myUser = await fixture.userController.read(myUserId);
 
     const myUpdatedUserData: IUserSerialized = {
-      id: myUserId, 
-      username: "testuser", 
-      email: "email2@mail.com",
-      firstName: "jane2",
-      lastName: "doe2",
-      password: "",
-      contacts: []
-    }
+      "id": myUserId,
+      "username": "testuser",
+      "email": "email2@mail.com",
+      "firstName": "jane2",
+      "lastName": "doe2",
+      "password": "",
+      "contacts": []
+    };
 
     await fixture.userController.update(myUpdatedUserData);
     const myUpdatedUser = await fixture.userController.read(myUserId);
@@ -154,38 +155,38 @@ const connection = Container.get(Connection);
 
   }
 
-  @test async canDeleteUser() {
-    let fixture = new Fixture();
+  @test public async canDeleteUser() {
+    const fixture = new Fixture();
 
     const serializedUser = {
       ...fixture.testUser1,
-      ...{password: fixture.testUserPassword}
-      } as IUserSerialized
+      ...{"password": fixture.testUserPassword}
+      } as IUserSerialized;
 
     const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const myDeletedUser = await fixture.userController.delete(myUserId);
-    try{
+    try {
       const myUpdatedUser = await fixture.userController.read(myUserId);
-      assert.fail("deleted user should not be able to log in")
-    } catch(e){
+      assert.fail("deleted user should not be able to log in");
+    } catch (e) {
       assert.equal(e, "Error: User does not exist");
     }
   }
 
-  @test async canAddContacts() {
-    let fixture = new Fixture();
+  @test public async canAddContacts() {
+    const fixture = new Fixture();
 
     const serializedUser1 = {
       ...fixture.testUser1,
-      ...{password: fixture.testUserPassword}
-      } as IUserSerialized
+      ...{"password": fixture.testUserPassword}
+      } as IUserSerialized;
     const serializedUser2 = {
       ...fixture.testUser2,
-      ...{password: fixture.testUserPassword}
-      } as IUserSerialized
-  
+      ...{"password": fixture.testUserPassword}
+      } as IUserSerialized;
+
     const myAccessToken1 = await fixture.userController.signup(serializedUser1);
     const myAccessToken2 = await fixture.userController.signup(serializedUser2);
 
@@ -195,11 +196,11 @@ const connection = Container.get(Connection);
     const myUser1 = await fixture.userController.read(myUserId1);
     const myUser2 = await fixture.userController.read(myUserId2);
 
-    //add user2 as a contact to user1's list
+    // add user2 as a contact to user1's list
     const myUpdatedUser1 = {
-        ...myUser1, 
+        ...myUser1,
         ...{
-          contacts: [
+          "contacts": [
             myUser2
           ]
         }
@@ -213,4 +214,3 @@ const connection = Container.get(Connection);
 
   }
 }
-

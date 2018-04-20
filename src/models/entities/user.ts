@@ -4,43 +4,13 @@ import * as path from "path";
 
 import { Logger } from "../../util/logger";
 import { Group } from "./group";
+import { IUser } from "./IUser";
 
 const logger = Logger(path.normalize(path.basename(__filename)));
-
-export abstract class IUser {
-  public id!: number;
-  public firstName!: string;
-  public lastName!: string;
-  public email!: string;
-  public username!: string;
-  public contacts!: IUser[];
-  public verifyPassword!: (password: string) => Promise<boolean>;
-  public updatePassword!: (password: string) => Promise<void>;
-}
 
 export interface IUserCredentials {
   username: string;
   password: string;
-}
-
-export abstract class IUserSerialized {
-  public id?: number;
-  public firstName!: string;
-  public lastName!: string;
-  public email!: string;
-  public username!: string;
-  public password!: string;
-  public contacts!: IUserSerialized[];
-}
-
-export class UserSerialized implements IUserSerialized {
-  public id?: number;
-  public firstName!: string;
-  public lastName!: string;
-  public email!: string;
-  public username!: string;
-  public password!: string;
-  public contacts!: IUserSerialized[];
 }
 
 @Entity()
@@ -71,7 +41,7 @@ export class User extends BaseEntity implements IUser {
 
   @ManyToMany((type) => User)
   @JoinTable()
-  public contacts!: User[];
+  public contacts!: IUser[];
 
   public verifyPassword = async (password: string) => {
     return await bcrypt.compare(password, this.passwordHash);

@@ -1,24 +1,21 @@
 import * as path from "path";
 import {Provides, Inject} from "typescript-ioc";
-import { Repository, Connection } from "typeorm";
+import {Repository, Connection} from "typeorm";
 
-import { Group, IGroup, IGroupSerialized } from "../models/entities/group";
-import { User, IUser, IUserSerialized } from "../models/entities/user";
+import {Group, IGroupSerialized} from "../models/entities/group";
+import {IGroup} from "../models/entities/IGroup";
+import {User} from "../models/entities/user";
+import {IUser} from "../models/entities/IUser";
+import {IUserSerialized} from "../models/entities/IUserSerialized";
 import {GroupFactory} from "../factories/group";
-import { IConfig, config } from "../config";
+import {IConfig, config} from "../config";
 import {ILogger, Logger} from "../util/logger";
-import { UserController } from "../controllers/user";
-import { IUserProvider, UserProvider } from "./user";
+import {UserController} from "../controllers/user";
+import {UserProvider} from "./user";
+import {IUserProvider} from "./IUserProvider";
+import {IGroupProvider} from "./IGroupProvider";
 
 const logger: ILogger = Logger(path.basename(__filename));
-
-export abstract class IGroupProvider {
-  public create!: (groupData: IGroupSerialized) => Promise<IGroup>;
-  public update!: (groupData: IGroupSerialized) => Promise<IGroup>;
-  public getByOwnerId!: (id: number) => Promise<IGroup[]>;
-  public getById!: (id: number) => Promise<IGroup | undefined>;
-  public deleteById!: (id: number) => Promise<IGroup>;
-}
 
 export class GroupProvider implements IGroupProvider {
 
@@ -89,14 +86,5 @@ export class GroupProvider implements IGroupProvider {
       throw new Error("Group does not exist");
     }
     return await this.groupRepository.remove(group);
-  }
-
-  public static serialize(group: IGroup) {
-    return {
-        "id": group.id,
-        "name": group.name,
-        "owner": group.owner,
-        "users": group.users.map((u) => UserProvider.serialize(u))
-      } as IGroupSerialized;
   }
 }

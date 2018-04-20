@@ -1,4 +1,5 @@
-import { Group, IGroup, IGroupSerialized } from "../models/entities/group";
+import {Group, IGroupSerialized} from "../models/entities/group";
+import {IGroup} from "../models/entities/IGroup";
 
 export class GroupFactory {
     public async Create(groupData: IGroupSerialized) {
