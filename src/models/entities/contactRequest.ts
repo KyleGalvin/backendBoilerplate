@@ -1,14 +1,9 @@
 import * as bcrypt from "bcrypt";
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne} from "typeorm";
 
-import { Logger } from "../../util/logger";
-import { User } from "./user";
-
-export abstract class IContactRequest {
-  public id!: number;
-  public fromUserId!: number;
-  public toUserId!: number;
-}
+import {Logger} from "../../util/logger";
+import {User} from "./user";
+import {IContactRequest} from "./IContactRequest";
 
 @Entity()
 export class ContactRequest extends BaseEntity implements IContactRequest {

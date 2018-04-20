@@ -1,13 +1,13 @@
 import * as path from "path";
-import { Connection } from "typeorm";
+import {Connection} from "typeorm";
 import {Post, Get, Route, Body, Request, Security, Delete, Put} from "tsoa";
 import {Inject} from "typescript-ioc";
 
-import { IUserProvider } from "../providers/IUserProvider";
-import { IContactRequest } from "../models/entities/contactRequest";
-import { IContactRequestProvider } from "../providers/IContactRequestProvider";
-import { Logger } from "../util/logger";
-import { IConfig } from "../config";
+import {IUserProvider} from "../providers/IUserProvider";
+import {IContactRequest} from "../models/entities/IContactRequest";
+import {IContactRequestProvider} from "../providers/IContactRequestProvider";
+import {Logger} from "../util/logger";
+import {IConfig} from "../config";
 
 const logger = Logger(path.basename(__filename));
 

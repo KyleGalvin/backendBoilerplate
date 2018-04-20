@@ -1,4 +1,4 @@
-import { IContactRequest } from "../models/entities/contactRequest";
+import {IContactRequest} from "../models/entities/IContactRequest";
 
 export abstract class IContactRequestProvider {
   public sendContactRequest!: (fromUserId: number, toUserId: number) => Promise<IContactRequest>;

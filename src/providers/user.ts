@@ -110,10 +110,6 @@ export class UserProvider implements IUserProvider {
 
   // delete user
   public async deleteById(id: number) {
-    const user = await this.repository.findOne(id);
-    if (!user) {
-      throw new Error("cannot delete user. user does not exist");
-    }
-    return await this.repository.remove(user);
+    return await this.repository.delete(id);
   }
 }

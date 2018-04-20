@@ -58,9 +58,8 @@ export class GroupController {
 
   @Delete("/{id}")
   @Security("jwt", ["user"])
-  public async delete(id: number): Promise<IGroupSerialized> {
-    const group = await this.groupProvider.deleteById(id);
-    return IGroupProvider.serialize(group);
+  public async delete(id: number): Promise<void> {
+    await this.groupProvider.deleteById(id);
   }
 
 }

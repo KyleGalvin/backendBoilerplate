@@ -51,7 +51,7 @@ export class GroupProvider implements IGroupProvider {
   }
 
   public async update(groupData: IGroupSerialized) {
-    const group = await this.groupRepository.findOneById(groupData.id);
+    const group = await this.groupRepository.findOne(groupData.id);
     if (group === undefined) {
       throw new Error("Group does not exist");
     }
@@ -72,7 +72,7 @@ export class GroupProvider implements IGroupProvider {
   }
 
   public getById(id: number) {
-    return this.groupRepository.findOneById(id);
+    return this.groupRepository.findOne(id);
   }
 
   public getByOwnerId(id: number) {
@@ -81,10 +81,6 @@ export class GroupProvider implements IGroupProvider {
 
   // delete group
   public async deleteById(id: number) {
-    const group = await this.groupRepository.findOneById(id);
-    if (!group) {
-      throw new Error("Group does not exist");
-    }
-    return await this.groupRepository.remove(group);
+    return await this.groupRepository.delete(id);
   }
 }
