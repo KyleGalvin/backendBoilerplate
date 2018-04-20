@@ -1,4 +1,5 @@
 import {DeleteResult} from "typeorm";
+
 import {IGroupSerialized} from "../models/entities/group";
 import {IGroup} from "../models/entities/IGroup";
 import {IUserProvider} from "./IUserProvider";
