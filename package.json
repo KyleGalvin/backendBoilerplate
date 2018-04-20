@@ -64,7 +64,7 @@
     "tslint": "^5.8.0",
     "tsoa": "^2.1.1",
     "typemoq": "^2.1.0",
-    "typeorm": "^0.1.19",
+    "typeorm": "^0.2.0",
     "typescript": "^2.7.2",
     "typescript-ioc": "^1.1.0"
   }

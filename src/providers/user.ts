@@ -48,7 +48,7 @@ export class UserProvider implements IUserProvider {
       throw new Error("Cannot update user without an id");
     }
 
-    const user = await this.repository.findOneById(userData.id);
+    const user = await this.repository.findOne(userData.id);
     if (user === undefined) {
       throw new Error("User does not exist");
     }
@@ -110,6 +110,10 @@ export class UserProvider implements IUserProvider {
 
   // delete user
   public async deleteById(id: number) {
-    return await this.repository.removeById(id);
+    const user = await this.repository.findOne(id);
+    if (!user) {
+      throw new Error("cannot delete user. user does not exist");
+    }
+    return await this.repository.remove(user);
   }
 }
