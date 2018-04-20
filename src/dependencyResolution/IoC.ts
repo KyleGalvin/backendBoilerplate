@@ -2,6 +2,7 @@ import {Container} from "typescript-ioc";
 import {IAuthProvider, AuthProvider} from "../providers/auth";
 import {IGroupProvider, GroupProvider} from "../providers/group";
 import {IUserProvider, UserProvider} from "../providers/user";
+import {IContactRequestProvider, ContactRequestProvider} from "../providers/contactRequest";
 import {Connection} from "typeorm";
 import {ConnectionProvider} from "../models/typeorm";
 
@@ -10,6 +11,7 @@ export default class RuntimeIoC {
     Container.bind(IAuthProvider).to(AuthProvider);
     Container.bind(IUserProvider).to(UserProvider);
     Container.bind(IGroupProvider).to(GroupProvider);
+    Container.bind(IContactRequestProvider).to(ContactRequestProvider);
     Container.bind(Connection).provider(ConnectionProvider);
     // ...
   }

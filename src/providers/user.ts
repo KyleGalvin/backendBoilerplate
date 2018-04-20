@@ -66,7 +66,9 @@ export class UserProvider implements IUserProvider {
     user.email = userData.email;
     user.firstName = userData.firstName;
     user.lastName = userData.lastName;
-    user.contacts = await this.resolveUpdatedContacts(user, userData.contacts);
+    if(userData.contacts) {
+      user.contacts = await this.resolveUpdatedContacts(user, userData.contacts);
+    }
 
     await this.repository.save(user);
     return await this.getById(userData.id);

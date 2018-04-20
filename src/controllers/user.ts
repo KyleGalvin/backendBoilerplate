@@ -39,9 +39,15 @@ export class UserController {
 
   @Put("signup")
   public async signup(@Body() user: IUserSerialized): Promise<IAccessToken> {
-    const result = await this.userProvider.create(user);
-    const jwt = await this.authProvider.login((result as IUser).username, user.password);
-    return {"access_token": jwt as string};
+    try {
+      console.log('in signup');
+      const result = await this.userProvider.create(user);
+      const jwt = await this.authProvider.login((result as IUser).username, user.password);
+      return {"access_token": jwt as string};
+    } catch (e) {
+      console.log('exception: ', e);
+      throw new Error();
+    }
   }
 
   @Put("login")

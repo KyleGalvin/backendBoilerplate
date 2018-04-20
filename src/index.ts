@@ -9,8 +9,9 @@ import {Connection} from "typeorm";
 import IoC from "./dependencyResolution/IoC";
 import "./controllers/swagger";
 import "./controllers/group";
-import "./controllers/user";
 import "./controllers/contactRequest";
+import "./controllers/user";
+
 import { config } from "./config";
 import { Logger } from "./util/logger";
 import { ConnectionProvider } from "./models/typeorm";
