@@ -32,21 +32,18 @@ export class UserController {
 
   @Delete("/{id}")
   @Security("jwt", ["user"])
-  public async delete(id: number): Promise<IUserSerialized> {
-    const user = await this.userProvider.deleteById(id);
-    return UserProvider.serialize(user);
+  public async delete(id: number): Promise<void> {
+    await this.userProvider.deleteById(id);
   }
 
   @Put("signup")
   public async signup(@Body() user: IUserSerialized): Promise<IAccessToken> {
     try {
-      console.log('in signup');
       const result = await this.userProvider.create(user);
       const jwt = await this.authProvider.login((result as IUser).username, user.password);
       return {"access_token": jwt as string};
     } catch (e) {
-      console.log('exception: ', e);
-      throw new Error();
+      throw e;
     }
   }
 

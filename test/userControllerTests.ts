@@ -42,8 +42,11 @@ const connection = Container.get(Connection);
     }
 
     const loginResult = await fixture.userController.login(credentials);
-    await fixture.userController.delete(myUserId);
 
+    const myUser = await fixture.userController.read(myUserId);
+
+    await fixture.userController.delete(myUserId);
+    console.log('created user: ', JSON.stringify(myUser));
     assert.notEqual(loginResult, null, "new user can log in");
   }  
 
