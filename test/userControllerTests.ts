@@ -196,21 +196,37 @@ const connection = Container.get(Connection);
     const myUser1 = await fixture.userController.read(myUserId1);
     const myUser2 = await fixture.userController.read(myUserId2);
 
-    // add user2 as a contact to user1's list
-    const myUpdatedUser1 = {
-        ...myUser1,
-        ...{
-          "contacts": [
-            myUser2
-          ]
-        }
-      } as IUserSerialized;
-    const savedUser1 = await fixture.userController.update(myUpdatedUser1);
+    // mock the data express reads from our JWT token.
+    // This is the minimum data our controller needs to recieve to act.
+    const mockExpressRequest1 = {"user": {"userId": myUserId1}} as Express.Request;
+    const contactRequestCreated = await fixture.contactRequestController
+      .sendContactRequest(mockExpressRequest1, myUserId2);
 
+    // get user2's pending contact requests
+    const mockExpressRequest2 = {"user": {"userId": myUserId2}} as Express.Request;
+    const user2ContactRequests = await fixture.contactRequestController.getContactRequests(mockExpressRequest2);
+
+    // accept the pending request
+    const acceptedRequest = await fixture.contactRequestController.acceptContactRequest(user2ContactRequests[0].id);
+
+    // both friends should now be linked
+    const myUpdatedUser1 = await fixture.userController.read(myUserId1);
+    const myUpdatedUser2 = await fixture.userController.read(myUserId2);
+
+    // cleanup should cascade to contact request table
     await fixture.userController.delete(myUserId1);
     await fixture.userController.delete(myUserId2);
 
-    assert.equal(myUser2.id, savedUser1.contacts[0].id);
+    assert.notEqual(null, contactRequestCreated);
+    assert.notEqual(null, contactRequestCreated.fromUser);
+    assert.notEqual(null, contactRequestCreated.toUser);
+    assert.equal(1, user2ContactRequests.length);
+    assert.equal(contactRequestCreated.id, user2ContactRequests[0].id);
+    assert.notEqual(null, acceptedRequest);
+    assert.notEqual(null, acceptedRequest.fromUser);
+    assert.notEqual(null, acceptedRequest.toUser);
+    assert.equal(myUserId1, myUpdatedUser2.contacts[0].id);
+    assert.equal(myUserId2, myUpdatedUser1.contacts[0].id);
 
   }
 }

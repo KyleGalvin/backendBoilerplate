@@ -3,8 +3,9 @@ import {Connection} from "typeorm";
 import {Post, Get, Route, Body, Request, Security, Delete, Put} from "tsoa";
 import {Inject} from "typescript-ioc";
 
-import {IUserProvider} from "../providers/IUserProvider";
 import {IContactRequest} from "../models/entities/IContactRequest";
+import {IContactRequestSerialized} from "../models/entities/IContactRequestSerialized";
+import {IUserProvider} from "../providers/IUserProvider";
 import {IContactRequestProvider} from "../providers/IContactRequestProvider";
 import {Logger} from "../util/logger";
 import {IConfig} from "../config";
@@ -19,19 +20,19 @@ export class ContactRequestController {
 
   @Get("")
   @Security("jwt", ["user"])
-  public async getContactRequests(@Request() request: Express.Request): Promise<IContactRequest[]> {
+  public async getContactRequests(@Request() request: Express.Request): Promise<IContactRequestSerialized[]> {
     return await this.contactRequestProvider.getContactRequests(request.user.userId);
   }
 
   @Put("request/{userId}")
   @Security("jwt", ["user"])
-  public async sendContactRequest(@Request() request: Express.Request, userId: number): Promise<IContactRequest> {
+  public async sendContactRequest(@Request() request: Express.Request, userId: number): Promise<IContactRequestSerialized> {
     return await this.contactRequestProvider.sendContactRequest(request.user.userId, userId);
   }
 
   @Post("accept/{requestId}")
   @Security("jwt", ["user"])
-  public async acceptContactRequest(requestId: number): Promise<IContactRequest> {
+  public async acceptContactRequest(requestId: number): Promise<IContactRequestSerialized> {
     return await this.contactRequestProvider.acceptContactRequest(requestId);
   }
 

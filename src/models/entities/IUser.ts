@@ -1,4 +1,4 @@
-import { IGroup } from "./IGroup";
+import {IGroup} from "./IGroup";
 
 export abstract class IUser {
   public id!: number;

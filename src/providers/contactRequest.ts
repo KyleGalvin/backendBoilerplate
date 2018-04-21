@@ -27,22 +27,37 @@ export class ContactRequestProvider implements IContactRequestProvider {
   }
 
   public async sendContactRequest(fromUserId: number, toUserId: number) {
-    const contactRequest = this.contactRequestFactory.Create(fromUserId, toUserId);
-    return await this.repository.save(contactRequest);
+    const fromUser = await this.userRepository.findOne(fromUserId);
+    const toUser = await this.userRepository.findOne(toUserId);
+
+    if (!fromUser || !toUser) {
+      throw new Error("user does not exist. cannot create contact request");
+    }
+    const contactRequest = this.contactRequestFactory.Create(fromUser, toUser);
+    const savedContactRequest = await this.repository.save(contactRequest);
+    return IContactRequestProvider.serialize(savedContactRequest);
   }
 
   public async acceptContactRequest(requestId: number) {
-    const contactRequest = await this.repository.findOne(requestId);
+    const contactRequest = await this.repository
+      .createQueryBuilder("contactRequest")
+      .leftJoinAndSelect("contactRequest.fromUser", "fromUser")
+      .leftJoinAndSelect("contactRequest.toUser", "toUser")
+      .where("contactRequest.id = :id", {"id": requestId})
+      .getOne();
     if (!contactRequest) {
       throw new Error("Contact Request not found");
     }
 
-    const fromUser = await this.userRepository.findOne(contactRequest.fromUserId);
-    const toUser = await this.userRepository.findOne(contactRequest.toUserId);
+    const fromUser = await this.userRepository.findOne(contactRequest.fromUser);
+    const toUser = await this.userRepository.findOne(contactRequest.toUser);
 
     if (!fromUser || !toUser) {
       throw new Error("Invalid User Id given");
     }
+
+    fromUser.contacts = fromUser.contacts ? fromUser.contacts : [];
+    toUser.contacts = toUser.contacts ? toUser.contacts : [];
 
     fromUser.contacts.push(toUser);
     toUser.contacts.push(fromUser);
@@ -53,7 +68,8 @@ export class ContactRequestProvider implements IContactRequestProvider {
 
     await this.userRepository.save(fromUser);
     await this.userRepository.save(toUser);
-    return contactRequest;
+    await this.repository.delete(contactRequest);
+    return IContactRequestProvider.serialize(contactRequest);
   }
 
   public async rejectContactRequest(requestId: number) {
@@ -61,9 +77,12 @@ export class ContactRequestProvider implements IContactRequestProvider {
   }
 
   public async getContactRequests(userId: number) {
-    return await this.repository
-      .createQueryBuilder("contactRequests")
-      .where("(contactRequests.toUserId = :id OR contractRequests.fromUserId = :id)", {"id": userId})
+    const contactRequests = await this.repository
+      .createQueryBuilder("contactRequest")
+      .leftJoinAndSelect("contactRequest.fromUser", "fromUser")
+      .leftJoinAndSelect("contactRequest.toUser", "toUser")
+      .where("(contactRequest.toUser = :id OR contactRequest.fromUser = :id)", {"id": userId})
       .getMany();
+    return contactRequests.map((c) => IContactRequestProvider.serialize(c));
   }
 }

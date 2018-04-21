@@ -90,11 +90,6 @@ export class UserProvider implements IUserProvider {
     ];
   }
 
-  // get user
-  public get() {
-    return this.repository.find();
-  }
-
   public async getById(id: number) {
     const user = await this.repository
       .createQueryBuilder("users")
@@ -104,6 +99,9 @@ export class UserProvider implements IUserProvider {
 
     if (!user) {
       throw new Error("User does not exist");
+    }
+    if (!user.contacts) {
+      user.contacts = [];
     }
     return user;
   }

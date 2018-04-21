@@ -1,11 +1,14 @@
 import {IUserSerialized} from "../src/models/entities/IUserSerialized";
 import {UserController} from "../src/controllers/user";
+import {ContactRequestController} from "../src/controllers/contactRequest";
 import {Inject} from "typescript-ioc";
 
 export class Fixture {
 
     @Inject
     public readonly userController!: UserController;
+    @Inject
+    public readonly contactRequestController!: ContactRequestController;
 
     public testUser1: IUserSerialized = {
       "id": -1,

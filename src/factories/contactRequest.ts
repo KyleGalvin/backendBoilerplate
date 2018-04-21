@@ -1,10 +1,11 @@
 import {ContactRequest} from "../models/entities/contactRequest";
+import {IUser} from "../models/entities/IUser";
 
 export class ContactRequestFactory {
-    public Create(fromUserId: number, toUserId: number): ContactRequest {
+    public Create(fromUser: IUser, toUser: IUser): ContactRequest {
         const contactRequest = new ContactRequest();
-        contactRequest.fromUserId = fromUserId;
-        contactRequest.toUserId = toUserId;
+        contactRequest.fromUser = fromUser;
+        contactRequest.toUser = toUser;
         return contactRequest;
     }
 }

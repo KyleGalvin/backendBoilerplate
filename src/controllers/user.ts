@@ -10,7 +10,6 @@ import {AuthProvider, IAccessToken} from "../providers/auth";
 import {IAuthProvider} from "../providers/IAuthProvider";
 import {IUserCredentials} from "../models/entities/user";
 import {IUserSerialized} from "../models/entities/IUserSerialized";
-import {IUser} from "../models/entities/IUser";
 
 @Route("user")
 export class UserController {
@@ -44,7 +43,7 @@ export class UserController {
   public async signup(@Body() user: IUserSerialized): Promise<IAccessToken> {
     try {
       const result = await this.userProvider.create(user);
-      const jwt = await this.authProvider.login((result as IUser).username, user.password);
+      const jwt = await this.authProvider.login(result.username, user.password);
       return {"access_token": jwt as string};
     } catch (e) {
       throw e;

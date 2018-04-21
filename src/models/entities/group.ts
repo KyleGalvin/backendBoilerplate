@@ -27,7 +27,7 @@ export class Group extends BaseEntity implements IGroup {
   @Column({ "type": "bigint" })
   public owner!: number;
 
-  @ManyToMany((type) => User, (user: User) => user.groups)
+  @ManyToMany((type) => User, (user: IUser) => user.groups)
   @JoinTable()
   public users!: IUser[];
 

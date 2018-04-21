@@ -1,5 +1,7 @@
+import {IUser} from "./IUser";
+
 export abstract class IContactRequest {
   public id!: number;
-  public fromUserId!: number;
-  public toUserId!: number;
+  public fromUser!: IUser;
+  public toUser!: IUser;
 }

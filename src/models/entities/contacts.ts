@@ -2,7 +2,9 @@ import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTabl
 import * as path from "path";
 
 import {Logger} from "../../util/logger";
-import { User } from "./user";
+import {User} from "./user";
+import {IUser} from "./IUser";
+
 const logger = Logger(path.normalize(path.basename(__filename)));
 
 export interface IGroup {
@@ -18,8 +20,8 @@ export class Group extends BaseEntity implements IGroup {
   @Column({ "type": "varchar" })
   public name!: string;
 
-  @ManyToMany((type) => User, (user: User) => user.groups)
+  @ManyToMany((type) => User, (user: IUser) => user.groups)
   @JoinTable()
-  public users!: User[];
+  public users!: IUser[];
 
 }

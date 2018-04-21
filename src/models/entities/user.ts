@@ -2,9 +2,10 @@ import * as bcrypt from "bcrypt";
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, OneToMany, JoinTable} from "typeorm";
 import * as path from "path";
 
-import { Logger } from "../../util/logger";
-import { Group } from "./group";
-import { IUser } from "./IUser";
+import {Logger} from "../../util/logger";
+import {Group} from "./group";
+import {IGroup} from "./IGroup"
+import {IUser} from "./IUser";
 
 const logger = Logger(path.normalize(path.basename(__filename)));
 
@@ -33,13 +34,13 @@ export class User extends BaseEntity implements IUser {
   @Column({ "type": "varchar" })
   public passwordHash!: string;
 
-  @ManyToMany((type) => Group, (group: Group) => group.users)
-  public groups!: Group[];
+  @ManyToMany((type) => Group, (group: IGroup) => group.users)
+  public groups!: IGroup[];
 
   // @OneToMany((type) => Group, (group: Group) => group.owner)
   // public ownedGroups!: Group[];
 
-  @ManyToMany((type) => User, (user: User) => user.id,  {cascade: true})
+  @ManyToMany((type) => User, (user: IUser) => user.id,  {cascade: true})
   @JoinTable()
   public contacts!: IUser[];
 

@@ -7,6 +7,8 @@ import {createConnection, Connection, ConnectionOptions} from "typeorm";
 import {config} from "../config";
 import {User} from "./entities/user";
 import {Group} from "./entities/group";
+import {ContactRequest} from "./entities/contactRequest";
+
 import {Logger} from "../util/logger";
 import { MongoConnectionOptions } from "typeorm/driver/mongodb/MongoConnectionOptions";
 
@@ -36,14 +38,14 @@ export class ConnectionSingleton {
         connectionData = {
           "type": "sqljs",
           "synchronize": true,
-          "entities": [User, Group]
+          "entities": [User, Group, ContactRequest]
         };
       } else {
         connectionData = {
           "type": "postgres",
           "url" : config.connectionString,
           "synchronize": true,
-          "entities": [User, Group]
+          "entities": [User, Group, ContactRequest]
         };
       }
       return createConnection(connectionData).then((connection) => {
