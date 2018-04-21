@@ -1,9 +1,9 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as express from "express";
-import {Get, Route, Security } from "tsoa";
-import { Logger } from "../util/logger";
-import { IConfig } from "../config";
+import {Get, Route, Security} from "tsoa";
+import {Logger} from "../util/logger";
+import {IConfig} from "../config";
 
 const logger = Logger(path.basename(__filename));
 

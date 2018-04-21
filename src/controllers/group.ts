@@ -2,11 +2,12 @@ import * as path from "path";
 import {Inject} from "typescript-ioc";
 import {Get, Put, Route, Body, Query, Header, Request, Security, Delete, Post } from "tsoa";
 
-import { Logger } from "../util/logger";
-import { IConfig, config } from "../config";
-import { IGroup, Group, IGroupSerialized } from "../models/entities/group";
-import { UserProvider, IUserProvider } from "../providers/user";
-import { GroupProvider, IGroupProvider } from "../providers/group";
+import {Logger} from "../util/logger";
+import {IConfig, config} from "../config";
+import {Group, IGroupSerialized} from "../models/entities/group";
+import {IGroup} from "../models/entities/IGroup";
+import {IUserProvider} from "../providers/IUserProvider";
+import {IGroupProvider} from "../providers/IGroupProvider";
 
 const logger = Logger(path.basename(__filename));
 
@@ -22,7 +23,7 @@ export class GroupController {
   @Security("jwt", ["user"])
   public async update(@Body() group: IGroupSerialized): Promise<IGroupSerialized> {
     const updatedGroup = await this.groupProvider.update(group);
-    return GroupProvider.serialize(updatedGroup);
+    return IGroupProvider.serialize(updatedGroup);
   }
 
   @Put("")
@@ -38,7 +39,7 @@ export class GroupController {
         "users": group.users
       };
       const savedGroup = await this.groupProvider.create(groupData);
-      return GroupProvider.serialize(savedGroup);
+      return IGroupProvider.serialize(savedGroup);
     } else {
       throw new Error("Not authenticated");
     }
@@ -49,7 +50,7 @@ export class GroupController {
     // get user record from jwt userId
     const user = await this.userProvider.getById(request.user.userId);
     if (user) {
-      return user.groups.map(g => GroupProvider.serialize(g));
+      return user.groups.map((g) => IGroupProvider.serialize(g));
     } else {
       throw new Error("Not authenticated");
     }
@@ -57,9 +58,8 @@ export class GroupController {
 
   @Delete("/{id}")
   @Security("jwt", ["user"])
-  public async delete(id: number): Promise<IGroupSerialized> {
-    const group = await this.groupProvider.deleteById(id);
-    return GroupProvider.serialize(group);
+  public async delete(id: number): Promise<void> {
+    await this.groupProvider.deleteById(id);
   }
 
 }

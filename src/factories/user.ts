@@ -1,4 +1,6 @@
-import {User, IUserSerialized, IUser} from "../models/entities/user";
+import {IUser} from "../models/entities/IUser";
+import {User} from "../models/entities/user";
+import {IUserSerialized} from "../models/entities/IUserSerialized";
 
 export class UserFactory {
     public async Create(userData: IUserSerialized): Promise<IUser> {

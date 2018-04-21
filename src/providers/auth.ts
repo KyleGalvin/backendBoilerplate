@@ -3,15 +3,13 @@ import * as jwt from "jsonwebtoken";
 import { Repository, Connection } from "typeorm";
 import { Inject, Provides } from "typescript-ioc";
 
-import {User, IUser} from "../models/entities/user";
+import {User} from "../models/entities/user";
+import {IUser} from "../models/entities/IUser";
 import { IConfig, config } from "../config";
 import {ILogger, Logger} from "../util/logger";
+import {IAuthProvider} from "./IAuthProvider";
 
 const logger: ILogger = Logger(path.basename(__filename));
-
-export abstract class IAuthProvider {
-  public login!: (username: string, password: string) => Promise<string>;
-}
 
 export interface IAccessToken {
   access_token: string;

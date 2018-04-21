@@ -2,15 +2,12 @@ import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTabl
 import * as path from "path";
 
 import {Logger} from "../../util/logger";
-import { User, IUserSerialized } from "./user";
-const logger = Logger(path.normalize(path.basename(__filename)));
+import {IUser} from "./IUser";
+import {User} from "./user";
+import {IGroup} from "./IGroup";
+import {IUserSerialized} from "./IUserSerialized";
 
-export interface IGroup {
-  id: number;
-  name: string;
-  owner: number;
-  users: User[];
-}
+const logger = Logger(path.normalize(path.basename(__filename)));
 
 export interface IGroupSerialized {
   id: number;
@@ -32,6 +29,6 @@ export class Group extends BaseEntity implements IGroup {
 
   @ManyToMany((type) => User, (user: User) => user.groups)
   @JoinTable()
-  public users!: User[];
+  public users!: IUser[];
 
 }

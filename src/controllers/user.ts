@@ -3,10 +3,14 @@ import {Post, Get, Route, Body, Security, Delete, Put} from "tsoa";
 import {Inject} from "typescript-ioc";
 
 import {config} from "../config";
-import {UserProvider, IUserProvider} from "../providers/user";
+import {UserProvider} from "../providers/user";
+import {IUserProvider} from "../providers/IUserProvider";
 import {UserFactory} from "../factories/user";
-import {AuthProvider, IAuthProvider, IAccessToken} from "../providers/auth";
-import {IUserSerialized, UserSerialized, IUserCredentials, IUser} from "../models/entities/user";
+import {AuthProvider, IAccessToken} from "../providers/auth";
+import {IAuthProvider} from "../providers/IAuthProvider";
+import {IUserCredentials} from "../models/entities/user";
+import {IUserSerialized} from "../models/entities/IUserSerialized";
+import {IUser} from "../models/entities/IUser";
 
 @Route("user")
 export class UserController {
@@ -20,14 +24,14 @@ export class UserController {
   @Security("jwt", ["user"])
   public async update(@Body() user: IUserSerialized): Promise<IUserSerialized> {
     const updatedUser = await this.userProvider.update(user);
-    return UserProvider.serialize(updatedUser);
+    return IUserProvider.serialize(updatedUser);
   }
 
   @Get("/{id}")
   @Security("jwt", ["user"])
   public async read(id: number): Promise<IUserSerialized> {
     const user = await this.userProvider.getById(id);
-    return UserProvider.serialize(user);
+    return IUserProvider.serialize(user);
   }
 
   @Delete("/{id}")

@@ -2,19 +2,14 @@ import * as path from "path";
 import {Repository, Connection} from "typeorm";
 import { Inject, Provides, Container } from "typescript-ioc";
 
-import {User, IUser, IUserSerialized} from "../models/entities/user";
+import {User} from "../models/entities/user";
+import {IUserSerialized} from "../models/entities/IUserSerialized";
+import {IUser} from "../models/entities/IUser";
 import {UserFactory} from "../factories/user";
 import {Logger} from "../util/logger";
+import {IUserProvider} from "./IUserProvider";
 
 const logger = Logger(path.basename(__filename));
-
-export abstract class IUserProvider {
-  public create!: (userData: IUserSerialized) => Promise<IUser>;
-  public update!: (userData: IUserSerialized, password?: string) => Promise<IUser>;
-  public getById!: (id: number) => Promise<User>;
-  public deleteById!: (id: number) => Promise<void>;
-  public static serialize: (user: IUser) => IUserSerialized;
-}
 
 export class UserProvider implements IUserProvider {
 
@@ -53,7 +48,7 @@ export class UserProvider implements IUserProvider {
       throw new Error("Cannot update user without an id");
     }
 
-    const user = await this.repository.findOneById(userData.id);
+    const user = await this.repository.findOne(userData.id);
     if (user === undefined) {
       throw new Error("User does not exist");
     }
@@ -66,7 +61,7 @@ export class UserProvider implements IUserProvider {
     user.email = userData.email;
     user.firstName = userData.firstName;
     user.lastName = userData.lastName;
-    if(userData.contacts) {
+    if (userData.contacts) {
       user.contacts = await this.resolveUpdatedContacts(user, userData.contacts);
     }
 
@@ -74,7 +69,7 @@ export class UserProvider implements IUserProvider {
     return await this.getById(userData.id);
   }
 
-  private async resolveUpdatedContacts(currentUser: User, updatedUsers: IUserSerialized[]) {
+  private async resolveUpdatedContacts(currentUser: IUser, updatedUsers: IUserSerialized[]) {
     if (!currentUser.contacts) {
       currentUser.contacts = [];
     }
@@ -115,17 +110,6 @@ export class UserProvider implements IUserProvider {
 
   // delete user
   public async deleteById(id: number) {
-    return await this.repository.removeById(id);
-  }
-
-  public static serialize(user: IUser): IUserSerialized {
-    return {
-        "id": user.id,
-        "firstName": user.firstName,
-        "lastName": user.lastName,
-        "email": user.email,
-        "username": user.username,
-        "contacts": user.contacts ? user.contacts.map((c: IUser) => this.serialize(c)) : []
-      } as IUserSerialized;
+    return await this.repository.delete(id);
   }
 }

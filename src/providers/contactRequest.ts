@@ -3,18 +3,14 @@ import {Repository, Connection} from "typeorm";
 import { Inject, Provides, Container } from "typescript-ioc";
 
 import {Logger} from "../util/logger";
-import { IContactRequest, ContactRequest } from "../models/entities/contactRequest";
+import {ContactRequest} from "../models/entities/contactRequest";
+import {IContactRequest} from "../models/entities/IContactRequest";
 import {ContactRequestFactory} from "../factories/contactRequest";
-import {User, IUser} from "../models/entities/user";
+import {IUser} from "../models/entities/IUser";
+import {User} from "../models/entities/user";
+import {IContactRequestProvider} from "./IContactRequestProvider";
 
 const logger = Logger(path.basename(__filename));
-
-export abstract class IContactRequestProvider {
-  public sendContactRequest!: (fromUserId: number, toUserId: number) => Promise<ContactRequest>;
-  public acceptContactRequest!: (requestId: number) => Promise<ContactRequest>;
-  public rejectContactRequest!: (requestId: number) => Promise<void>;
-  public getContactRequests!: (userId: number) => Promise<ContactRequest[]>;
-}
 
 export class ContactRequestProvider implements IContactRequestProvider {
 
@@ -36,13 +32,13 @@ export class ContactRequestProvider implements IContactRequestProvider {
   }
 
   public async acceptContactRequest(requestId: number) {
-    const contactRequest = await this.repository.findOneById(requestId);
+    const contactRequest = await this.repository.findOne(requestId);
     if (!contactRequest) {
       throw new Error("Contact Request not found");
     }
 
-    const fromUser = await this.userRepository.findOneById(contactRequest.fromUserId);
-    const toUser = await this.userRepository.findOneById(contactRequest.toUserId);
+    const fromUser = await this.userRepository.findOne(contactRequest.fromUserId);
+    const toUser = await this.userRepository.findOne(contactRequest.toUserId);
 
     if (!fromUser || !toUser) {
       throw new Error("Invalid User Id given");
@@ -61,13 +57,13 @@ export class ContactRequestProvider implements IContactRequestProvider {
   }
 
   public async rejectContactRequest(requestId: number) {
-    await this.repository.deleteById(requestId);
+    await this.repository.delete(requestId);
   }
 
   public async getContactRequests(userId: number) {
     return await this.repository
       .createQueryBuilder("contactRequests")
-      .where("contactRequests.toUserId = :id", {"id": userId})
+      .where("(contactRequests.toUserId = :id OR contractRequests.fromUserId = :id)", {"id": userId})
       .getMany();
   }
 }
