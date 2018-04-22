@@ -29,6 +29,10 @@ This application pairs out of the box with a corresponding frontend project host
 * docker containerization
 * stricter permission constraints on api actions
 
+## Requirements:
+
+node v8.x
+
 ## To install this project:
 
 npm install
