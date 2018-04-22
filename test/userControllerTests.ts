@@ -31,7 +31,7 @@ const connection = Container.get(Connection);
   @test public async canCreateUserAndLogin() {
     const fixture = new Fixture();
 
-    const serializedUser = fixture.generateRandomUser();
+    const serializedUser = fixture.generateRandomUserData();
     const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
     const credentials = {
@@ -50,7 +50,7 @@ const connection = Container.get(Connection);
   @test public async loginNamesMustBeUnique() {
     const fixture = new Fixture();
 
-    const serializedUser = fixture.generateRandomUser();
+    const serializedUser = fixture.generateRandomUserData();
     const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
@@ -67,7 +67,7 @@ const connection = Container.get(Connection);
   @test public async loginBadPassword() {
     const fixture = new Fixture();
 
-    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUser());
+    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUserData());
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const credentials = {
@@ -87,7 +87,8 @@ const connection = Container.get(Connection);
   @test public async loginBadUsername() {
     const fixture = new Fixture();
 
-    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUser());
+    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUserData
+());
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const credentials = {
@@ -107,7 +108,8 @@ const connection = Container.get(Connection);
   @test public async canUpdateUser() {
     const fixture = new Fixture();
 
-    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUser());
+    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUserData
+());
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const myUser = await fixture.userController.read(myUserId);
@@ -136,7 +138,8 @@ const connection = Container.get(Connection);
   @test public async canDeleteUser() {
     const fixture = new Fixture();
 
-    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUser());
+    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUserData
+());
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const myDeletedUser = await fixture.userController.delete(myUserId);

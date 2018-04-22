@@ -12,7 +12,7 @@ export class Fixture {
     @Inject
     public readonly contactRequestController!: ContactRequestController;
 
-    public generateRandomUser() {
+    public generateRandomUserData() {
       return {
         "id": -1,
         "username": uuid.v4(),
@@ -27,7 +27,7 @@ export class Fixture {
     public generateRandomUsers(count: number) {
       return Array
         .apply(null, Array(count))
-        .map((u: undefined) => this.generateRandomUser());
+        .map((u: undefined) => this.generateRandomUserData());
     }
 
     public testUser1: IUserSerialized = {
