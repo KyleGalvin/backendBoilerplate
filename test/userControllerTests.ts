@@ -120,7 +120,8 @@ const connection = Container.get(Connection);
       ...{
         "firstName": "updatedFirstName",
         "lastName": "updatedLastName",
-        "email": "updated@email.com"
+        "email": "updated@email.com",
+        "password": "newPassword"
       }
     };
 
