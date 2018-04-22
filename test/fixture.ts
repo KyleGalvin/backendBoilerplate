@@ -1,7 +1,9 @@
+import {Inject} from "typescript-ioc";
+import * as uuid from "uuid";
+
 import {IUserSerialized} from "../src/models/entities/IUserSerialized";
 import {UserController} from "../src/controllers/user";
 import {ContactRequestController} from "../src/controllers/contactRequest";
-import {Inject} from "typescript-ioc";
 
 export class Fixture {
 
@@ -9,6 +11,24 @@ export class Fixture {
     public readonly userController!: UserController;
     @Inject
     public readonly contactRequestController!: ContactRequestController;
+
+    public generateRandomUser() {
+      return {
+        "id": -1,
+        "username": uuid.v4(),
+        "email": uuid.v4() + "@" + uuid.v4() + "." + uuid.v4(),
+        "firstName": uuid.v4(),
+        "lastName": uuid.v4(),
+        "password": uuid.v4(),
+        "contacts": []
+      } as IUserSerialized;
+    }
+
+    public generateRandomUsers(count: number) {
+      return Array
+        .apply(null, Array(count))
+        .map((u: undefined) => this.generateRandomUser());
+    }
 
     public testUser1: IUserSerialized = {
       "id": -1,

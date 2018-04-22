@@ -31,16 +31,12 @@ const connection = Container.get(Connection);
   @test public async canCreateUserAndLogin() {
     const fixture = new Fixture();
 
-    const serializedUser = {
-      ...fixture.testUser1,
-      ...{"password": fixture.testUserPassword}
-      } as IUserSerialized;
-
+    const serializedUser = fixture.generateRandomUser();
     const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
     const credentials = {
-      "username": fixture.testUser1.username,
-      "password": fixture.testUserPassword
+      "username": serializedUser.username,
+      "password": serializedUser.password
     };
 
     const loginResult = await fixture.userController.login(credentials);
@@ -54,11 +50,7 @@ const connection = Container.get(Connection);
   @test public async loginNamesMustBeUnique() {
     const fixture = new Fixture();
 
-    const serializedUser = {
-      ...fixture.testUser1,
-      ...{"password": fixture.testUserPassword}
-      } as IUserSerialized;
-
+    const serializedUser = fixture.generateRandomUser();
     const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
@@ -75,12 +67,7 @@ const connection = Container.get(Connection);
   @test public async loginBadPassword() {
     const fixture = new Fixture();
 
-    const serializedUser = {
-      ...fixture.testUser1,
-      ...{"password": fixture.testUserPassword}
-      } as IUserSerialized;
-
-    const myAccessToken = await fixture.userController.signup(serializedUser);
+    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUser());
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const credentials = {
@@ -100,12 +87,7 @@ const connection = Container.get(Connection);
   @test public async loginBadUsername() {
     const fixture = new Fixture();
 
-    const serializedUser = {
-      ...fixture.testUser1,
-      ...{"password": fixture.testUserPassword}
-      } as IUserSerialized;
-
-    const myAccessToken = await fixture.userController.signup(serializedUser);
+    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUser());
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const credentials = {
@@ -125,13 +107,9 @@ const connection = Container.get(Connection);
   @test public async canUpdateUser() {
     const fixture = new Fixture();
 
-    const serializedUser = {
-      ...fixture.testUser1,
-      ...{"password": fixture.testUserPassword}
-      } as IUserSerialized;
-
-    const myAccessToken = await fixture.userController.signup(serializedUser);
+    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUser());
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
+
     const myUser = await fixture.userController.read(myUserId);
 
     const myUpdatedUserData: IUserSerialized = {
@@ -158,12 +136,7 @@ const connection = Container.get(Connection);
   @test public async canDeleteUser() {
     const fixture = new Fixture();
 
-    const serializedUser = {
-      ...fixture.testUser1,
-      ...{"password": fixture.testUserPassword}
-      } as IUserSerialized;
-
-    const myAccessToken = await fixture.userController.signup(serializedUser);
+    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUser());
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const myDeletedUser = await fixture.userController.delete(myUserId);
@@ -178,23 +151,13 @@ const connection = Container.get(Connection);
   @test public async canAddContacts() {
     const fixture = new Fixture();
 
-    const serializedUser1 = {
-      ...fixture.testUser1,
-      ...{"password": fixture.testUserPassword}
-      } as IUserSerialized;
-    const serializedUser2 = {
-      ...fixture.testUser2,
-      ...{"password": fixture.testUserPassword}
-      } as IUserSerialized;
+    const users = fixture.generateRandomUsers(2);
 
-    const myAccessToken1 = await fixture.userController.signup(serializedUser1);
-    const myAccessToken2 = await fixture.userController.signup(serializedUser2);
+    const myAccessToken1 = await fixture.userController.signup(users[0]);
+    const myAccessToken2 = await fixture.userController.signup(users[1]);
 
     const myUserId1 = AuthProviderTests.getUserIdFromJwt(myAccessToken1.access_token);
     const myUserId2 = AuthProviderTests.getUserIdFromJwt(myAccessToken2.access_token);
-
-    const myUser1 = await fixture.userController.read(myUserId1);
-    const myUser2 = await fixture.userController.read(myUserId2);
 
     // mock the data express reads from our JWT token.
     // This is the minimum data our controller needs to recieve to act.
