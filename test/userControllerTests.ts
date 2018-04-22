@@ -67,11 +67,12 @@ const connection = Container.get(Connection);
   @test public async loginBadPassword() {
     const fixture = new Fixture();
 
-    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUserData());
+    const serializedUser = fixture.generateRandomUserData();
+    const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const credentials = {
-      "username": fixture.testUser1.username,
+      "username": serializedUser.username,
       "password": "notMyPassword"
     };
 
