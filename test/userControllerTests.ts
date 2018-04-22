@@ -109,20 +109,19 @@ const connection = Container.get(Connection);
   @test public async canUpdateUser() {
     const fixture = new Fixture();
 
-    const myAccessToken = await fixture.userController.signup(fixture.generateRandomUserData
-());
+    const serializedUser = fixture.generateRandomUserData();
+    const myAccessToken = await fixture.userController.signup(serializedUser);
     const myUserId = AuthProviderTests.getUserIdFromJwt(myAccessToken.access_token);
 
     const myUser = await fixture.userController.read(myUserId);
 
     const myUpdatedUserData: IUserSerialized = {
-      "id": myUserId,
-      "username": "testuser",
-      "email": "email2@mail.com",
-      "firstName": "jane2",
-      "lastName": "doe2",
-      "password": "",
-      "contacts": []
+      ...myUser,
+      ...{
+        "firstName": "updatedFirstName",
+        "lastName": "updatedLastName",
+        "email": "updated@email.com"
+      }
     };
 
     await fixture.userController.update(myUpdatedUserData);
@@ -130,9 +129,9 @@ const connection = Container.get(Connection);
 
     await fixture.userController.delete(myUserId);
 
-    assert.notEqual(myUser.email, myUpdatedUser.email, "updated email");
-    assert.notEqual(myUser.firstName, myUpdatedUser.firstName, "updated firstName");
-    assert.notEqual(myUser.lastName, myUpdatedUser.lastName, "updated lastName");
+    assert.notEqual(myUser.email, "updated@email.com", "updated email");
+    assert.notEqual(myUser.firstName, "updatedFirstName", "updated firstName");
+    assert.notEqual(myUser.lastName, "updatedLastName", "updated lastName");
 
   }
 
