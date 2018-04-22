@@ -28,11 +28,11 @@ const connection = Container.get(Connection);
 
     const users = fixture.generateRandomUsers(2);
 
-    const myAccessToken1 = await fixture.userController.signup(users[0]);
-    const myAccessToken2 = await fixture.userController.signup(users[1]);
+    const loginCredentials1 = await fixture.userController.signup(users[0]);
+    const loginCredentials2 = await fixture.userController.signup(users[1]);
 
-    const myUserId1 = Fixture.getUserIdFromJwt(myAccessToken1.access_token);
-    const myUserId2 = Fixture.getUserIdFromJwt(myAccessToken2.access_token);
+    const myUserId1 = Fixture.getUserIdFromJwt(loginCredentials1.authToken);
+    const myUserId2 = Fixture.getUserIdFromJwt(loginCredentials2.authToken);
 
     // mock the data express reads from our JWT token.
     // This is the minimum data our controller needs to recieve to act.

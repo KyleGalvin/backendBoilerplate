@@ -10,6 +10,7 @@ import {AuthProvider, IAccessToken} from "../providers/auth";
 import {IAuthProvider} from "../providers/IAuthProvider";
 import {IUserCredentials} from "../models/entities/user";
 import {IUserSerialized} from "../models/entities/IUserSerialized";
+import {ISignupResponse} from "../models/entities/ISignupResponse";
 
 @Route("user")
 export class UserController {
@@ -40,22 +41,30 @@ export class UserController {
   }
 
   @Put("signup")
-  public async signup(@Body() user: IUserSerialized): Promise<IAccessToken> {
+  public async signup(@Body() user: IUserSerialized): Promise<ISignupResponse> {
     try {
-      const result = await this.userProvider.create(user);
-      const jwt = await this.authProvider.login(result.username, user.password);
-      return {"access_token": jwt as string};
+      const userData = await this.userProvider.create(user);
+      const jwt = await this.authProvider.login(userData.username, user.password);
+      return {
+          "authToken": jwt as string,
+          "user": userData
+        };
     } catch (e) {
       throw e;
     }
   }
 
   @Put("login")
-  public async login(@Body() credentials: IUserCredentials): Promise<IAccessToken> {
+  public async login(@Body() credentials: IUserCredentials): Promise<ISignupResponse> {
     const jwt = await this.authProvider.login(credentials.username, credentials.password);
     if (!jwt) {
       throw new Error("Login Error");
     }
-    return {"access_token": jwt};
+    const userId = JSON.parse(Buffer.from(jwt.split(".")[1], "base64").toString()).id;
+    const userData = await this.userProvider.getById(userId);
+    return {
+      "authToken": jwt as string,
+      "user": userData
+    };
   }
 }
