@@ -44,10 +44,11 @@ export class UserController {
   public async signup(@Body() user: IUserSerialized): Promise<ISignupResponse> {
     try {
       const userData = await this.userProvider.create(user);
+      const userDataSerialized = IUserProvider.serialize(userData);
       const jwt = await this.authProvider.login(userData.username, user.password);
       return {
           "authToken": jwt as string,
-          "user": userData
+          "user": userDataSerialized
         };
     } catch (e) {
       throw e;
@@ -62,9 +63,10 @@ export class UserController {
     }
     const userId = JSON.parse(Buffer.from(jwt.split(".")[1], "base64").toString()).id;
     const userData = await this.userProvider.getById(userId);
+    const userDataSerialized = IUserProvider.serialize(userData);
     return {
       "authToken": jwt as string,
-      "user": userData
+      "user": userDataSerialized
     };
   }
 }
