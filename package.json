@@ -11,7 +11,7 @@
     "local": "nodemon -e ts -w ./src -x npm run local:watch",
     "local:watch": "npm run build && npm run lint && cat ./tslint.err && npm run build && node --inspect ./dist/src/index.js",
     "start": "npm run build && node ./dist/src/index.js",
-    "test": "set NODE_ENV=TEST && nyc --extension .ts --extension .tsx mocha -r ts-node/register ./test/*.ts && nyc report --reporter text-lcov --extension .ts --extension .tsx | coveralls",
+    "test": "set NODE_ENV=TEST && nyc --extension .ts --extension .tsx mocha --timeout 10000 -r ts-node/register ./test/*.ts && nyc report --reporter text-lcov --extension .ts --extension .tsx | coveralls",
     "test-watch": "npm run clean && mocha-typescript-watch -p tsconfig.json -o ./mocha.opts"
   },
   "repository": {
