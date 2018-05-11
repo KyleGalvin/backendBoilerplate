@@ -1,6 +1,6 @@
 import * as express from "express";
-import {Post, Get, Route, Body, Security, Delete, Put} from "tsoa";
 import {Inject} from "typescript-ioc";
+import * as Hapi from "hapi";
 
 import {config} from "../config";
 import {UserProvider} from "../providers/user";
@@ -12,7 +12,6 @@ import {IUserCredentials} from "../models/entities/user";
 import {IUserSerialized} from "../models/entities/IUserSerialized";
 import {ISignupResponse} from "../models/entities/ISignupResponse";
 
-@Route("user")
 export class UserController {
 
   @Inject
@@ -20,32 +19,53 @@ export class UserController {
   @Inject
   private authProvider!: IAuthProvider;
 
-  @Post("")
-  @Security("jwt", ["user"])
-  public async update(@Body() user: IUserSerialized): Promise<IUserSerialized> {
-    const updatedUser = await this.userProvider.update(user);
+  constructor(server: Hapi.Server) {
+    server.route({
+      "method": "POST",
+      "path": "",
+      "handler": this.update
+    });
+    server.route({
+      "method": "GET",
+      "path": "/{id}",
+      "handler": this.read
+    });
+    server.route({
+      "method": "DELETE",
+      "path": "/{id}",
+      "handler": this.delete
+    });
+    server.route({
+      "method": "PUT",
+      "path": "/signup",
+      "handler": this.signup
+    });
+    server.route({
+      "method": "PUT",
+      "path": "/login",
+      "handler": this.login
+    });
+  }
+
+  public async update(request: Hapi.Request) {
+    const updatedUser = await this.userProvider.update(request.payload as IUserSerialized);
     return IUserProvider.serialize(updatedUser);
   }
 
-  @Get("/{id}")
-  @Security("jwt", ["user"])
-  public async read(id: number): Promise<IUserSerialized> {
-    const user = await this.userProvider.getById(id);
+  public async read(request: Hapi.Request) {
+    const user = await this.userProvider.getById(parseInt(request.params.id, 10));
     return IUserProvider.serialize(user);
   }
 
-  @Delete("/{id}")
-  @Security("jwt", ["user"])
-  public async delete(id: number): Promise<void> {
-    await this.userProvider.deleteById(id);
+  public async delete(request: Hapi.Request) {
+    await this.userProvider.deleteById(parseInt(request.params.id, 10));
   }
 
-  @Put("signup")
-  public async signup(@Body() user: IUserSerialized): Promise<ISignupResponse> {
+  public async signup(request: Hapi.Request) {
     try {
-      const userData = await this.userProvider.create(user);
+      const userData = await this.userProvider.create(request.payload as IUserSerialized);
       const userDataSerialized = IUserProvider.serialize(userData);
-      const jwt = await this.authProvider.login(userData.username, user.password);
+      const jwt = await this.authProvider.login(userData.username, (request.payload as IUserSerialized).password);
       return {
           "authToken": jwt as string,
           "user": userDataSerialized
@@ -55,8 +75,8 @@ export class UserController {
     }
   }
 
-  @Put("login")
-  public async login(@Body() credentials: IUserCredentials): Promise<ISignupResponse> {
+  public async login(request: Hapi.Request) {
+    const credentials = request.payload as IUserCredentials;
     const jwt = await this.authProvider.login(credentials.username, credentials.password);
     if (!jwt) {
       throw new Error("Login Error");

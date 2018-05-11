@@ -1,7 +1,7 @@
 import * as path from "path";
 import {Connection} from "typeorm";
-import {Post, Get, Route, Body, Request, Security, Delete, Put} from "tsoa";
 import {Inject} from "typescript-ioc";
+import * as Hapi from "hapi";
 
 import {IContactRequest} from "../models/entities/IContactRequest";
 import {IContactRequestSerialized} from "../models/entities/IContactRequestSerialized";
@@ -12,33 +12,41 @@ import {IConfig} from "../config";
 
 const logger = Logger(path.basename(__filename));
 
-@Route("contacts")
 export class ContactRequestController {
 
   @Inject
   private contactRequestProvider!: IContactRequestProvider;
 
-  @Get("")
-  @Security("jwt", ["user"])
-  public async getContactRequests(@Request() request: Express.Request): Promise<IContactRequestSerialized[]> {
-    return await this.contactRequestProvider.getContactRequests(request.user.userId);
-  }
-
-  @Put("request/{userId}")
-  @Security("jwt", ["user"])
-  public async sendContactRequest(@Request() request: Express.Request, userId: number): Promise<IContactRequestSerialized> {
-    return await this.contactRequestProvider.sendContactRequest(request.user.userId, userId);
-  }
-
-  @Post("accept/{requestId}")
-  @Security("jwt", ["user"])
-  public async acceptContactRequest(requestId: number): Promise<IContactRequestSerialized> {
-    return await this.contactRequestProvider.acceptContactRequest(requestId);
-  }
-
-  @Post("reject/{requestId}")
-  @Security("jwt", ["user"])
-  public async rejectContactRequest(requestId: number): Promise<void> {
-    await this.contactRequestProvider.rejectContactRequest(requestId);
+  constructor(server: Hapi.Server) {
+    server.route({
+      "method": "GET",
+      "path": "",
+      "handler": async (request, h) => {
+        return await this.contactRequestProvider.getContactRequests(request.user.userId);
+      }
+    });
+    server.route({
+      "method": "PUT",
+      "path": "request/{userId}",
+      "handler": async (request, h) => {
+        logger.info("hapi auth: " + request.headers.authorization);
+        return await this.contactRequestProvider
+          .sendContactRequest(request.user.userId, parseInt(request.params.userId, 10));
+      }
+    });
+    server.route({
+      "method": "POST",
+      "path": "accept/{requestId}",
+      "handler": async (request, h) => {
+        return await this.contactRequestProvider.acceptContactRequest(parseInt(request.params.requestId, 10));
+      }
+    });
+    server.route({
+      "method": "POST",
+      "path": "reject/{requestId}",
+      "handler": async (request, h) => {
+        await this.contactRequestProvider.rejectContactRequest(parseInt(request.params.requestId, 10));
+      }
+    });
   }
 }

@@ -5,6 +5,8 @@ import * as http from "http";
 import * as cors from "cors";
 import {Container} from "typescript-ioc";
 import {Connection} from "typeorm";
+import * as Hapi from "hapi";
+import * as HapiJwt from "hapi-auth-jwt2";
 
 import IoC from "./dependencyResolution/IoC";
 import "./controllers/swagger";
@@ -15,7 +17,6 @@ import "./controllers/user";
 import { config } from "./config";
 import { Logger } from "./util/logger";
 import { ConnectionProvider } from "./models/typeorm";
-import {RegisterRoutes} from "./routes";
 
 const logger = Logger(path.basename(__filename));
 
@@ -24,11 +25,28 @@ IoC.configure();
 const connection = Container.get(Connection);
 
 const app = express();
-app.use(bodyParser.json({ "type": "application/json"}));
-app.use(bodyParser.urlencoded({ "extended": true }));
-app.use(cors());
 
-RegisterRoutes(app);
+const server = new Hapi.Server({
+  "host": config.domain,
+  "port": config.port
+});
+const start = async () => {
 
-const server = http.createServer(app  as (req: any, res: any) => void);
-server.listen(config.port, () => logger.info("Listening on port " + config.port));
+  try {
+      await server.register(HapiJwt);
+      server.auth.strategy("jwt", "jwt",
+      { "key": config.jwt.secret,
+        "validate": () => true,
+        "verifyOptions": { "algorithms": [ "HS256" ] }
+      });
+      server.auth.default("jwt");
+      await server.start();
+  } catch (err) {
+      logger.error(err);
+      process.exit(1);
+  }
+
+  logger.info("Server running at:", server.info.uri);
+};
+
+start();
