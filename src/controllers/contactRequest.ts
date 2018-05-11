@@ -21,32 +21,39 @@ export class ContactRequestController {
     server.route({
       "method": "GET",
       "path": "",
-      "handler": async (request, h) => {
-        return await this.contactRequestProvider.getContactRequests(request.user.userId);
-      }
+      "handler": async (request) => this.getContactRequests(request.user.userId)
     });
     server.route({
       "method": "PUT",
       "path": "request/{userId}",
-      "handler": async (request, h) => {
-        logger.info("hapi auth: " + request.headers.authorization);
-        return await this.contactRequestProvider
-          .sendContactRequest(request.user.userId, parseInt(request.params.userId, 10));
-      }
+      "handler": async (request) => this.sendContactRequest(request.user.userId, parseInt(request.params.userId, 10))
     });
     server.route({
       "method": "POST",
       "path": "accept/{requestId}",
-      "handler": async (request, h) => {
-        return await this.contactRequestProvider.acceptContactRequest(parseInt(request.params.requestId, 10));
-      }
+      "handler": async (request) => this.acceptContactRequest(parseInt(request.params.requestId, 10))
     });
     server.route({
       "method": "POST",
       "path": "reject/{requestId}",
-      "handler": async (request, h) => {
-        await this.contactRequestProvider.rejectContactRequest(parseInt(request.params.requestId, 10));
-      }
+      "handler": async (request) => this.rejectContactRequest(parseInt(request.params.requestId, 10))
     });
+  }
+
+  public async sendContactRequest(fromUserId: number, toUserId: number) {
+    return await this.contactRequestProvider
+    .sendContactRequest(fromUserId, toUserId);
+  }
+
+  public async getContactRequests(userId: number) {
+    return await this.contactRequestProvider.getContactRequests(userId);
+  }
+
+  public async acceptContactRequest(requestId: number) {
+    return await this.contactRequestProvider.acceptContactRequest(requestId);
+  }
+
+  public async rejectContactRequest(requestId: number) {
+    await this.contactRequestProvider.rejectContactRequest(requestId);
   }
 }

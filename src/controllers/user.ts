@@ -23,49 +23,49 @@ export class UserController {
     server.route({
       "method": "POST",
       "path": "",
-      "handler": this.update
+      "handler": (request) => this.update(request.payload as IUserSerialized)
     });
     server.route({
       "method": "GET",
       "path": "/{id}",
-      "handler": this.read
+      "handler": (request) => this.read(parseInt(request.params.id, 10))
     });
     server.route({
       "method": "DELETE",
       "path": "/{id}",
-      "handler": this.delete
+      "handler": (request) => this.delete(parseInt(request.params.id, 10))
     });
     server.route({
       "method": "PUT",
       "path": "/signup",
-      "handler": this.signup
+      "handler": (request) => this.signup(request.payload as IUserSerialized)
     });
     server.route({
       "method": "PUT",
       "path": "/login",
-      "handler": this.login
+      "handler": (request) => this.login(request.payload as IUserCredentials)
     });
   }
 
-  public async update(request: Hapi.Request) {
-    const updatedUser = await this.userProvider.update(request.payload as IUserSerialized);
+  public async update(userRequest: IUserSerialized) {
+    const updatedUser = await this.userProvider.update(userRequest);
     return IUserProvider.serialize(updatedUser);
   }
 
-  public async read(request: Hapi.Request) {
-    const user = await this.userProvider.getById(parseInt(request.params.id, 10));
+  public async read(userId: number) {
+    const user = await this.userProvider.getById(userId);
     return IUserProvider.serialize(user);
   }
 
-  public async delete(request: Hapi.Request) {
-    await this.userProvider.deleteById(parseInt(request.params.id, 10));
+  public async delete(userId: number) {
+    await this.userProvider.deleteById(userId);
   }
 
-  public async signup(request: Hapi.Request) {
+  public async signup(userRequest: IUserSerialized) {
     try {
-      const userData = await this.userProvider.create(request.payload as IUserSerialized);
+      const userData = await this.userProvider.create(userRequest);
       const userDataSerialized = IUserProvider.serialize(userData);
-      const jwt = await this.authProvider.login(userData.username, (request.payload as IUserSerialized).password);
+      const jwt = await this.authProvider.login(userData.username, userRequest.password);
       return {
           "authToken": jwt as string,
           "user": userDataSerialized
@@ -75,8 +75,7 @@ export class UserController {
     }
   }
 
-  public async login(request: Hapi.Request) {
-    const credentials = request.payload as IUserCredentials;
+  public async login(credentials: IUserCredentials) {
     const jwt = await this.authProvider.login(credentials.username, credentials.password);
     if (!jwt) {
       throw new Error("Login Error");
