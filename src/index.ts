@@ -9,6 +9,7 @@ import * as HapiJwt from "hapi-auth-jwt2";
 import * as HapiSwagger from "hapi-swagger";
 import * as inert from "inert";
 import * as vision from "vision";
+import { graphqlHapi, graphiqlHapi } from "apollo-server-hapi";
 
 import IoC from "./dependencyResolution/IoC";
 import registerGroup from "./controllers/hapi/group";
@@ -44,7 +45,9 @@ const start = async () => {
       HapiJwt,
       inert,
       vision,
-      HapiSwagger
+      HapiSwagger,
+      graphqlHapi,
+      graphiqlHapi
     ]);
 
     server.auth.strategy("jwt", "jwt",
