@@ -19,34 +19,6 @@ export class UserController {
   @Inject
   private authProvider!: IAuthProvider;
 
-  constructor(server: Hapi.Server) {
-    server.route({
-      "method": "POST",
-      "path": "",
-      "handler": (request) => this.update(request.payload as IUserSerialized)
-    });
-    server.route({
-      "method": "GET",
-      "path": "/{id}",
-      "handler": (request) => this.read(parseInt(request.params.id, 10))
-    });
-    server.route({
-      "method": "DELETE",
-      "path": "/{id}",
-      "handler": (request) => this.delete(parseInt(request.params.id, 10))
-    });
-    server.route({
-      "method": "PUT",
-      "path": "/signup",
-      "handler": (request) => this.signup(request.payload as IUserSerialized)
-    });
-    server.route({
-      "method": "PUT",
-      "path": "/login",
-      "handler": (request) => this.login(request.payload as IUserCredentials)
-    });
-  }
-
   public async update(userRequest: IUserSerialized) {
     const updatedUser = await this.userProvider.update(userRequest);
     return IUserProvider.serialize(updatedUser);

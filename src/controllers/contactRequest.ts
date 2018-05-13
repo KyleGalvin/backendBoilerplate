@@ -17,29 +17,6 @@ export class ContactRequestController {
   @Inject
   private contactRequestProvider!: IContactRequestProvider;
 
-  constructor(server: Hapi.Server) {
-    server.route({
-      "method": "GET",
-      "path": "",
-      "handler": async (request) => this.getContactRequests(request.user.userId)
-    });
-    server.route({
-      "method": "PUT",
-      "path": "request/{userId}",
-      "handler": async (request) => this.sendContactRequest(request.user.userId, parseInt(request.params.userId, 10))
-    });
-    server.route({
-      "method": "POST",
-      "path": "accept/{requestId}",
-      "handler": async (request) => this.acceptContactRequest(parseInt(request.params.requestId, 10))
-    });
-    server.route({
-      "method": "POST",
-      "path": "reject/{requestId}",
-      "handler": async (request) => this.rejectContactRequest(parseInt(request.params.requestId, 10))
-    });
-  }
-
   public async sendContactRequest(fromUserId: number, toUserId: number) {
     return await this.contactRequestProvider
     .sendContactRequest(fromUserId, toUserId);
