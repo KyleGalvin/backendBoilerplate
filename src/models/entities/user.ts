@@ -4,7 +4,7 @@ import * as path from "path";
 
 import {Logger} from "../../util/logger";
 import {Group} from "./group";
-import {IGroup} from "./IGroup"
+import {IGroup} from "./IGroup";
 import {IUser} from "./IUser";
 
 const logger = Logger(path.normalize(path.basename(__filename)));
@@ -40,7 +40,7 @@ export class User extends BaseEntity implements IUser {
   // @OneToMany((type) => Group, (group: Group) => group.owner)
   // public ownedGroups!: Group[];
 
-  @ManyToMany((type) => User, (user: IUser) => user.id,  {cascade: true})
+  @ManyToMany((type) => User, (user: IUser) => user.id,  {"cascade": true})
   @JoinTable()
   public contacts!: IUser[];
 

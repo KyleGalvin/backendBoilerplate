@@ -1,6 +1,6 @@
 import * as express from "express";
-import {Post, Get, Route, Body, Security, Delete, Put} from "tsoa";
 import {Inject} from "typescript-ioc";
+import * as Hapi from "hapi";
 
 import {config} from "../config";
 import {UserProvider} from "../providers/user";
@@ -12,7 +12,6 @@ import {IUserCredentials} from "../models/entities/user";
 import {IUserSerialized} from "../models/entities/IUserSerialized";
 import {ISignupResponse} from "../models/entities/ISignupResponse";
 
-@Route("user")
 export class UserController {
 
   @Inject
@@ -20,32 +19,25 @@ export class UserController {
   @Inject
   private authProvider!: IAuthProvider;
 
-  @Post("")
-  @Security("jwt", ["user"])
-  public async update(@Body() user: IUserSerialized): Promise<IUserSerialized> {
-    const updatedUser = await this.userProvider.update(user);
+  public async update(userRequest: IUserSerialized) {
+    const updatedUser = await this.userProvider.update(userRequest);
     return IUserProvider.serialize(updatedUser);
   }
 
-  @Get("/{id}")
-  @Security("jwt", ["user"])
-  public async read(id: number): Promise<IUserSerialized> {
-    const user = await this.userProvider.getById(id);
+  public async read(userId: number) {
+    const user = await this.userProvider.getById(userId);
     return IUserProvider.serialize(user);
   }
 
-  @Delete("/{id}")
-  @Security("jwt", ["user"])
-  public async delete(id: number): Promise<void> {
-    await this.userProvider.deleteById(id);
+  public async delete(userId: number) {
+    await this.userProvider.deleteById(userId);
   }
 
-  @Put("signup")
-  public async signup(@Body() user: IUserSerialized): Promise<ISignupResponse> {
+  public async signup(userRequest: IUserSerialized) {
     try {
-      const userData = await this.userProvider.create(user);
+      const userData = await this.userProvider.create(userRequest);
       const userDataSerialized = IUserProvider.serialize(userData);
-      const jwt = await this.authProvider.login(userData.username, user.password);
+      const jwt = await this.authProvider.login(userData.username, userRequest.password);
       return {
           "authToken": jwt as string,
           "user": userDataSerialized
@@ -55,8 +47,7 @@ export class UserController {
     }
   }
 
-  @Put("login")
-  public async login(@Body() credentials: IUserCredentials): Promise<ISignupResponse> {
+  public async login(credentials: IUserCredentials) {
     const jwt = await this.authProvider.login(credentials.username, credentials.password);
     if (!jwt) {
       throw new Error("Login Error");

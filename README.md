@@ -24,10 +24,10 @@ This application pairs out of the box with a corresponding frontend project host
 ## Todo:
 
 * 'group' API test coverage
-* investigate hapi rest controller swagger
-* improve rest error handling
 * docker containerization
 * stricter permission constraints on api actions
+* Odata rest endpoints
+* Uuids instead of auto_increment keys
 
 ## Requirements:
 

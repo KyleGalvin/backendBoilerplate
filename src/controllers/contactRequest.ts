@@ -1,7 +1,7 @@
 import * as path from "path";
 import {Connection} from "typeorm";
-import {Post, Get, Route, Body, Request, Security, Delete, Put} from "tsoa";
 import {Inject} from "typescript-ioc";
+import * as Hapi from "hapi";
 
 import {IContactRequest} from "../models/entities/IContactRequest";
 import {IContactRequestSerialized} from "../models/entities/IContactRequestSerialized";
@@ -12,33 +12,25 @@ import {IConfig} from "../config";
 
 const logger = Logger(path.basename(__filename));
 
-@Route("contacts")
 export class ContactRequestController {
 
   @Inject
   private contactRequestProvider!: IContactRequestProvider;
 
-  @Get("")
-  @Security("jwt", ["user"])
-  public async getContactRequests(@Request() request: Express.Request): Promise<IContactRequestSerialized[]> {
-    return await this.contactRequestProvider.getContactRequests(request.user.userId);
+  public async sendContactRequest(fromUserId: number, toUserId: number) {
+    return await this.contactRequestProvider
+    .sendContactRequest(fromUserId, toUserId);
   }
 
-  @Put("request/{userId}")
-  @Security("jwt", ["user"])
-  public async sendContactRequest(@Request() request: Express.Request, userId: number): Promise<IContactRequestSerialized> {
-    return await this.contactRequestProvider.sendContactRequest(request.user.userId, userId);
+  public async getContactRequests(userId: number) {
+    return await this.contactRequestProvider.getContactRequests(userId);
   }
 
-  @Post("accept/{requestId}")
-  @Security("jwt", ["user"])
-  public async acceptContactRequest(requestId: number): Promise<IContactRequestSerialized> {
+  public async acceptContactRequest(requestId: number) {
     return await this.contactRequestProvider.acceptContactRequest(requestId);
   }
 
-  @Post("reject/{requestId}")
-  @Security("jwt", ["user"])
-  public async rejectContactRequest(requestId: number): Promise<void> {
+  public async rejectContactRequest(requestId: number) {
     await this.contactRequestProvider.rejectContactRequest(requestId);
   }
 }

@@ -34,15 +34,11 @@ const connection = Container.get(Connection);
     const myUserId1 = Fixture.getUserIdFromJwt(loginCredentials1.authToken);
     const myUserId2 = Fixture.getUserIdFromJwt(loginCredentials2.authToken);
 
-    // mock the data express reads from our JWT token.
-    // This is the minimum data our controller needs to recieve to act.
-    const mockExpressRequest1 = {"user": {"userId": myUserId1}} as Express.Request;
     const contactRequestCreated = await fixture.contactRequestController
-      .sendContactRequest(mockExpressRequest1, myUserId2);
+      .sendContactRequest(myUserId1, myUserId2);
 
     // get user2's pending contact requests
-    const mockExpressRequest2 = {"user": {"userId": myUserId2}} as Express.Request;
-    const user2ContactRequests = await fixture.contactRequestController.getContactRequests(mockExpressRequest2);
+    const user2ContactRequests = await fixture.contactRequestController.getContactRequests(myUserId2);
 
     // accept the pending request
     const acceptedRequest = await fixture.contactRequestController.acceptContactRequest(user2ContactRequests[0].id);
