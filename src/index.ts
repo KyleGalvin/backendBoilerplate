@@ -30,6 +30,7 @@ const start = async () => {
       "port": config.port,
       "routes": {
         "cors": {
+          "headers": ["Accept", "Authorization", "Content-Type", "Access-Control-Allow-Origin"],
           "origin": [
             "http://localhost"
           ]
