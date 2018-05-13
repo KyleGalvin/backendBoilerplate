@@ -12,6 +12,7 @@ import IoC from "./dependencyResolution/IoC";
 import registerGroup from "./controllers/hapi/group";
 import registerContactRequests from "./controllers/hapi/contactRequest";
 import registerUsers from "./controllers/hapi/user";
+import registerSwagger from "./controllers/hapi/swagger";
 import { config } from "./config";
 import { Logger } from "./util/logger";
 import { ConnectionProvider } from "./models/typeorm";
@@ -43,6 +44,7 @@ const start = async () => {
     registerGroup(server);
     registerContactRequests(server);
     registerUsers(server);
+    registerSwagger(server);
 
     server.auth.strategy("jwt", "jwt",
     { "key": config.jwt.secret,
