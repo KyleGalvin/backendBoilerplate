@@ -6,13 +6,16 @@ import {Container} from "typescript-ioc";
 import {Connection} from "typeorm";
 import * as Hapi from "hapi";
 import * as HapiJwt from "hapi-auth-jwt2";
+import * as HapiSwagger from "hapi-swagger";
+import * as inert from "inert";
+import * as vision from "vision";
 
 import IoC from "./dependencyResolution/IoC";
 // import "./controllers/swagger";
 import registerGroup from "./controllers/hapi/group";
 import registerContactRequests from "./controllers/hapi/contactRequest";
 import registerUsers from "./controllers/hapi/user";
-import registerSwagger from "./controllers/hapi/swagger";
+// import registerSwagger from "./controllers/hapi/swagger";
 import { config } from "./config";
 import { Logger } from "./util/logger";
 import { ConnectionProvider } from "./models/typeorm";
@@ -39,18 +42,26 @@ const start = async () => {
       }
     });
 
-    await server.register(HapiJwt);
+    await server.register([
+      HapiJwt,
+      inert,
+      vision,
+      HapiSwagger
+    ]);
+
+    server.auth.strategy("jwt", "jwt",
+    { "key": config.jwt.secret,
+      "validate": () => {
+        return {"isValid": true};
+      },
+      "verifyOptions": { "algorithms": [ "HS256" ] }
+    });
 
     registerGroup(server);
     registerContactRequests(server);
     registerUsers(server);
-    registerSwagger(server);
+    // registerSwagger(server);
 
-    server.auth.strategy("jwt", "jwt",
-    { "key": config.jwt.secret,
-      "validate": () => true,
-      "verifyOptions": { "algorithms": [ "HS256" ] }
-    });
     server.auth.default("jwt");
     await server.start();
     logger.info("Server running at:", server.info.uri);

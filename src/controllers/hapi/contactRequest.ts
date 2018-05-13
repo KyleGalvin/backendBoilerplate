@@ -12,6 +12,12 @@ export default (server: Hapi.Server) => {
   server.route({
     "method": "GET",
     "path": basePath + "",
+    "options": {
+      "auth": "jwt",
+      "tags": ["api"],
+      "description": "Get ContactRequests",
+      "notes": "Get outstanding contactRequests belonging to a userId"
+    },
     "handler": (request) => {
       const contactRequestController = new ContactRequestController();
       const userId = jwtToId(request.headers.authorization);
@@ -21,6 +27,12 @@ export default (server: Hapi.Server) => {
   server.route({
     "method": "PUT",
     "path": basePath + "/request/{userId}",
+    "options": {
+      "auth": "jwt",
+      "tags": ["api"],
+      "description": "Create ContactRequests",
+      "notes": "Create contact request from currently logged in user to a specified user"
+    },
     "handler": (request) => {
       const contactRequestController = new ContactRequestController();
       const fromUserId = jwtToId(request.headers.authorization);
@@ -31,6 +43,12 @@ export default (server: Hapi.Server) => {
   server.route({
     "method": "POST",
     "path": basePath + "/accept/{requestId}",
+    "options": {
+      "auth": "jwt",
+      "tags": ["api"],
+      "description": "Accept ContactRequests",
+      "notes": "accept contactRequest"
+    },
     "handler": (request) => {
       const contactRequestController = new ContactRequestController();
       contactRequestController.acceptContactRequest(parseInt(request.params.requestId, 10));
@@ -39,6 +57,12 @@ export default (server: Hapi.Server) => {
   server.route({
     "method": "POST",
     "path": basePath + "/reject/{requestId}",
+    "options": {
+      "auth": "jwt",
+      "tags": ["api"],
+      "description": "Reject ContactRequests",
+      "notes": "reject contactRequest"
+    },
     "handler": (request) => {
       const contactRequestController = new ContactRequestController();
       contactRequestController.rejectContactRequest(parseInt(request.params.requestId, 10));

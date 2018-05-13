@@ -12,41 +12,66 @@ export default (server: Hapi.Server) => {
   server.route({
     "method": "POST",
     "path": basePath + "",
+    "options": {"auth": "jwt"},
     "handler": (request) => {
       const userController = new UserController();
-      userController.update(request.payload as IUserSerialized);
+      return userController.update(request.payload as IUserSerialized);
     }
   });
   server.route({
     "method": "GET",
     "path": basePath + "/{id}",
+    "options": {
+      "auth": "jwt",
+      "tags": ["api"],
+      "description": "Get User",
+      "notes": "Get user by UserId"
+    },
     "handler": (request) => {
       const userController = new UserController();
-      userController.read(parseInt(request.params.id, 10));
+      return userController.read(parseInt(request.params.id, 10));
     }
   });
   server.route({
     "method": "DELETE",
     "path": basePath + "/{id}",
+    "options": {
+      "auth": "jwt",
+      "tags": ["api"],
+      "description": "Delete User",
+      "notes": "Delete user by UserId"
+    },
     "handler": (request) => {
       const userController = new UserController();
-      userController.delete(parseInt(request.params.id, 10));
+      return userController.delete(parseInt(request.params.id, 10));
     }
   });
   server.route({
     "method": "PUT",
     "path": basePath + "/signup",
+    "options": {
+      "auth": "jwt",
+      "tags": ["api"],
+      "description": "Add User",
+      "notes": "Add user"
+    },
     "handler": (request) => {
       const userController = new UserController();
-      userController.signup(request.payload as IUserSerialized);
+      return userController.signup(request.payload as IUserSerialized);
     }
   });
   server.route({
     "method": "PUT",
     "path": basePath + "/login",
+    "options": {
+      "auth": false,
+      "tags": ["api"],
+      "description": "Login",
+      "notes": "login"
+    },
     "handler": (request) => {
       const userController = new UserController();
-      userController.login(request.payload as IUserCredentials);
+      return userController.login(request.payload as IUserCredentials);
     }
   });
 };
