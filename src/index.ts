@@ -10,6 +10,8 @@ import * as HapiSwagger from "hapi-swagger";
 import * as inert from "inert";
 import * as vision from "vision";
 import { graphqlHapi, graphiqlHapi } from "apollo-server-hapi";
+import { importSchema } from "graphql-import";
+import { makeExecutableSchema } from "graphql-tools";
 
 import IoC from "./dependencyResolution/IoC";
 import registerGroup from "./controllers/hapi/group";
@@ -18,6 +20,19 @@ import registerUsers from "./controllers/hapi/user";
 import { config } from "./config";
 import { Logger } from "./util/logger";
 import { ConnectionProvider } from "./models/typeorm";
+import { UserController } from "./controllers/user";
+
+const typeDefs = importSchema("./dist/src/graphql/schema.graphql");
+const resolvers = {
+  "Query": {
+    "getUserById": async (source: undefined, args: {id: number}) => {
+      // console.log("getUserbyId called " + args.id + typeof(args.id));
+      return await new UserController().read(args.id as number);
+    }
+  }
+} as any;
+
+const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 const logger = Logger(path.basename(__filename));
 
@@ -26,7 +41,6 @@ IoC.configure();
 const connection = Container.get(Connection);
 
 const start = async () => {
-
   try {
     const server = new Hapi.Server({
       "host": config.domain,
@@ -46,8 +60,32 @@ const start = async () => {
       inert,
       vision,
       HapiSwagger,
-      graphqlHapi,
-      graphiqlHapi
+      {
+        "plugin": graphiqlHapi,
+        "options": {
+          "route": {
+            "auth": false
+          },
+          "path": "/graphiql",
+          "graphiqlOptions": {
+            "endpointURL": "/graphql",
+
+          },
+        },
+      },
+      {
+        "plugin": graphqlHapi,
+        "options": {
+          "path": "/graphql",
+          "graphqlOptions": {
+            "schema": schema,
+          },
+          "route": {
+            "cors": true,
+            "auth": false
+          },
+        },
+      }
     ]);
 
     server.auth.strategy("jwt", "jwt",

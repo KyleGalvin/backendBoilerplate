@@ -50,7 +50,7 @@ export default (server: Hapi.Server) => {
     "method": "PUT",
     "path": basePath + "/signup",
     "options": {
-      "auth": "jwt",
+      "auth": false,
       "tags": ["api"],
       "description": "Add User",
       "notes": "Add user"
