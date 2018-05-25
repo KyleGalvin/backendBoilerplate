@@ -1,5 +1,5 @@
 import * as path from "path";
-import {Repository, Connection} from "typeorm";
+import {Repository, Connection, SelectQueryBuilder} from "typeorm";
 import { Inject, Provides, Container } from "typescript-ioc";
 
 import {User} from "../models/entities/user";
@@ -40,6 +40,30 @@ export class UserProvider implements IUserProvider {
       throw new Error("Error saving user");
     }
 
+  }
+
+  public async getFiltered(filters: any) {
+
+    const processList = (list: string[], builder: SelectQueryBuilder<User>): SelectQueryBuilder<User> => {
+      if (list.length === 0) {
+        return builder;
+      } else {
+        // recursively consume list elements until it is empty, chaining 'andWhere' queries for each
+        const head = list.shift() as string; // not undefined since if statement exists early
+        const queryObj: any = {};
+        const v = filters[head];
+        queryObj[head] = v;
+        const filterString = "user." + head + " = :" + head;
+        const newBuilder = builder.andWhere(filterString , queryObj);
+        return processList(list, newBuilder);
+      }
+    };
+
+    const queryBuilder = this.repository
+      .createQueryBuilder("user")
+      .where("1=1");
+
+    return processList(Object.keys(filters), queryBuilder).getMany();
   }
 
   // update user

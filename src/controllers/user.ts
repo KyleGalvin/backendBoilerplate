@@ -29,6 +29,10 @@ export class UserController {
     return IUserProvider.serialize(user);
   }
 
+  public async getFiltered(filters: any) {
+    return this.userProvider.getFiltered(filters);
+  }
+
   public async delete(userId: number) {
     await this.userProvider.deleteById(userId);
   }

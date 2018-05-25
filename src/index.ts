@@ -11,7 +11,7 @@ import * as inert from "inert";
 import * as vision from "vision";
 import { graphqlHapi, graphiqlHapi } from "apollo-server-hapi";
 import { importSchema } from "graphql-import";
-import { makeExecutableSchema } from "graphql-tools";
+import { makeExecutableSchema, IExecutableSchemaDefinition, IResolvers } from "graphql-tools";
 
 import IoC from "./dependencyResolution/IoC";
 import registerGroup from "./controllers/hapi/group";
@@ -21,18 +21,21 @@ import { config } from "./config";
 import { Logger } from "./util/logger";
 import { ConnectionProvider } from "./models/typeorm";
 import { UserController } from "./controllers/user";
+import {IUserSerialized} from "./models/entities/IUserSerialized";
 
 const typeDefs = importSchema("./dist/src/graphql/schema.graphql");
 const resolvers = {
   "Query": {
-    "getUserById": async (source: undefined, args: {id: number}) => {
-      // console.log("getUserbyId called " + args.id + typeof(args.id));
+    "getUserById": async (obj: undefined, args: {id: number}) => {
       return await new UserController().read(args.id as number);
+    },
+    "getUsers": async (obj: undefined, args: IUserSerialized) => {
+      return await new UserController().getFiltered(args);
     }
   }
-} as any;
+} as IResolvers;
 
-const schema = makeExecutableSchema({ typeDefs, resolvers });
+const schema = makeExecutableSchema({ typeDefs, resolvers } as IExecutableSchemaDefinition);
 
 const logger = Logger(path.basename(__filename));
 
@@ -69,7 +72,6 @@ const start = async () => {
           "path": "/graphiql",
           "graphiqlOptions": {
             "endpointURL": "/graphql",
-
           },
         },
       },
@@ -99,7 +101,6 @@ const start = async () => {
     registerGroup(server);
     registerContactRequests(server);
     registerUsers(server);
-    // registerSwagger(server);
 
     server.auth.default("jwt");
     await server.start();
