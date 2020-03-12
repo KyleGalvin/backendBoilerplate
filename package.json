@@ -63,7 +63,7 @@
     "pg": "^7.3.0",
     "reflect-metadata": "^0.1.10",
     "sql.js": "^0.5.0",
-    "ts-node": "^5.0.1",
+    "ts-node": "^8.0.0",
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "typeorm": "^0.2.0",
